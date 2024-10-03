@@ -11,7 +11,6 @@
 	<item id="280" name="earth ground" />
 	<item id="293" name="grass" />
 	<item id="294" article="a" name="pitfall">
-		<attribute key="floorchange" value="down" />
 		<attribute key="decayTo" value="293" />
 		<attribute key="duration" value="300" />
 	</item>
@@ -20,11 +19,9 @@
 	<item fromid="356" toid="367" article="a" name="dirt wall" />
 	<item id="368" name="earth ground" />
 	<item fromid="369" toid="370" article="a" name="trapdoor">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="371" toid="382" article="a" name="stone wall" />
 	<item id="383" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="384" article="a" name="rope spot">
 		<attribute key="description" value="There is a hole in the ceiling." />
@@ -43,16 +40,13 @@
 	<item id="392" article="a" name="hole">
 		<attribute key="decayTo" value="354" />
 		<attribute key="duration" value="300" />
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="405" name="wooden flooring" />
 	<item id="406" article="a" name="white marble tile" />
 	<item id="407" article="a" name="black marble tile" />
 	<item fromid="408" toid="409" article="a" name="trapdoor">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="410" toid="411" name="stairs">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="412" article="a" name="sandstone tile" />
 	<item id="413" article="a" name="stone tile" />
@@ -68,25 +62,20 @@
 	<item id="420" article="a" name="tiled floor" />
 	<item fromid="421" toid="422" article="a" name="sandstone floor" />
 	<item id="423" name="stairs">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="424" article="a" name="stone tile" />
 	<item fromid="425" toid="426" article="a" name="stone tile">
 		<attribute key="description" value="It seems to be a switch." />
 	</item>
 	<item id="427" article="a" name="trapdoor">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="428" article="a" name="ladder">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="429" article="a" name="trapdoor">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="430" article="a" name="sewer grate" />
 	<item id="431" name="stone floor" />
 	<item fromid="432" toid="433" name="stairs">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="434" toid="445" name="wooden floor" />
 	<item fromid="446" toid="447" name="wooden floor">
@@ -96,12 +85,10 @@
 	<item id="457" article="a" name="white stone tile" />
 	<item id="458" name="wooden floor" />
 	<item id="459" name="stairs">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="460" name="void" />
 	<item id="461" article="a" name="closed trapdoor" />
 	<item id="462" article="an" name="open trapdoor">
-		<attribute key="floorchange" value="down" />
 		<attribute key="decayTo" value="461" />
 		<attribute key="duration" value="120" />
 	</item>
@@ -116,40 +103,32 @@
 	</item>
 	<item id="468" article="a" name="loose stone pile" />
 	<item id="469" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 		<attribute key="decayTo" value="468" />
 		<attribute key="duration" value="60" />
 	</item>
 	<item id="470" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="471" toid="474" article="a" name="time tile" />
 	<item fromid="475" toid="476" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="477" toid="478" article="a" name="ramp" />
 	<item fromid="479" toid="480" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="481" article="a" name="loose stone pile" />
 	<item id="482" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 		<attribute key="decayTo" value="481" />
 		<attribute key="duration" value="300" />
 	</item>
 	<item id="483" article="a" name="loose ice pile" />
 	<item id="484" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 		<attribute key="decayTo" value="483" />
 		<attribute key="duration" value="300" />
 	</item>
 	<item id="485" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="486" article="a" name="heap of snow" />
 	<item fromid="487" toid="488" article="a" name="ramp" />
 	<item id="489" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 		<attribute key="decayTo" value="231" />
 		<attribute key="duration" value="30" />
 	</item>
@@ -183,7 +162,6 @@
 	<item fromid="918" toid="919" article="a" name="mountain" />
 	<item fromid="920" toid="923" article="a" name="flat roof" />
 	<item id="924" article="a" name="trapdoor">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="925" toid="944" article="a" name="tiled roof" />
 	<item fromid="945" toid="964" article="a" name="wooden roof" />
@@ -441,7 +419,6 @@
 	<item id="1378" article="a" name="small basin" />
 	<item fromid="1379" toid="1384" article="a" name="mill" />
 	<item id="1385" name="stairs">
-		<attribute key="floorchange" value="north" />
 	</item>
 	<item id="1386" article="a" name="ladder" />
 	<item id="1387" article="a" name="magic forcefield">
@@ -449,39 +426,30 @@
 		<attribute key="type" value="teleport" />
 	</item>
 	<item id="1388" article="a" name="ramp">
-		<attribute key="floorchange" value="east" />
 	</item>
 	<item id="1389" article="a" name="ramp" />
 	<item id="1390" article="a" name="ramp">
-		<attribute key="floorchange" value="west" />
 	</item>
 	<item id="1391" article="a" name="ramp" />
 	<item id="1392" article="a" name="ramp">
-		<attribute key="floorchange" value="south" />
 	</item>
 	<item id="1393" article="a" name="ramp" />
 	<item id="1394" article="a" name="ramp">
-		<attribute key="floorchange" value="north" />
 	</item>
 	<item id="1395" article="a" name="ramp" />
 	<item id="1396" name="stairs">
-		<attribute key="floorchange" value="north" />
 	</item>
 	<item id="1397" article="a" name="mystic flame" />
 	<item id="1398" article="a" name="ramp">
-		<attribute key="floorchange" value="east" />
 	</item>
 	<item id="1399" article="a" name="ramp" />
 	<item id="1400" article="a" name="ramp">
-		<attribute key="floorchange" value="west" />
 	</item>
 	<item id="1401" article="a" name="ramp" />
 	<item id="1402" article="a" name="ramp">
-		<attribute key="floorchange" value="south" />
 	</item>
 	<item id="1403" article="a" name="ramp" />
 	<item id="1404" article="a" name="ramp">
-		<attribute key="floorchange" value="north" />
 	</item>
 	<item id="1405" article="a" name="ramp" />
 	<item id="1406" article="a" name="grave" />
@@ -777,23 +745,15 @@
 	<item id="1551" article="an" name="oriental pillar" />
 	<item id="1552" article="a" name="ramp" />
 	<item id="1553" article="a" name="ramp">
-		<attribute key="floorchange" value="north" />
-		<attribute key="floorchange" value="west" />
 	</item>
 	<item id="1554" article="a" name="ramp" />
 	<item id="1555" article="a" name="ramp">
-		<attribute key="floorchange" value="north" />
-		<attribute key="floorchange" value="east" />
 	</item>
 	<item id="1556" article="a" name="ramp" />
 	<item id="1557" article="a" name="ramp">
-		<attribute key="floorchange" value="south" />
-		<attribute key="floorchange" value="east" />
 	</item>
 	<item id="1558" article="a" name="ramp" />
 	<item id="1559" article="a" name="ramp">
-		<attribute key="floorchange" value="south" />
-		<attribute key="floorchange" value="west" />
 	</item>
 	<item id="1560" article="an" name="obelisk" />
 	<item id="1561" article="a" name="broken obelisk" />
@@ -6424,13 +6384,10 @@
 		<attribute key="corpseType" value="blood" />
 	</item>
 	<item fromid="3135" toid="3136" article="a" name="ladder">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="3137" article="a" name="trapdoor">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="3138" article="a" name="stairway">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="3139" toid="3151" name="wooden floor" />
 	<item fromid="3152" toid="3157" name="stone floor" />
@@ -6455,7 +6412,6 @@
 	</item>
 	<item id="3218" article="a" name="stone roof" />
 	<item fromid="3219" toid="3220" article="a" name="stone stairway">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="3221" toid="3223" article="a" name="stone roof" />
 	<item fromid="3224" toid="3225" article="a" name="wooden roof" />
@@ -6465,15 +6421,12 @@
 	<item fromid="3264" toid="3265" name="ground" />
 	<item fromid="3298" toid="3309" name="jungle grass" />
 	<item id="3310" article="a" name="mud stain">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="3311" article="a" name="pitfall">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="3312" toid="3322" article="an" name="ant trail" />
 	<item id="3323" article="an" name="anthill" />
 	<item id="3324" article="a" name="pitfall">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="3325" toid="3347" article="a" name="rock" />
 	<item id="3348" article="a" name="dried grass roof" />
@@ -6582,26 +6535,20 @@
 	<item fromid="3636" toid="3677" article="a" name="stone" />
 	<item id="3678" article="a" name="ladder" />
 	<item id="3679" article="a" name="ramp">
-		<attribute key="floorchange" value="east" />
 	</item>
 	<item id="3680" article="a" name="ramp" />
 	<item id="3681" article="a" name="ramp">
-		<attribute key="floorchange" value="west" />
 	</item>
 	<item id="3682" article="a" name="ramp" />
 	<item id="3683" article="a" name="ramp">
-		<attribute key="floorchange" value="south" />
 	</item>
 	<item id="3684" article="a" name="ramp" />
 	<item id="3685" article="a" name="ramp">
-		<attribute key="floorchange" value="north" />
 	</item>
 	<item id="3686" article="a" name="ramp" />
 	<item id="3687" name="stone stairs">
-		<attribute key="floorchange" value="north" />
 	</item>
 	<item id="3688" name="stone stairs">
-		<attribute key="floorchange" value="west" />
 	</item>
 	<item fromid="3689" toid="3696" article="a" name="large cauldron" />
 	<item fromid="3697" toid="3728" article="a" name="statue" />
@@ -7679,7 +7626,6 @@
 	</item>
 	<item fromid="4832" toid="4833" name="dirt" />
 	<item fromid="4834" toid="4837" name="stairs">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="4838" article="a" name="stone herb" plural="stone herbs">
 		<attribute key="weight" value="20" />
@@ -7891,7 +7837,6 @@
 		<attribute key="weight" value="600" />
 	</item>
 	<item id="5081" article="a" name="trapdoor">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="5082" article="a" name="closed door">
 		<attribute key="type" value="door" />
@@ -8117,13 +8062,10 @@
 	<item fromid="5254" toid="5255" article="a" name="wooden railing" />
 	<item fromid="5256" toid="5257" article="a" name="window" />
 	<item id="5258" name="stairs">
-		<attribute key="floorchange" value="west" />
 	</item>
 	<item id="5259" name="stairs">
-		<attribute key="floorchange" value="north" />
 	</item>
 	<item id="5260" name="stairs">
-		<attribute key="floorchange" value="west" />
 	</item>
 	<item fromid="5261" toid="5275" article="a" name="wooden wall" />
 	<item fromid="5276" toid="5277" article="a" name="wooden wall window" />
@@ -8473,7 +8415,6 @@
 	<item id="5543" article="a" name="rope-ladder" />
 	<item id="5544" article="a" name="cart" />
 	<item id="5545" article="a" name="ladder">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="5546" toid="5548" article="a" name="cart" />
 	<item fromid="5549" toid="5552" name="sugar cane" />
@@ -8625,7 +8566,6 @@
 		<attribute key="corpseType" value="blood" />
 	</item>
 	<item id="5691" article="a" name="trapdoor">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="5692" toid="5703" article="a" name="ballista" />
 	<item fromid="5704" toid="5705" article="a" name="shark" />
@@ -8658,7 +8598,6 @@
 		<attribute key="corpseType" value="blood" />
 	</item>
 	<item id="5731" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="5732" name="closed bars">
 		<attribute key="type" value="door" />
@@ -8714,7 +8653,6 @@
 		<attribute key="corpseType" value="blood" />
 	</item>
 	<item id="5763" article="a" name="ladder">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="5764" article="a" name="ventilation grille" />
 	<item id="5765" article="a" name="dead toad">
@@ -10078,7 +10016,6 @@
 		<attribute key="weight" value="500" />
 	</item>
 	<item fromid="6127" toid="6130" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item id="6131" article="a" name="tortoise shield">
 		<attribute key="weight" value="5200" />
@@ -10099,7 +10036,6 @@
 	<item fromid="6160" toid="6171" name="grass" />
 	<item id="6172" article="a" name="grass roof" />
 	<item fromid="6173" toid="6174" article="a" name="hole">
-		<attribute key="floorchange" value="down" />
 	</item>
 	<item fromid="6175" toid="6177" article="a" name="tree archway" />
 	<item fromid="6178" toid="6179" article="a" name="window" />
