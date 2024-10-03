@@ -281,9 +281,6 @@ bool Condition::updateCondition(const Condition* addCondition)
 
 Icons_t Condition::getIcons() const
 {
-	if(buff)
-		return ICON_BUFF;
-
 	return ICON_NONE;
 }
 
