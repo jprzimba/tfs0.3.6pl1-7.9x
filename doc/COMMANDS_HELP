@@ -224,7 +224,7 @@
 
 		Examples
 			/config serverName
-			/config gamePort
+			/config loginPort
 			/config displayCriticalHitNotify
 
 	/i

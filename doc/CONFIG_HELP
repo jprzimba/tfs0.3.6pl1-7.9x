@@ -298,21 +298,6 @@
 			Login server means server which responds with character list.
 			Default: 7171
 
-		gamePort
-			Game service requires to run on seperated port!
-			DO NOT run this service with ANY other on SAME PORT.
-			Any merging with other ports will end with services not working properly,
-			so please keep in mind the default configuration that is easy and works.
-			Default: 7172
-
-		adminPort
-			Port where admin protocol will listen.
-			Default: 7171
-
-		statusPort
-			Port where status protocol will listen.
-			Default: 7171
-
 		loginTries
 			How much tries specified IP address has to login.
 			E.g. after 10 wrong passwords, IP will be blocked until next server restart.

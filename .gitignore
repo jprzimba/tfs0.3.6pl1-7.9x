@@ -69,3 +69,6 @@ compile_commands.json
 
 # Ignore binaries for macOS
 .DS_Store
+
+# Ignore Windows Makefile
+Makefile.win
