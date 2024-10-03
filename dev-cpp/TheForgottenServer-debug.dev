@@ -139,26 +139,6 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
-FileName=..\protocolold.cpp
-CompileCpp=1
-Folder=TheForgottenServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit16]
-FileName=..\protocolold.h
-CompileCpp=1
-Folder=TheForgottenServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit17]
 FileName=..\condition.cpp
 CompileCpp=1
