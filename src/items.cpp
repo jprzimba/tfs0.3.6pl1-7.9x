@@ -658,8 +658,6 @@ void Items::parseItemNode(xmlNodePtr itemNode, uint32_t id)
 						it.corpseType = RACE_UNDEAD;
 					else if(tmpStrValue == "fire")
 						it.corpseType = RACE_FIRE;
-					else if(tmpStrValue == "energy")
-						it.corpseType = RACE_ENERGY;
 					else
 						std::cout << "[Warning - Items::loadFromXml] Unknown corpseType " << strValue << std::endl;
 				}

@@ -4284,11 +4284,6 @@ bool Game::combatChangeHealth(CombatType_t combatType, Creature* attacker, Creat
 								magicEffect = MAGIC_EFFECT_DRAW_BLOOD;
 								break;
 
-							case RACE_ENERGY:
-								textColor = TEXTCOLOR_PURPLE;
-								magicEffect = MAGIC_EFFECT_PURPLEENERGY;
-								break;
-
 							default:
 								break;
 						}

@@ -5,16 +5,6 @@
 	<action actionid="2001" event="script" value="quests/system.lua"/>
 	<action uniqueid="30015" event="script" value="quests/annihilator.lua"/>
 
-	<!-- Weapons enchanting (Gems) -->
-	<action itemid="2146" event="script" value="other/enchanting.lua"/>
-	<action itemid="2147" event="script" value="other/enchanting.lua"/>
-	<action itemid="2150" event="script" value="other/enchanting.lua"/>
-	<action itemid="2149" event="script" value="other/enchanting.lua"/>
-	<action itemid="7759" event="script" value="other/enchanting.lua"/>
-	<action itemid="7760" event="script" value="other/enchanting.lua"/>
-	<action itemid="7761" event="script" value="other/enchanting.lua"/>
-	<action itemid="7762" event="script" value="other/enchanting.lua"/>
-
 	<!-- Tools -->
 	<action itemid="2420" event="script" value="tools/machete.lua"/>
 	<action itemid="2442" event="script" value="tools/machete.lua"/>
@@ -241,27 +231,12 @@
 	<action fromid="5745" toid="5749" event="script" value="other/doors.lua"/>
 	<action fromid="6192" toid="6209" event="script" value="other/doors.lua"/>
 	<action fromid="6249" toid="6266" event="script" value="other/doors.lua"/>
-	<action fromid="6795" toid="6802" event="script" value="other/doors.lua"/>
-	<action fromid="6891" toid="6908" event="script" value="other/doors.lua"/>
-	<action fromid="7033" toid="7050" event="script" value="other/doors.lua"/>
-	<action fromid="7054" toid="7057" event="script" value="other/doors.lua"/>
-	<action fromid="8541" toid="8558" event="script" value="other/doors.lua"/>
-	<action fromid="9165" toid="9184" event="script" value="other/doors.lua"/>
-	<action fromid="9267" toid="9284" event="script" value="other/doors.lua"/>
-	<action itemid="10032" event="script" value="other/doors.lua"/>
-	<action itemid="10091" event="script" value="other/doors.lua"/>
-	<action fromid="10268" toid="10285" event="script" value="other/doors.lua"/>
-	<action fromid="10468" toid="10486" event="script" value="other/doors.lua"/>
-	<action fromid="10774" toid="10776" event="script" value="other/doors.lua"/>
-	<action fromid="10779" toid="10785" event="script" value="other/doors.lua"/>
-	<action fromid="10788" toid="10791" event="script" value="other/doors.lua"/>
 
 	<!-- Watch -->
 	<action itemid="2036" event="script" value="other/watch.lua"/>
 	<action fromid="1728" toid="1731" event="script" value="other/watch.lua"/>
 	<action itemid="1877" event="script" value="other/watch.lua"/>
 	<action fromid="6091" toid="6092" event="script" value="other/watch.lua"/>
-	<action itemid="8187" event="script" value="other/watch.lua"/>
 
 	<!-- Decay To -->
 	<action fromid="2041" toid="2042" event="script" value="other/decayto.lua"/>

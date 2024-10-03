@@ -84,8 +84,7 @@ enum RaceType_t
 	RACE_VENOM,
 	RACE_BLOOD,
 	RACE_UNDEAD,
-	RACE_FIRE,
-	RACE_ENERGY
+	RACE_FIRE
 };
 
 enum CombatType_t

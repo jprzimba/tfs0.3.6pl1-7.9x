@@ -548,8 +548,6 @@
 				actions/
 					scripts/
 						other/
-							enchanting.lua
-								* Added enchanting system
 							furniturebeds.lua
 								* Added furniture beds (packages with beds)
 
@@ -859,7 +857,7 @@
 		New configurables: ghostModeInvisibleEffect, gainExperienceColor, checkCorpseOwner, showHealingDamageForMonsters
 			premiumDaysToFormGuild, pushCreatureDelay, deathContainerId (slawkens)
 		Moved items randomization to randomization.xml file (slawkens, Elf)
-		Furniture beds (packages with beds) + enchanting system (slawkens)
+		Furniture beds (packages with beds) (slawkens)
 		Outfit attributes (Elf)
 		Proccess priority and affinity assinging for both Windows and *nix systems (Elf)
 		'hidename' & 'hidehealth' flags for monsters & npcs (slawkens)

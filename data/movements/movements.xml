@@ -4,10 +4,6 @@
 	<movevent type="StepIn" itemid="293" event="script" value="decay.lua"/>
 	<movevent type="StepIn" itemid="461" event="script" value="decay.lua"/>
 
-	<!-- Swimming -->
-	<movevent type="StepIn" itemid="4828-4831" event="script" value="swimming.lua"/>
-	<movevent type="StepIn" itemid="7943-7954" event="script" value="swimming.lua"/>
-
 	<!-- Underwater drown -->
 	<movevent type="StepIn" fromid="5405" toid="5410" event="script" value="drown.lua"/>
 	<movevent type="StepOut" fromid="5405" toid="5410" event="script" value="drown.lua"/>
@@ -23,8 +19,6 @@
 	<movevent type="StepOut" itemid="3217" event="script" value="tiles.lua"/>
 	<movevent type="StepIn" itemid="3202" event="script" value="tiles.lua"/>
 	<movevent type="StepOut" itemid="3215" event="script" value="tiles.lua"/>
-	<movevent type="StepIn" itemid="11059" event="script" value="tiles.lua"/>
-	<movevent type="StepOut" itemid="11060" event="script" value="tiles.lua"/>
 	<!-- <movevent type="StepIn" itemid="8714" event="script" value="tiles.lua"/> -->
 
 	<!-- Traps -->
@@ -82,38 +76,7 @@
 	<movevent type="StepOut" itemid="6262" event="script" value="closingdoor.lua"/>
 	<movevent type="StepOut" itemid="6264" event="script" value="closingdoor.lua"/>
 	<movevent type="StepOut" itemid="6266" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="6897" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="6899" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="6906" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="6908" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="7039" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="7041" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="7048" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="7050" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="8552" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="8554" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="8556" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="8558" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="9176" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="9178" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="9180" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="9182" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="9278" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="9280" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="9282" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="9284" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10279" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10281" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10283" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10285" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10474" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10476" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10483" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10485" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10780" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10782" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10789" event="script" value="closingdoor.lua"/>
-	<movevent type="StepOut" itemid="10791" event="script" value="closingdoor.lua"/>
+
 	<movevent type="StepIn" itemid="1228" event="script" value="walkback.lua"/>
 	<movevent type="StepIn" itemid="1230" event="script" value="walkback.lua"/>
 	<movevent type="StepIn" itemid="1246" event="script" value="walkback.lua"/>
