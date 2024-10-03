@@ -413,20 +413,6 @@ bool isPasswordCharacter(char character)
 	return ((character >= 33 && character <= 47) || (character >= 58 && character <= 64) || (character >= 91 && character <= 96) || (character >= 123 && character <= 126));
 }
 
-bool isValidAccountName(std::string text)
-{
-	toLowerCaseString(text);
-
-	uint32_t textLength = text.length();
-	for(uint32_t size = 0; size < textLength; size++)
-	{
-		if(!isLowercaseLetter(text[size]) && !isNumber(text[size]))
-			return false;
-	}
-
-	return true;
-}
-
 bool isValidPassword(std::string text)
 {
 	toLowerCaseString(text);

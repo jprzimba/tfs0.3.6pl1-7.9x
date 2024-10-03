@@ -262,7 +262,6 @@ class Player : public Creature, public Cylinder
 		bool isTrading() const {return tradePartner;}
 
 		uint32_t getAccount() const {return accountId;}
-		std::string getAccountName() const {return account;}
 		uint16_t getAccess() const {return group ? group->getAccess() : 0;}
 		uint16_t getGhostAccess() const {return group ? group->getGhostAccess() : 0;}
 
@@ -792,13 +791,13 @@ class Player : public Creature, public Cylinder
 
 		OperatingSystem_t operatingSystem;
 		AccountManager_t accountManager;
-		PlayerSex_t managerSex;
 		BlockType_t lastAttackBlockType;
 		chaseMode_t chaseMode;
 		fightMode_t fightMode;
 		secureMode_t secureMode;
 		tradestate_t tradeState;
 		GuildLevel_t guildLevel;
+		PlayerSex_t _newSex;
 
 		int16_t blessings;
 		uint16_t maxWriteLen;
@@ -809,7 +808,6 @@ class Player : public Creature, public Cylinder
 		int32_t soulMax;
 		int32_t vocation_id;
 		int32_t groupId;
-		int32_t managerNumber, managerNumber2;
 		int32_t purchaseCallback;
 		int32_t saleCallback;
 		int32_t varSkills[SKILL_LAST + 1];
@@ -818,6 +816,7 @@ class Player : public Creature, public Cylinder
 		int32_t bloodHitCount;
 		int32_t shieldBlockCount;
 		int32_t shootRange;
+		int32_t newVocation;
 
 		uint32_t clientVersion;
 		uint32_t messageTicks;
@@ -844,6 +843,7 @@ class Player : public Creature, public Cylinder
 		uint32_t rankId;
 		uint32_t promotionLevel;
 		uint32_t town;
+		uint32_t realAccount, newAccount;
 
 		time_t skullEnd;
 		time_t lastLogin;
@@ -859,10 +859,11 @@ class Player : public Creature, public Cylinder
 
 		double inventoryWeight;
 		double capacity;
-		char managerChar[100];
 
-		std::string managerString, managerString2;
-		std::string account, password;
+		char newAccountNumber[10];
+
+		std::string newPassword, newCharacterName, removeChar, accountNumberAttempt, recoveryKeyAttempt, namelockedPlayer, recoveryKey;
+		std::string password;
 		std::string name, nameDescription, specialDescription;
 		std::string guildName, rankName, guildNick;
 

@@ -103,7 +103,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 	{
 		if(!g_config.getBool(ConfigManager::ACCOUNT_MANAGER))
 		{
-			disconnectClient(0x0A, "Invalid account name.");
+			disconnectClient(0x0A, "Invalid account number.");
 			return false;
 		}
 
@@ -140,15 +140,6 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 		disconnectClient(0x0A, "Your IP is banished!");
 		return false;
 	}
-
-/*	uint32_t id = 1;
-	if(!IOLoginData::getInstance()->getAccountId(name, id))
-	{
-		ConnectionManager::getInstance()->addLoginAttempt(clientIp, false);
-		disconnectClient(0x0A, "Invalid account name.");
-		return false;
-	}
-*/
 
 	uint32_t serverIp = serverIps[0].first;
 	for(IpList::iterator it = serverIps.begin(); it != serverIps.end(); ++it)

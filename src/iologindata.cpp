@@ -119,27 +119,6 @@ bool IOLoginData::getAccountId(const std::string& name, uint32_t& number)
 	return true;
 }
 
-bool IOLoginData::getAccountName(uint32_t number, std::string& name)
-{
-	if(number < 2)
-	{
-		name = number ? "1" : "";
-		return true;
-	}
-
-	Database* db = Database::getInstance();
-	DBQuery query;
-	query << "SELECT `name` FROM `accounts` WHERE `id` = " << number << " LIMIT 1";
-
-	DBResult* result;
-	if(!(result = db->storeQuery(query.str())))
-		return false;
-
-	name = result->getDataString("name");
-	result->free();
-	return true;
-}
-
 bool IOLoginData::hasFlag(uint32_t accountId, PlayerFlags value)
 {
 	Database* db = Database::getInstance();
@@ -205,20 +184,6 @@ bool IOLoginData::accountIdExists(uint32_t accountId)
 	Database* db = Database::getInstance();
 	DBQuery query;
 	query << "SELECT `id` FROM `accounts` WHERE `id` = " << accountId << " LIMIT 1";
-
-	DBResult* result;
-	if(!(result = db->storeQuery(query.str())))
-		return false;
-
-	result->free();
-	return true;
-}
-
-bool IOLoginData::accountNameExists(const std::string& name)
-{
-	Database* db = Database::getInstance();
-	DBQuery query;
-	query << "SELECT `id` FROM `accounts` WHERE `name` " << db->getStringComparison() << db->escapeString(name) << " LIMIT 1";
 
 	DBResult* result;
 	if(!(result = db->storeQuery(query.str())))
@@ -304,13 +269,13 @@ bool IOLoginData::setRecoveryKey(uint32_t accountId, std::string newRecoveryKey)
 	return db->executeQuery(query.str());
 }
 
-uint64_t IOLoginData::createAccount(std::string name, std::string password)
+bool IOLoginData::createAccount(uint32_t accountNumber, std::string password)
 {
 	_encrypt(password, false);
 	Database* db = Database::getInstance();
 
 	DBQuery query;
-	query << "INSERT INTO `accounts` (`id`, `name`, `password`) VALUES (NULL, " << db->escapeString(name) << ", " << db->escapeString(password) << ")";
+	query << "INSERT INTO `accounts` (`id`, `password`) VALUES (" << accountNumber << ", " << db->escapeString(password) << ")";
 	if(!db->executeQuery(query.str()))
 		return 0;
 
