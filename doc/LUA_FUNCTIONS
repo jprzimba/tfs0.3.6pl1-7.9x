@@ -121,7 +121,6 @@
 						SKULL_GREEN (2)
 						SKULL_WHITE (3)
 						SKULL_RED (4)
-						SKULL_BLACK (5)
 
 				Example
 					local skullNames = {"Yellow", "Green", "White", "Red", "Black"}

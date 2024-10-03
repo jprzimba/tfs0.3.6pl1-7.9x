@@ -68,9 +68,6 @@
 		redSkullLength
 			Default: 30 * 24 * 60 * 60
 
-		blackSkullLength
-			Default: 45 * 24 * 60 * 60
-
 		dailyFragsToRedSkull
 			Default: 3
 
@@ -80,15 +77,6 @@
 		monthlyFragsToRedSkull
 			Default: 10
 
-		dailyFragsToBlackSkull
-			Default: dailyFragsToRedSkull
-
-		weeklyFragsToBlackSkull
-			Default: weeklyFragsToRedSkull
-
-		monthlyFragsToBlackSkull
-			Default: monthlyFragsToRedSkull
-
 		dailyFragsToBanishment
 			Default: dailyFragsToRedSkull
 
@@ -97,16 +85,6 @@
 
 		monthlyFragsToBanishment
 			Default: monthlyFragsToRedSkull
-
-		blackSkulledDeathHealth
-			Default: 40
-
-		blackSkulledDeathMana
-			Default: 0
-
-		useBlackSkull
-			New feature from 8.5. If you'll use it, player won't be banished but instead they receive black skull which block some actions.
-			Default: yes
 
 		advancedFragList
 			Default: no
@@ -132,7 +110,6 @@
 
 		killsBanLength
 			Ban length for unjustified player killing.
-			Works only if useBlackSkull option is disabled.
 			Default: 7 * 24 * 60 * 60 (7 days)
 
 		finalBanLength

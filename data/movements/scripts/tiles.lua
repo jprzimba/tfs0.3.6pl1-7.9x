@@ -61,7 +61,7 @@ function onStepIn(cid, item, position, fromPosition)
 	end
 
 	local skull = item.actionid - 180
-	if(skull >= SKULL_NONE and skull <= SKULL_BLACK) then
+	if(skull >= SKULL_NONE and skull <= SKULL_RED) then
 		if(skull ~= getCreatureSkullType(cid)) then
 			pushBack(cid, position, fromPosition, true)
 		end

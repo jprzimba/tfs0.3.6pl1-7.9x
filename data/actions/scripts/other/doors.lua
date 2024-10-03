@@ -42,7 +42,7 @@ function onUse(cid, item, fromPosition, itemEx, toPosition)
 		end
 
 		local skull = item.actionid - 180
-		if(skull >= SKULL_NONE and skull <= SKULL_BLACK) then
+		if(skull >= SKULL_NONE and skull <= SKULL_RED) then
 			if(skull ~= getCreatureSkullType(cid)) then
 				doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, "Only the worthy may pass.")
 				return true

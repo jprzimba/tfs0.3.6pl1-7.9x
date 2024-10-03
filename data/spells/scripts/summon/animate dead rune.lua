@@ -3,7 +3,7 @@ local function doTargetCorpse(cid, pos)
 	getPos.stackpos = STACKPOS_TOP_MOVEABLE_ITEM_OR_CREATURE
 
 	local corpse = getThingFromPos(getPos)
-	if(corpse.uid > 0 and isCorpse(corpse.uid) and isMoveable(corpse.uid) and getCreatureSkullType(cid) ~= SKULL_BLACK) then
+	if(corpse.uid > 0 and isCorpse(corpse.uid) and isMoveable(corpse.uid)) then
 		doRemoveItem(corpse.uid)
 		local creature = doCreateMonster(cid, "Skeleton", pos)
 		doConvinceCreature(cid, creature)
