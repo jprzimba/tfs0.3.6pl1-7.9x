@@ -1510,11 +1510,7 @@ void Player::onCreatureMove(const Creature* creature, const Tile* newTile, const
 	{
 		int32_t ticks = g_config.getNumber(ConfigManager::STAIRHOP_DELAY);
 		if(ticks > 0)
-		{
 			addExhaust(ticks, EXHAUST_COMBAT);
-			if(Condition* condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_PACIFIED, ticks))
-				addCondition(condition);
-		}
 	}
 }
 
@@ -3246,12 +3242,6 @@ void Player::doAttacking(uint32_t interval)
 	else if((OTSYS_TIME() - lastAttack) < getAttackSpeed())
 		return;
 
-	if(hasCondition(CONDITION_PACIFIED) && !hasCustomFlag(PlayerCustomFlag_IgnorePacification))
-	{
-		lastAttack = OTSYS_TIME();
-		return;
-	}
-
 	Item* tool = getWeapon();
 	if(const Weapon* weapon = g_weapons->getWeapon(tool))
 	{
@@ -3400,15 +3390,6 @@ void Player::onAddCombatCondition(ConditionType_t type, bool hadCondition)
 			break;
 		case CONDITION_ENERGY:
 			tmp = "electrified";
-			break;
-		case CONDITION_FREEZING:
-			tmp = "freezing";
-			break;
-		case CONDITION_DAZZLED:
-			tmp = "dazzled";
-			break;
-		case CONDITION_CURSED:
-			tmp = "cursed";
 			break;
 		case CONDITION_DROWN:
 			tmp = "drowning";

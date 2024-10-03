@@ -1,5 +1,5 @@
 local combat = createCombatObject()
-setCombatParam(combat, COMBAT_PARAM_TYPE, COMBAT_EARTHDAMAGE)
+setCombatParam(combat, COMBAT_PARAM_TYPE, COMBAT_POISONDAMAGE)
 setCombatParam(combat, COMBAT_PARAM_EFFECT, CONST_ME_PLANTATTACK)
 setAttackFormula(combat, COMBAT_FORMULA_LEVELMAGIC, 5, 5, 5, 10)
 

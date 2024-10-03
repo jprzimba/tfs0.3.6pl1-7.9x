@@ -186,9 +186,6 @@ Condition* Condition::createCondition(ConditionId_t _id, ConditionType_t _type, 
 		case CONDITION_FIRE:
 		case CONDITION_ENERGY:
 		case CONDITION_POISON:
-		case CONDITION_FREEZING:
-		case CONDITION_DAZZLED:
-		case CONDITION_CURSED:
 		case CONDITION_DROWN:
 		case CONDITION_PHYSICAL:
 			return new ConditionDamage(_id, _type, _buff, _subId);
@@ -221,7 +218,6 @@ Condition* Condition::createCondition(ConditionId_t _id, ConditionType_t _type, 
 		case CONDITION_MUTED:
 		case CONDITION_EXHAUST:
 		case CONDITION_DRUNK:
-		case CONDITION_PACIFIED:
 		case CONDITION_GAMEMASTER:
 			return new ConditionGeneric(_id, _type, _ticks, _buff, _subId);
 
@@ -1230,15 +1226,6 @@ Icons_t ConditionDamage::getIcons() const
 
 		case CONDITION_POISON:
 			return ICON_POISON;
-
-		case CONDITION_FREEZING:
-			return ICON_FREEZING;
-
-		case CONDITION_DAZZLED:
-			return ICON_DAZZLED;
-
-		case CONDITION_CURSED:
-			return ICON_CURSED;
 
 		case CONDITION_DROWN:
 			return ICON_DROWNING;

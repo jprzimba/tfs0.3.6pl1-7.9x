@@ -4147,10 +4147,7 @@ bool Game::combatBlockHit(CombatType_t combatType, Creature* attacker, Creature*
 		case COMBAT_ENERGYDAMAGE:
 		case COMBAT_FIREDAMAGE:
 		case COMBAT_PHYSICALDAMAGE:
-		case COMBAT_ICEDAMAGE:
-		case COMBAT_DEATHDAMAGE:
-		case COMBAT_EARTHDAMAGE:
-		case COMBAT_HOLYDAMAGE:
+		case COMBAT_POISONDAMAGE:
 		{
 			effect = MAGIC_EFFECT_BLOCKHIT;
 			break;
@@ -4198,7 +4195,7 @@ bool Game::combatChangeHealth(CombatType_t combatType, Creature* attacker, Creat
 			if(combatType != COMBAT_HEALING)
 				addMagicEffect(list, targetPos, MAGIC_EFFECT_WRAPS_BLUE);
 
-			addAnimatedText(list, targetPos, TEXTCOLOR_GREEN, buffer);
+			addAnimatedText(list, targetPos, TEXTCOLOR_LIGHTGREEN, buffer);
 		}
 	}
 	else
@@ -4278,7 +4275,7 @@ bool Game::combatChangeHealth(CombatType_t combatType, Creature* attacker, Creat
 								break;
 
 							case RACE_UNDEAD:
-								textColor = TEXTCOLOR_GREY;
+								textColor = TEXTCOLOR_LIGHTGREY;
 								magicEffect = MAGIC_EFFECT_HIT_AREA;
 								break;
 
@@ -4311,7 +4308,7 @@ bool Game::combatChangeHealth(CombatType_t combatType, Creature* attacker, Creat
 						break;
 					}
 
-					case COMBAT_EARTHDAMAGE:
+					case COMBAT_POISONDAMAGE:
 					{
 						textColor = TEXTCOLOR_LIGHTGREEN;
 						magicEffect = MAGIC_EFFECT_POISON_RINGS;
@@ -4329,27 +4326,6 @@ bool Game::combatChangeHealth(CombatType_t combatType, Creature* attacker, Creat
 					{
 						textColor = TEXTCOLOR_ORANGE;
 						magicEffect = MAGIC_EFFECT_HITBY_FIRE;
-						break;
-					}
-
-					case COMBAT_ICEDAMAGE:
-					{
-						textColor = TEXTCOLOR_TEAL;
-						magicEffect = MAGIC_EFFECT_ICEATTACK;
-						break;
-					}
-
-					case COMBAT_HOLYDAMAGE:
-					{
-						textColor = TEXTCOLOR_YELLOW;
-						magicEffect = MAGIC_EFFECT_HOLYDAMAGE;
-						break;
-					}
-
-					case COMBAT_DEATHDAMAGE:
-					{
-						textColor = TEXTCOLOR_DARKRED;
-						magicEffect = MAGIC_EFFECT_SMALLCLOUDS;
 						break;
 					}
 
@@ -4409,7 +4385,7 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, int32_t manaCh
 			sprintf(buffer, "+%d", manaChange);
 
 			const SpectatorVec& list = getSpectators(targetPos);
-			addAnimatedText(list, targetPos, TEXTCOLOR_DARKPURPLE, buffer);
+			addAnimatedText(list, targetPos, TEXTCOLOR_BLUE, buffer);
 		}
 	}
 	else

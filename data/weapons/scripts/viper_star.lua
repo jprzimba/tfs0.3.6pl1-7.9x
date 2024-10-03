@@ -5,7 +5,7 @@ setCombatParam(combat, COMBAT_PARAM_DISTANCEEFFECT, CONST_ANI_GREENSTAR)
 setCombatFormula(combat, COMBAT_FORMULA_SKILL, 0, 0, 1.0, 0)
 
 local xCombat = createCombatObject()
-setCombatParam(xCombat, COMBAT_PARAM_TYPE, COMBAT_EARTHDAMAGE)
+setCombatParam(xCombat, COMBAT_PARAM_TYPE, COMBAT_POISONDAMAGE)
 
 local condition = createConditionObject(CONDITION_POISON)
 setConditionParam(condition, CONDITION_PARAM_DELAYED, 1)

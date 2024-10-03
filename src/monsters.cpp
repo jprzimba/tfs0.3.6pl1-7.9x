@@ -388,14 +388,8 @@ bool Monsters::deserializeSpell(xmlNodePtr node, spellBlock_t& sb, const std::st
 				conditionType = CONDITION_FIRE;
 			else if(readXMLInteger(node, "energy", intValue))
 				conditionType = CONDITION_ENERGY;
-			else if(readXMLInteger(node, "earth", intValue))
+			else if(readXMLInteger(node, "earth", intValue) || readXMLInteger(node, "poison", intValue))
 				conditionType = CONDITION_POISON;
-			else if(readXMLInteger(node, "freeze", intValue))
-				conditionType = CONDITION_FREEZING;
-			else if(readXMLInteger(node, "dazzle", intValue))
-				conditionType = CONDITION_DAZZLED;
-			else if(readXMLInteger(node, "curse", intValue))
-				conditionType = CONDITION_CURSED;
 			else if(readXMLInteger(node, "drown", intValue))
 			{
 				conditionType = CONDITION_DROWN;
@@ -437,13 +431,7 @@ bool Monsters::deserializeSpell(xmlNodePtr node, spellBlock_t& sb, const std::st
 		else if(tmpName == "energy")
 			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_ENERGYDAMAGE);
 		else if(tmpName == "poison" || tmpName == "earth")
-			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_EARTHDAMAGE);
-		else if(tmpName == "ice")
-			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_ICEDAMAGE);
-		else if(tmpName == "holy")
-			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_HOLYDAMAGE);
-		else if(tmpName == "death")
-			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_DEATHDAMAGE);
+			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_POISONDAMAGE);
 		else if(tmpName == "lifedrain")
 			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_LIFEDRAIN);
 		else if(tmpName == "manadrain")
@@ -765,21 +753,6 @@ bool Monsters::deserializeSpell(xmlNodePtr node, spellBlock_t& sb, const std::st
 			else if(tmpName == "earthcondition")
 			{
 				conditionType = CONDITION_POISON;
-				tickInterval = 10000;
-			}
-			else if(tmpName == "freezecondition")
-			{
-				conditionType = CONDITION_FREEZING;
-				tickInterval = 10000;
-			}
-			else if(tmpName == "cursecondition")
-			{
-				conditionType = CONDITION_CURSED;
-				tickInterval = 10000;
-			}
-			else if(tmpName == "dazzlecondition")
-			{
-				conditionType = CONDITION_DAZZLED;
 				tickInterval = 10000;
 			}
 			else if(tmpName == "drowncondition")
@@ -1191,23 +1164,8 @@ bool Monsters::loadMonster(const std::string& file, const std::string& monsterNa
 						}
 						else if(tmpStrValue == "poison" || tmpStrValue == "earth")
 						{
-							mType->damageImmunities |= COMBAT_EARTHDAMAGE;
+							mType->damageImmunities |= COMBAT_POISONDAMAGE;
 							mType->conditionImmunities |= CONDITION_POISON;
-						}
-						else if(tmpStrValue == "ice")
-						{
-							mType->damageImmunities |= COMBAT_ICEDAMAGE;
-							mType->conditionImmunities |= CONDITION_FREEZING;
-						}
-						else if(tmpStrValue == "holy")
-						{
-							mType->damageImmunities |= COMBAT_HOLYDAMAGE;
-							mType->conditionImmunities |= CONDITION_DAZZLED;
-						}
-						else if(tmpStrValue == "death")
-						{
-							mType->damageImmunities |= COMBAT_DEATHDAMAGE;
-							mType->conditionImmunities |= CONDITION_CURSED;
 						}
 						else if(tmpStrValue == "drown")
 						{
@@ -1247,28 +1205,13 @@ bool Monsters::loadMonster(const std::string& file, const std::string& monsterNa
 					else if((readXMLString(tmpNode, "poison", strValue) || readXMLString(tmpNode, "earth", strValue))
 						&& booleanString(strValue))
 					{
-						mType->damageImmunities |= COMBAT_EARTHDAMAGE;
+						mType->damageImmunities |= COMBAT_POISONDAMAGE;
 						mType->conditionImmunities |= CONDITION_POISON;
 					}
 					else if(readXMLString(tmpNode, "drown", strValue) && booleanString(strValue))
 					{
 						mType->damageImmunities |= COMBAT_DROWNDAMAGE;
 						mType->conditionImmunities |= CONDITION_DROWN;
-					}
-					else if(readXMLString(tmpNode, "ice", strValue) && booleanString(strValue))
-					{
-						mType->damageImmunities |= COMBAT_ICEDAMAGE;
-						mType->conditionImmunities |= CONDITION_FREEZING;
-					}
-					else if(readXMLString(tmpNode, "holy", strValue) && booleanString(strValue))
-					{
-						mType->damageImmunities |= COMBAT_HOLYDAMAGE;
-						mType->conditionImmunities |= CONDITION_DAZZLED;
-					}
-					else if(readXMLString(tmpNode, "death", strValue) && booleanString(strValue))
-					{
-						mType->damageImmunities |= COMBAT_DEATHDAMAGE;
-						mType->conditionImmunities |= CONDITION_CURSED;
 					}
 					else if(readXMLString(tmpNode, "lifedrain", strValue) && booleanString(strValue))
 						mType->damageImmunities |= COMBAT_LIFEDRAIN;
@@ -1353,14 +1296,8 @@ bool Monsters::loadMonster(const std::string& file, const std::string& monsterNa
 						mType->elementMap[COMBAT_FIREDAMAGE] = intValue;
 					else if(readXMLInteger(tmpNode, "energyPercent", intValue))
 						mType->elementMap[COMBAT_ENERGYDAMAGE] = intValue;
-					else if(readXMLInteger(tmpNode, "icePercent", intValue))
-						mType->elementMap[COMBAT_ICEDAMAGE] = intValue;
 					else if(readXMLInteger(tmpNode, "poisonPercent", intValue) || readXMLInteger(tmpNode, "earthPercent", intValue))
-						mType->elementMap[COMBAT_EARTHDAMAGE] = intValue;
-					else if(readXMLInteger(tmpNode, "holyPercent", intValue))
-						mType->elementMap[COMBAT_HOLYDAMAGE] = intValue;
-					else if(readXMLInteger(tmpNode, "deathPercent", intValue))
-						mType->elementMap[COMBAT_DEATHDAMAGE] = intValue;
+						mType->elementMap[COMBAT_POISONDAMAGE] = intValue;
 					else if(readXMLInteger(tmpNode, "drownPercent", intValue))
 						mType->elementMap[COMBAT_DROWNDAMAGE] = intValue;
 					else if(readXMLInteger(tmpNode, "physicalPercent", intValue))

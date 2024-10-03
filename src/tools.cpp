@@ -920,41 +920,14 @@ ShootTypeNames shootTypeNames[] =
 	{"snowball",		SHOOT_EFFECT_SNOWBALL},
 	{"powerbolt",		SHOOT_EFFECT_POWERBOLT},
 	{"poison",		SHOOT_EFFECT_POISONFIELD},
-	{"infernalbolt",	SHOOT_EFFECT_INFERNALBOLT},
-	{"huntingspear",	SHOOT_EFFECT_HUNTINGSPEAR},
-	{"enchantedspear",	SHOOT_EFFECT_ENCHANTEDSPEAR},
-	{"redstar",		SHOOT_EFFECT_REDSTAR},
-	{"greenstar",		SHOOT_EFFECT_GREENSTAR},
-	{"royalspear",		SHOOT_EFFECT_ROYALSPEAR},
-	{"sniperarrow",		SHOOT_EFFECT_SNIPERARROW},
-	{"onyxarrow",		SHOOT_EFFECT_ONYXARROW},
-	{"piercingbolt",	SHOOT_EFFECT_PIERCINGBOLT},
-	{"whirlwindsword",	SHOOT_EFFECT_WHIRLWINDSWORD},
-	{"whirlwindaxe",	SHOOT_EFFECT_WHIRLWINDAXE},
-	{"whirlwindclub",	SHOOT_EFFECT_WHIRLWINDCLUB},
-	{"etherealspear",	SHOOT_EFFECT_ETHEREALSPEAR},
-	{"ice",			SHOOT_EFFECT_ICE},
-	{"earth",		SHOOT_EFFECT_EARTH},
-	{"holy",		SHOOT_EFFECT_HOLY},
-	{"suddendeath",		SHOOT_EFFECT_SUDDENDEATH},
-	{"flasharrow",		SHOOT_EFFECT_FLASHARROW},
-	{"flammingarrow",	SHOOT_EFFECT_FLAMMINGARROW},
-	{"flamingarrow",	SHOOT_EFFECT_FLAMMINGARROW},
-	{"shiverarrow",		SHOOT_EFFECT_SHIVERARROW},
-	{"energyball",		SHOOT_EFFECT_ENERGYBALL},
-	{"smallice",		SHOOT_EFFECT_SMALLICE},
-	{"smallholy",		SHOOT_EFFECT_SMALLHOLY},
-	{"smallearth",		SHOOT_EFFECT_SMALLEARTH},
-	{"eartharrow",		SHOOT_EFFECT_EARTHARROW},
-	{"explosion",		SHOOT_EFFECT_EXPLOSION},
-	{"cake",		SHOOT_EFFECT_CAKE}
+	{"infernalbolt",	SHOOT_EFFECT_INFERNALBOLT}
 };
 
 CombatTypeNames combatTypeNames[] =
 {
 	{"physical",		COMBAT_PHYSICALDAMAGE},
 	{"energy",		COMBAT_ENERGYDAMAGE},
-	{"earth",		COMBAT_EARTHDAMAGE},
+	{"earth",		COMBAT_POISONDAMAGE},
 	{"fire",		COMBAT_FIREDAMAGE},
 	{"undefined",		COMBAT_UNDEFINEDDAMAGE},
 	{"lifedrain",		COMBAT_LIFEDRAIN},
@@ -962,10 +935,7 @@ CombatTypeNames combatTypeNames[] =
 	{"manadrain",		COMBAT_MANADRAIN},
 	{"mana drain",		COMBAT_MANADRAIN},
 	{"healing",		COMBAT_HEALING},
-	{"drown",		COMBAT_DROWNDAMAGE},
-	{"ice",			COMBAT_ICEDAMAGE},
-	{"holy",		COMBAT_HOLYDAMAGE},
-	{"death",		COMBAT_DEATHDAMAGE}
+	{"drown",		COMBAT_DROWNDAMAGE}
 };
 
 AmmoTypeNames ammoTypeNames[] =
@@ -1133,7 +1103,7 @@ std::string getCombatName(CombatType_t combatType)
 			return "physical";
 		case COMBAT_ENERGYDAMAGE:
 			return "energy";
-		case COMBAT_EARTHDAMAGE:
+		case COMBAT_POISONDAMAGE:
 			return "earth";
 		case COMBAT_FIREDAMAGE:
 			return "fire";
@@ -1147,12 +1117,6 @@ std::string getCombatName(CombatType_t combatType)
 			return "healing";
 		case COMBAT_DROWNDAMAGE:
 			return "drown";
-		case COMBAT_ICEDAMAGE:
-			return "ice";
-		case COMBAT_HOLYDAMAGE:
-			return "holy";
-		case COMBAT_DEATHDAMAGE:
-			return "death";
 		default:
 			break;
 	}

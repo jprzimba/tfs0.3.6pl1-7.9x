@@ -177,18 +177,14 @@ bool Outfits::parseOutfitNode(xmlNodePtr p)
 				{
 					outfit.reflect[REFLECT_PERCENT][COMBAT_ENERGYDAMAGE] += intValue;
 					outfit.reflect[REFLECT_PERCENT][COMBAT_FIREDAMAGE] += intValue;
-					outfit.reflect[REFLECT_PERCENT][COMBAT_EARTHDAMAGE] += intValue;
-					outfit.reflect[REFLECT_PERCENT][COMBAT_ICEDAMAGE] += intValue;
+					outfit.reflect[REFLECT_PERCENT][COMBAT_POISONDAMAGE] += intValue;
 				}
 
 				if(readXMLInteger(configNode, "percentMagic", intValue))
 				{
 					outfit.reflect[REFLECT_PERCENT][COMBAT_ENERGYDAMAGE] += intValue;
 					outfit.reflect[REFLECT_PERCENT][COMBAT_FIREDAMAGE] += intValue;
-					outfit.reflect[REFLECT_PERCENT][COMBAT_EARTHDAMAGE] += intValue;
-					outfit.reflect[REFLECT_PERCENT][COMBAT_ICEDAMAGE] += intValue;
-					outfit.reflect[REFLECT_PERCENT][COMBAT_HOLYDAMAGE] += intValue;
-					outfit.reflect[REFLECT_PERCENT][COMBAT_DEATHDAMAGE] += intValue;
+					outfit.reflect[REFLECT_PERCENT][COMBAT_POISONDAMAGE] += intValue;
 				}
 
 				if(readXMLInteger(configNode, "percentEnergy", intValue))
@@ -198,16 +194,7 @@ bool Outfits::parseOutfitNode(xmlNodePtr p)
 					outfit.reflect[REFLECT_PERCENT][COMBAT_FIREDAMAGE] += intValue;
 
 				if(readXMLInteger(configNode, "percentPoison", intValue) || readXMLInteger(configNode, "percentEarth", intValue))
-					outfit.reflect[REFLECT_PERCENT][COMBAT_EARTHDAMAGE] += intValue;
-
-				if(readXMLInteger(configNode, "percentIce", intValue))
-					outfit.reflect[REFLECT_PERCENT][COMBAT_ICEDAMAGE] += intValue;
-
-				if(readXMLInteger(configNode, "percentHoly", intValue))
-					outfit.reflect[REFLECT_PERCENT][COMBAT_HOLYDAMAGE] += intValue;
-
-				if(readXMLInteger(configNode, "percentDeath", intValue))
-					outfit.reflect[REFLECT_PERCENT][COMBAT_DEATHDAMAGE] += intValue;
+					outfit.reflect[REFLECT_PERCENT][COMBAT_POISONDAMAGE] += intValue;
 
 				if(readXMLInteger(configNode, "percentLifeDrain", intValue))
 					outfit.reflect[REFLECT_PERCENT][COMBAT_LIFEDRAIN] += intValue;
@@ -237,18 +224,14 @@ bool Outfits::parseOutfitNode(xmlNodePtr p)
 				{
 					outfit.reflect[REFLECT_CHANCE][COMBAT_ENERGYDAMAGE] += intValue;
 					outfit.reflect[REFLECT_CHANCE][COMBAT_FIREDAMAGE] += intValue;
-					outfit.reflect[REFLECT_CHANCE][COMBAT_EARTHDAMAGE] += intValue;
-					outfit.reflect[REFLECT_CHANCE][COMBAT_ICEDAMAGE] += intValue;
+					outfit.reflect[REFLECT_CHANCE][COMBAT_POISONDAMAGE] += intValue;
 				}
 
 				if(readXMLInteger(configNode, "chanceMagic", intValue))
 				{
 					outfit.reflect[REFLECT_CHANCE][COMBAT_ENERGYDAMAGE] += intValue;
 					outfit.reflect[REFLECT_CHANCE][COMBAT_FIREDAMAGE] += intValue;
-					outfit.reflect[REFLECT_CHANCE][COMBAT_EARTHDAMAGE] += intValue;
-					outfit.reflect[REFLECT_CHANCE][COMBAT_ICEDAMAGE] += intValue;
-					outfit.reflect[REFLECT_CHANCE][COMBAT_HOLYDAMAGE] += intValue;
-					outfit.reflect[REFLECT_CHANCE][COMBAT_DEATHDAMAGE] += intValue;
+					outfit.reflect[REFLECT_CHANCE][COMBAT_POISONDAMAGE] += intValue;
 				}
 
 				if(readXMLInteger(configNode, "chanceEnergy", intValue))
@@ -258,16 +241,7 @@ bool Outfits::parseOutfitNode(xmlNodePtr p)
 					outfit.reflect[REFLECT_CHANCE][COMBAT_FIREDAMAGE] += intValue;
 
 				if(readXMLInteger(configNode, "chancePoison", intValue) || readXMLInteger(configNode, "chanceEarth", intValue))
-					outfit.reflect[REFLECT_CHANCE][COMBAT_EARTHDAMAGE] += intValue;
-
-				if(readXMLInteger(configNode, "chanceIce", intValue))
-					outfit.reflect[REFLECT_CHANCE][COMBAT_ICEDAMAGE] += intValue;
-
-				if(readXMLInteger(configNode, "chanceHoly", intValue))
-					outfit.reflect[REFLECT_CHANCE][COMBAT_HOLYDAMAGE] += intValue;
-
-				if(readXMLInteger(configNode, "chanceDeath", intValue))
-					outfit.reflect[REFLECT_CHANCE][COMBAT_DEATHDAMAGE] += intValue;
+					outfit.reflect[REFLECT_CHANCE][COMBAT_POISONDAMAGE] += intValue;
 
 				if(readXMLInteger(configNode, "chanceLifeDrain", intValue))
 					outfit.reflect[REFLECT_CHANCE][COMBAT_LIFEDRAIN] += intValue;
@@ -299,18 +273,14 @@ bool Outfits::parseOutfitNode(xmlNodePtr p)
 				{
 					outfit.absorb[COMBAT_ENERGYDAMAGE] += intValue;
 					outfit.absorb[COMBAT_FIREDAMAGE] += intValue;
-					outfit.absorb[COMBAT_EARTHDAMAGE] += intValue;
-					outfit.absorb[COMBAT_ICEDAMAGE] += intValue;
+					outfit.absorb[COMBAT_POISONDAMAGE] += intValue;
 				}
 
 				if(readXMLInteger(configNode, "percentMagic", intValue))
 				{
 					outfit.absorb[COMBAT_ENERGYDAMAGE] += intValue;
 					outfit.absorb[COMBAT_FIREDAMAGE] += intValue;
-					outfit.absorb[COMBAT_EARTHDAMAGE] += intValue;
-					outfit.absorb[COMBAT_ICEDAMAGE] += intValue;
-					outfit.absorb[COMBAT_HOLYDAMAGE] += intValue;
-					outfit.absorb[COMBAT_DEATHDAMAGE] += intValue;
+					outfit.absorb[COMBAT_POISONDAMAGE] += intValue;
 				}
 
 				if(readXMLInteger(configNode, "percentEnergy", intValue))
@@ -320,16 +290,7 @@ bool Outfits::parseOutfitNode(xmlNodePtr p)
 					outfit.absorb[COMBAT_FIREDAMAGE] += intValue;
 
 				if(readXMLInteger(configNode, "percentPoison", intValue) || readXMLInteger(configNode, "percentEarth", intValue))
-					outfit.absorb[COMBAT_EARTHDAMAGE] += intValue;
-
-				if(readXMLInteger(configNode, "percentIce", intValue))
-					outfit.absorb[COMBAT_ICEDAMAGE] += intValue;
-
-				if(readXMLInteger(configNode, "percentHoly", intValue))
-					outfit.absorb[COMBAT_HOLYDAMAGE] += intValue;
-
-				if(readXMLInteger(configNode, "percentDeath", intValue))
-					outfit.absorb[COMBAT_DEATHDAMAGE] += intValue;
+					outfit.absorb[COMBAT_POISONDAMAGE] += intValue;
 
 				if(readXMLInteger(configNode, "percentLifeDrain", intValue))
 					outfit.absorb[COMBAT_LIFEDRAIN] += intValue;
@@ -514,18 +475,6 @@ bool Outfits::parseOutfitNode(xmlNodePtr p)
 
 				if(readXMLString(configNode, "attributes", strValue) && booleanString(strValue))
 					outfit.conditionSuppressions |= CONDITION_ATTRIBUTES;
-
-				if(readXMLString(configNode, "freezing", strValue) && booleanString(strValue))
-					outfit.conditionSuppressions |= CONDITION_FREEZING;
-
-				if(readXMLString(configNode, "dazzled", strValue) && booleanString(strValue))
-					outfit.conditionSuppressions |= CONDITION_DAZZLED;
-
-				if(readXMLString(configNode, "cursed", strValue) && booleanString(strValue))
-					outfit.conditionSuppressions |= CONDITION_CURSED;
-
-				if(readXMLString(configNode, "pacified", strValue) && booleanString(strValue))
-					outfit.conditionSuppressions |= CONDITION_PACIFIED;
 
 				if(readXMLString(configNode, "gamemaster", strValue) && booleanString(strValue))
 					outfit.conditionSuppressions |= CONDITION_GAMEMASTER;

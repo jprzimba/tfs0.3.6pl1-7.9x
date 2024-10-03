@@ -214,18 +214,14 @@ bool Vocations::parseVocationNode(xmlNodePtr p)
 			{
 				voc->increaseAbsorb(COMBAT_ENERGYDAMAGE, intValue);
 				voc->increaseAbsorb(COMBAT_FIREDAMAGE, intValue);
-				voc->increaseAbsorb(COMBAT_EARTHDAMAGE, intValue);
-				voc->increaseAbsorb(COMBAT_ICEDAMAGE, intValue);
+				voc->increaseAbsorb(COMBAT_POISONDAMAGE, intValue);
 			}
 
 			if(readXMLInteger(configNode, "percentMagic", intValue))
 			{
 				voc->increaseAbsorb(COMBAT_ENERGYDAMAGE, intValue);
 				voc->increaseAbsorb(COMBAT_FIREDAMAGE, intValue);
-				voc->increaseAbsorb(COMBAT_EARTHDAMAGE, intValue);
-				voc->increaseAbsorb(COMBAT_ICEDAMAGE, intValue);
-				voc->increaseAbsorb(COMBAT_HOLYDAMAGE, intValue);
-				voc->increaseAbsorb(COMBAT_DEATHDAMAGE, intValue);
+				voc->increaseAbsorb(COMBAT_POISONDAMAGE, intValue);
 			}
 
 			if(readXMLInteger(configNode, "percentEnergy", intValue))
@@ -235,16 +231,7 @@ bool Vocations::parseVocationNode(xmlNodePtr p)
 				voc->increaseAbsorb(COMBAT_FIREDAMAGE, intValue);
 
 			if(readXMLInteger(configNode, "percentPoison", intValue) || readXMLInteger(configNode, "percentEarth", intValue))
-				voc->increaseAbsorb(COMBAT_EARTHDAMAGE, intValue);
-
-			if(readXMLInteger(configNode, "percentIce", intValue))
-				voc->increaseAbsorb(COMBAT_ICEDAMAGE, intValue);
-
-			if(readXMLInteger(configNode, "percentHoly", intValue))
-				voc->increaseAbsorb(COMBAT_HOLYDAMAGE, intValue);
-
-			if(readXMLInteger(configNode, "percentDeath", intValue))
-				voc->increaseAbsorb(COMBAT_DEATHDAMAGE, intValue);
+				voc->increaseAbsorb(COMBAT_POISONDAMAGE, intValue);
 
 			if(readXMLInteger(configNode, "percentLifeDrain", intValue))
 				voc->increaseAbsorb(COMBAT_LIFEDRAIN, intValue);
@@ -276,18 +263,14 @@ bool Vocations::parseVocationNode(xmlNodePtr p)
 			{
 				voc->increaseReflect(REFLECT_PERCENT, COMBAT_ENERGYDAMAGE, intValue);
 				voc->increaseReflect(REFLECT_PERCENT, COMBAT_FIREDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_PERCENT, COMBAT_EARTHDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_PERCENT, COMBAT_ICEDAMAGE, intValue);
+				voc->increaseReflect(REFLECT_PERCENT, COMBAT_POISONDAMAGE, intValue);
 			}
 
 			if(readXMLInteger(configNode, "percentMagic", intValue))
 			{
 				voc->increaseReflect(REFLECT_PERCENT, COMBAT_ENERGYDAMAGE, intValue);
 				voc->increaseReflect(REFLECT_PERCENT, COMBAT_FIREDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_PERCENT, COMBAT_EARTHDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_PERCENT, COMBAT_ICEDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_PERCENT, COMBAT_HOLYDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_PERCENT, COMBAT_DEATHDAMAGE, intValue);
+				voc->increaseReflect(REFLECT_PERCENT, COMBAT_POISONDAMAGE, intValue);
 			}
 
 			if(readXMLInteger(configNode, "percentEnergy", intValue))
@@ -297,16 +280,7 @@ bool Vocations::parseVocationNode(xmlNodePtr p)
 				voc->increaseReflect(REFLECT_PERCENT, COMBAT_FIREDAMAGE, intValue);
 
 			if(readXMLInteger(configNode, "percentPoison", intValue) || readXMLInteger(configNode, "percentEarth", intValue))
-				voc->increaseReflect(REFLECT_PERCENT, COMBAT_EARTHDAMAGE, intValue);
-
-			if(readXMLInteger(configNode, "percentIce", intValue))
-				voc->increaseReflect(REFLECT_PERCENT, COMBAT_ICEDAMAGE, intValue);
-
-			if(readXMLInteger(configNode, "percentHoly", intValue))
-				voc->increaseReflect(REFLECT_PERCENT, COMBAT_HOLYDAMAGE, intValue);
-
-			if(readXMLInteger(configNode, "percentDeath", intValue))
-				voc->increaseReflect(REFLECT_PERCENT, COMBAT_DEATHDAMAGE, intValue);
+				voc->increaseReflect(REFLECT_PERCENT, COMBAT_POISONDAMAGE, intValue);
 
 			if(readXMLInteger(configNode, "percentLifeDrain", intValue))
 				voc->increaseReflect(REFLECT_PERCENT, COMBAT_LIFEDRAIN, intValue);
@@ -336,18 +310,14 @@ bool Vocations::parseVocationNode(xmlNodePtr p)
 			{
 				voc->increaseReflect(REFLECT_CHANCE, COMBAT_ENERGYDAMAGE, intValue);
 				voc->increaseReflect(REFLECT_CHANCE, COMBAT_FIREDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_CHANCE, COMBAT_EARTHDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_CHANCE, COMBAT_ICEDAMAGE, intValue);
+				voc->increaseReflect(REFLECT_CHANCE, COMBAT_POISONDAMAGE, intValue);
 			}
 
 			if(readXMLInteger(configNode, "chanceMagic", intValue))
 			{
 				voc->increaseReflect(REFLECT_CHANCE, COMBAT_ENERGYDAMAGE, intValue);
 				voc->increaseReflect(REFLECT_CHANCE, COMBAT_FIREDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_CHANCE, COMBAT_EARTHDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_CHANCE, COMBAT_ICEDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_CHANCE, COMBAT_HOLYDAMAGE, intValue);
-				voc->increaseReflect(REFLECT_CHANCE, COMBAT_DEATHDAMAGE, intValue);
+				voc->increaseReflect(REFLECT_CHANCE, COMBAT_POISONDAMAGE, intValue);
 			}
 
 			if(readXMLInteger(configNode, "chanceEnergy", intValue))
@@ -357,16 +327,7 @@ bool Vocations::parseVocationNode(xmlNodePtr p)
 				voc->increaseReflect(REFLECT_CHANCE, COMBAT_FIREDAMAGE, intValue);
 
 			if(readXMLInteger(configNode, "chancePoison", intValue) || readXMLInteger(configNode, "chanceEarth", intValue))
-				voc->increaseReflect(REFLECT_CHANCE, COMBAT_EARTHDAMAGE, intValue);
-
-			if(readXMLInteger(configNode, "chanceIce", intValue))
-				voc->increaseReflect(REFLECT_CHANCE, COMBAT_ICEDAMAGE, intValue);
-
-			if(readXMLInteger(configNode, "chanceHoly", intValue))
-				voc->increaseReflect(REFLECT_CHANCE, COMBAT_HOLYDAMAGE, intValue);
-
-			if(readXMLInteger(configNode, "chanceDeath", intValue))
-				voc->increaseReflect(REFLECT_CHANCE, COMBAT_DEATHDAMAGE, intValue);
+				voc->increaseReflect(REFLECT_CHANCE, COMBAT_POISONDAMAGE, intValue);
 
 			if(readXMLInteger(configNode, "chanceLifeDrain", intValue))
 				voc->increaseReflect(REFLECT_CHANCE, COMBAT_LIFEDRAIN, intValue);

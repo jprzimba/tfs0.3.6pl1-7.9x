@@ -157,16 +157,7 @@ CombatType_t Combat::ConditionToDamageType(ConditionType_t type)
 			return COMBAT_ENERGYDAMAGE;
 
 		case CONDITION_POISON:
-			return COMBAT_EARTHDAMAGE;
-
-		case CONDITION_FREEZING:
-			return COMBAT_ICEDAMAGE;
-
-		case CONDITION_DAZZLED:
-			return COMBAT_HOLYDAMAGE;
-
-		case CONDITION_CURSED:
-			return COMBAT_DEATHDAMAGE;
+			return COMBAT_POISONDAMAGE;;
 
 		case CONDITION_DROWN:
 			return COMBAT_DROWNDAMAGE;
@@ -191,17 +182,8 @@ ConditionType_t Combat::DamageToConditionType(CombatType_t type)
 		case COMBAT_ENERGYDAMAGE:
 			return CONDITION_ENERGY;
 
-		case COMBAT_EARTHDAMAGE:
+		case COMBAT_POISONDAMAGE:
 			return CONDITION_POISON;
-
-		case COMBAT_ICEDAMAGE:
-			return CONDITION_FREEZING;
-
-		case COMBAT_HOLYDAMAGE:
-			return CONDITION_DAZZLED;
-
-		case COMBAT_DEATHDAMAGE:
-			return CONDITION_CURSED;
 
 		case COMBAT_PHYSICALDAMAGE:
 			return CONDITION_PHYSICAL;
@@ -672,32 +654,6 @@ void Combat::postCombatEffects(Creature* caster, const Position& pos, const Comb
 
 void Combat::addDistanceEffect(Creature* caster, const Position& fromPos, const Position& toPos, ShootEffect_t effect)
 {
-	if(effect == SHOOT_EFFECT_WEAPONTYPE)
-	{
-		switch(caster->getWeaponType())
-		{
-			case WEAPON_AXE:
-				effect = SHOOT_EFFECT_WHIRLWINDAXE;
-				break;
-
-			case WEAPON_SWORD:
-				effect = SHOOT_EFFECT_WHIRLWINDSWORD;
-				break;
-
-			case WEAPON_CLUB:
-				effect = SHOOT_EFFECT_WHIRLWINDCLUB;
-				break;
-
-			case WEAPON_FIST:
-				effect = SHOOT_EFFECT_LARGEROCK;
-				break;
-
-			default:
-				effect = SHOOT_EFFECT_NONE;
-				break;
-		}
-	}
-
 	if(caster && effect != SHOOT_EFFECT_NONE)
 		g_game.addDistanceEffect(fromPos, toPos, effect);
 }
