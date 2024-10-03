@@ -69,8 +69,13 @@ ItemType::ItemType()
 	stopTime = false;
 	corpseType = RACE_NONE;
 	fluidSource = FLUID_NONE;
-	clientCharges = false;
 	allowDistRead = false;
+	
+	floorChangeDown = true;
+	floorChangeNorth = false;
+	floorChangeSouth = false;
+	floorChangeEast = false;
+	floorChangeWest = false;
 
 	isVertical = isHorizontal = isHangable = false;
 	lightLevel = lightColor = 0;
@@ -96,9 +101,6 @@ ItemType::ItemType()
 	transformUseTo[PLAYERSEX_MALE] = 0;
 	transformToFree = 0;
 	levelDoor = 0;
-
-	floorChangeDown = true;
-	floorChangeNorth = floorChangeSouth = floorChangeEast = floorChangeWest = false;
 }
 
 ItemType::~ItemType()
@@ -212,7 +214,7 @@ int32_t Items::loadFromOtb(std::string file)
 			case ITEM_GROUP_GROUND:
 			case ITEM_GROUP_SPLASH:
 			case ITEM_GROUP_FLUID:
-			case ITEM_GROUP_CHARGES:
+			case ITEM_GROUP_RUNE:
 			case ITEM_GROUP_DEPRECATED:
 				break;
 			default:
@@ -245,8 +247,6 @@ int32_t Items::loadFromOtb(std::string file)
 		iType->allowDistRead = hasBitSet(FLAG_ALLOWDISTREAD, flags);
 		iType->rotable = hasBitSet(FLAG_ROTABLE, flags);
 		iType->canReadText = hasBitSet(FLAG_READABLE, flags);
-		iType->clientCharges = hasBitSet(FLAG_CLIENTCHARGES, flags);
-		iType->lookThrough = hasBitSet(FLAG_LOOKTHROUGH, flags);
 
 		attribute_t attr;
 		while(props.GET_VALUE(attr))
@@ -643,23 +643,6 @@ void Items::parseItemNode(xmlNodePtr itemNode, uint32_t id)
 			{
 				if(readXMLInteger(itemAttributesNode, "value", intValue))
 					it.allowPickupable = (intValue != 0);
-			}
-			else if(tmpStrValue == "floorchange")
-			{
-				if(readXMLString(itemAttributesNode, "value", strValue))
-				{
-					tmpStrValue = asLowerCaseString(strValue);
-					if(tmpStrValue == "down")
-						it.floorChangeDown = true;
-					else if(tmpStrValue == "north")
-						it.floorChangeNorth = true;
-					else if(tmpStrValue == "south")
-						it.floorChangeSouth = true;
-					else if(tmpStrValue == "west")
-						it.floorChangeWest = true;
-					else if(tmpStrValue == "east")
-						it.floorChangeEast = true;
-				}
 			}
 			else if(tmpStrValue == "corpsetype")
 			{

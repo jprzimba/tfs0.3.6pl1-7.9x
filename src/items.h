@@ -108,10 +108,10 @@ class ItemType
 		bool isTrashHolder() const {return (type == ITEM_TYPE_TRASHHOLDER);}
 		bool isBed() const {return (type == ITEM_TYPE_BED);}
 
-		bool isRune() const {return clientCharges;}
-		bool hasSubType() const {return (isFluidContainer() || isSplash() || stackable || charges);}
+		bool isRune() const {return (group == ITEM_GROUP_RUNE);}
+		bool hasSubType() const {return (isFluidContainer() || isSplash() || stackable || charges != 0);}
 
-		bool stopTime, showCount, clientCharges, stackable, showDuration, showCharges, showAttributes,
+		bool stopTime, showCount, stackable, showDuration, showCharges, showAttributes,
 			allowDistRead, canReadText, canWriteText, forceSerialize, isVertical, isHorizontal, isHangable,
 			useable, moveable, pickupable, rotable, replaceable, lookThrough,
 			hasHeight, blockSolid, blockPickupable, blockProjectile, blockPathFind, allowPickupable, alwaysOnTop,

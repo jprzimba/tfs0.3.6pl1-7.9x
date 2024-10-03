@@ -271,7 +271,6 @@ class Item : virtual public Thing, public ItemAttributes
 		bool floorChangeSouth() const {return items[id].floorChangeSouth;}
 		bool floorChangeEast() const {return items[id].floorChangeEast;}
 		bool floorChangeWest() const {return items[id].floorChangeWest;}
-		bool floorChange() const {return floorChangeDown() || floorChangeNorth() || floorChangeSouth() || floorChangeEast() || floorChangeWest();}
 	
 		bool forceSerialize() const {return items[id].forceSerialize || canWriteText() || isContainer() || isBed() || isDoor();}
 

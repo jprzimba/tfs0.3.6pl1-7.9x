@@ -757,56 +757,61 @@ Cylinder* Tile::__queryDestination(int32_t& index, const Thing* thing, Item** de
 	*destItem = NULL;
 	if(floorChangeDown())
 	{
-		Position pos = getPosition();
-		pos.z += 1;
-		if(Tile* downTile = g_game.getTile(pos))
+		Tile* downTile = g_game.getTile(getPosition().x, getPosition().y, getPosition().z + 1);
+
+		if(downTile)
 		{
-			if(downTile->floorChange(NORTH))
-				pos.y += 1;
-
-			if(downTile->floorChange(SOUTH))
-				pos.y -= 1;
-
-			if(downTile->floorChange(EAST))
-				pos.x -= 1;
-
-			if(downTile->floorChange(WEST))
-				pos.x += 1;
-
-			destTile = g_game.getTile(pos);
+			if(downTile->floorChange(NORTH) && downTile->floorChange(EAST))
+				destTile = g_game.getTile(getPosition().x - 1, getPosition().y + 1, getPosition().z + 1);
+			else if(downTile->floorChange(NORTH) && downTile->floorChange(WEST))
+				destTile = g_game.getTile(getPosition().x + 1, getPosition().y + 1, getPosition().z + 1);
+			else if(downTile->floorChange(SOUTH) && downTile->floorChange(EAST))
+				destTile = g_game.getTile(getPosition().x - 1, getPosition().y - 1, getPosition().z + 1);
+			else if(downTile->floorChange(SOUTH) && downTile->floorChange(WEST))
+				destTile = g_game.getTile(getPosition().x + 1, getPosition().y - 1, getPosition().z + 1);
+			else if(downTile->floorChange(NORTH))
+				destTile = g_game.getTile(getPosition().x, getPosition().y + 1, getPosition().z + 1);
+			else if(downTile->floorChange(SOUTH))
+				destTile = g_game.getTile(getPosition().x, getPosition().y - 1, getPosition().z + 1);
+			else if(downTile->floorChange(EAST))
+				destTile = g_game.getTile(getPosition().x - 1, getPosition().y, getPosition().z + 1);
+			else if(downTile->floorChange(WEST))
+				destTile = g_game.getTile(getPosition().x + 1, getPosition().y, getPosition().z + 1);
+			else
+				destTile = downTile;
 		}
 	}
 	else if(floorChange())
 	{
-		Position pos = getPosition();
-		pos.z -= 1;
-		if(floorChange(NORTH))
-			pos.y--;
-
-		if(floorChange(SOUTH))
-			pos.y++;
-
-		if(floorChange(EAST))
-			pos.x++;
-
-		if(floorChange(WEST))
-			pos.x--;
-
-		destTile = g_game.getTile(pos);
+		if(floorChange(NORTH) && floorChange(EAST))
+			destTile = g_game.getTile(getPosition().x + 1, getPosition().y - 1, getPosition().z - 1);
+		else if(floorChange(NORTH) && floorChange(WEST))
+			destTile = g_game.getTile(getPosition().x - 1, getPosition().y - 1, getPosition().z - 1);
+		else if(floorChange(SOUTH) && floorChange(EAST))
+			destTile = g_game.getTile(getPosition().x + 1, getPosition().y + 1, getPosition().z - 1);
+		else if(floorChange(SOUTH) && floorChange(WEST))
+			destTile = g_game.getTile(getPosition().x - 1, getPosition().y + 1, getPosition().z - 1);
+		else if(floorChange(NORTH))
+			destTile = g_game.getTile(getPosition().x, getPosition().y - 1, getPosition().z - 1);
+		else if(floorChange(SOUTH))
+			destTile = g_game.getTile(getPosition().x, getPosition().y + 1, getPosition().z - 1);
+		else if(floorChange(EAST))
+			destTile = g_game.getTile(getPosition().x + 1, getPosition().y, getPosition().z - 1);
+		else if(floorChange(WEST))
+			destTile = g_game.getTile(getPosition().x - 1, getPosition().y, getPosition().z - 1);
 	}
 
-	if(!destTile)
+	if(destTile == NULL)
 		destTile = this;
 	else
-		flags |= FLAG_NOLIMIT; //will ignore that there is blocking items/creatures
+		flags |= FLAG_NOLIMIT; //Will ignore that there is blocking items/creatures
 
 	if(destTile)
 	{
 		Thing* destThing = destTile->getTopDownItem();
-		if(destThing && !destThing->isRemoved())
+		if(destThing)
 			*destItem = destThing->getItem();
 	}
-
 	return destTile;
 }
 

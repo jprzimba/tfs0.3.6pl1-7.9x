@@ -48,9 +48,7 @@ function onUse(cid, item, fromPosition, itemEx, toPosition)
 	local result = ""
 	if(reward ~= 0) then
 		local ret = getItemDescriptions(reward.uid)
-		if(reward.type > 0 and isItemRune(reward.itemid)) then
-			result = reward.type .. " charges " .. ret.name
-		elseif(reward.type > 0 and isItemStackable(reward.itemid)) then
+		if(reward.type > 0 and isItemStackable(reward.itemid)) then
 			result = reward.type .. " " .. ret.plural
 		else
 			result = ret.article .. " " .. ret.name
@@ -78,9 +76,7 @@ function onUse(cid, item, fromPosition, itemEx, toPosition)
 
 				result = result .. ret
 				ret = getItemDescriptions(tmp.uid)
-				if(tmp.type > 0 and isItemRune(tmp.itemid)) then
-					result = result .. tmp.type .. " charges " .. ret.name
-				elseif(tmp.type > 0 and isItemStackable(tmp.itemid)) then
+				if(tmp.type > 0 and isItemStackable(tmp.itemid)) then
 					result = result .. tmp.type .. " " .. ret.plural
 				else
 					result = result .. ret.article .. " " .. ret.name

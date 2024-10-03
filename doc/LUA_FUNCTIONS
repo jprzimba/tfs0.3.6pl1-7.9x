@@ -914,7 +914,6 @@
 	isPlayer(cid)
 	isPlayerPzLocked(cid)
 	isItemStackable(itemid)
-	isItemRune(itemid)
 	isItemMovable(itemid)
 	isItemDoor(itemid)
 	isItemContainer(itemid)

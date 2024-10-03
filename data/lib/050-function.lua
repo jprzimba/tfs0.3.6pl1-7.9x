@@ -597,11 +597,6 @@ function isItemStackable(itemid)
 	return item and item.stackable or false
 end
 
-function isItemRune(itemid)
-	local item = getItemInfo(itemid)
-	return item and item.clientCharges or false
-end
-
 function isItemDoor(itemid)
 	local item = getItemInfo(itemid)
 	return item and item.type == 5 or false
