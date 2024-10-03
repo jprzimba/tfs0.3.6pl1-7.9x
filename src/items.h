@@ -57,24 +57,6 @@ enum ItemTypes_t
 	ITEM_TYPE_LAST
 };
 
-enum FloorChange_t
-{
-	CHANGE_PRE_FIRST = 0,
-	CHANGE_DOWN = CHANGE_PRE_FIRST,
-	CHANGE_FIRST = 1,
-	CHANGE_NORTH = CHANGE_FIRST,
-	CHANGE_EAST = 2,
-	CHANGE_SOUTH = 3,
-	CHANGE_WEST = 4,
-	CHANGE_FIRST_EX = 5,
-	CHANGE_NORTH_EX = CHANGE_FIRST_EX,
-	CHANGE_EAST_EX = 6,
-	CHANGE_SOUTH_EX = 7,
-	CHANGE_WEST_EX = 8,
-	CHANGE_NONE = 9,
-	CHANGE_LAST = CHANGE_NONE
-};
-
 struct Abilities
 {
 	Abilities()
@@ -133,7 +115,7 @@ class ItemType
 			allowDistRead, canReadText, canWriteText, forceSerialize, isVertical, isHorizontal, isHangable,
 			useable, moveable, pickupable, rotable, replaceable, lookThrough,
 			hasHeight, blockSolid, blockPickupable, blockProjectile, blockPathFind, allowPickupable, alwaysOnTop,
-			floorChange[CHANGE_LAST];
+			floorChangeDown, floorChangeNorth, floorChangeSouth, floorChangeEast, floorChangeWest,;
 
 		MagicEffect_t magicEffect;
 		FluidTypes_t fluidSource;

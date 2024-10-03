@@ -97,7 +97,8 @@ ItemType::ItemType()
 	transformToFree = 0;
 	levelDoor = 0;
 
-	memset(floorChange, 0, sizeof(floorChange));
+	floorChangeDown = true;
+	floorChangeNorth = floorChangeSouth = floorChangeEast = floorChangeWest = false;
 }
 
 ItemType::~ItemType()
@@ -231,6 +232,12 @@ int32_t Items::loadFromOtb(std::string file)
 		iType->moveable = hasBitSet(FLAG_MOVEABLE, flags);
 		iType->stackable = hasBitSet(FLAG_STACKABLE, flags);
 
+		iType->floorChangeDown = hasBitSet(FLAG_FLOORCHANGEDOWN, flags);
+		iType->floorChangeNorth = hasBitSet(FLAG_FLOORCHANGENORTH, flags);
+		iType->floorChangeEast = hasBitSet(FLAG_FLOORCHANGEEAST, flags);
+		iType->floorChangeSouth = hasBitSet(FLAG_FLOORCHANGESOUTH, flags);
+		iType->floorChangeWest = hasBitSet(FLAG_FLOORCHANGEWEST, flags);
+	
 		iType->alwaysOnTop = hasBitSet(FLAG_ALWAYSONTOP, flags);
 		iType->isVertical = hasBitSet(FLAG_VERTICAL, flags);
 		iType->isHorizontal = hasBitSet(FLAG_HORIZONTAL, flags);
@@ -643,23 +650,15 @@ void Items::parseItemNode(xmlNodePtr itemNode, uint32_t id)
 				{
 					tmpStrValue = asLowerCaseString(strValue);
 					if(tmpStrValue == "down")
-						it.floorChange[CHANGE_DOWN] = true;
+						it.floorChangeDown = true;
 					else if(tmpStrValue == "north")
-						it.floorChange[CHANGE_NORTH] = true;
+						it.floorChangeNorth = true;
 					else if(tmpStrValue == "south")
-						it.floorChange[CHANGE_SOUTH] = true;
+						it.floorChangeSouth = true;
 					else if(tmpStrValue == "west")
-						it.floorChange[CHANGE_WEST] = true;
+						it.floorChangeWest = true;
 					else if(tmpStrValue == "east")
-						it.floorChange[CHANGE_EAST] = true;
-					else if(tmpStrValue == "northex")
-						it.floorChange[CHANGE_NORTH_EX] = true;
-					else if(tmpStrValue == "southex")
-						it.floorChange[CHANGE_SOUTH_EX] = true;
-					else if(tmpStrValue == "westex")
-						it.floorChange[CHANGE_WEST_EX] = true;
-					else if(tmpStrValue == "eastex")
-						it.floorChange[CHANGE_EAST_EX] = true;
+						it.floorChangeEast = true;
 				}
 			}
 			else if(tmpStrValue == "corpsetype")

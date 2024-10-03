@@ -184,31 +184,21 @@ class Tile : public Cylinder
 		void setFlag(tileflags_t flag) {m_flags |= (uint32_t)flag;}
 		void resetFlag(tileflags_t flag) {m_flags &= ~(uint32_t)flag;}
 
+		bool floorChange() const {return hasFlag(TILESTATE_FLOORCHANGE);}
+		bool floorChangeDown() const {return hasFlag(TILESTATE_FLOORCHANGE_DOWN);}
 		bool positionChange() const {return hasFlag(TILESTATE_TELEPORT);}
-		bool floorChange(FloorChange_t change = CHANGE_NONE) const
+		bool floorChange(Direction direction) const
 		{
-			switch(change)
+			switch(direction)
 			{
-				case CHANGE_DOWN:
-					return hasFlag(TILESTATE_FLOORCHANGE_DOWN);
-				case CHANGE_NORTH:
+				case NORTH:
 					return hasFlag(TILESTATE_FLOORCHANGE_NORTH);
-				case CHANGE_SOUTH:
+				case SOUTH:
 					return hasFlag(TILESTATE_FLOORCHANGE_SOUTH);
-				case CHANGE_EAST:
+				case EAST:
 					return hasFlag(TILESTATE_FLOORCHANGE_EAST);
-				case CHANGE_WEST:
+				case WEST:
 					return hasFlag(TILESTATE_FLOORCHANGE_WEST);
-				case CHANGE_NORTH_EX:
-					return hasFlag(TILESTATE_FLOORCHANGE_NORTH_EX);
-				case CHANGE_SOUTH_EX:
-					return hasFlag(TILESTATE_FLOORCHANGE_SOUTH_EX);
-				case CHANGE_EAST_EX:
-					return hasFlag(TILESTATE_FLOORCHANGE_EAST_EX);
-				case CHANGE_WEST_EX:
-					return hasFlag(TILESTATE_FLOORCHANGE_WEST_EX);
-				case CHANGE_NONE:
-					return hasFlag(TILESTATE_FLOORCHANGE);
 				default:
 					break;
 			}

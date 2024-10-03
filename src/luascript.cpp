@@ -9039,14 +9039,6 @@ int32_t LuaScriptInterface::luaGetItemInfo(lua_State* L)
 	setFieldBool(L, "allowPickupable", item->allowPickupable);
 	setFieldBool(L, "alwaysOnTop", item->alwaysOnTop);
 
-	createTable(L, "floorChange");
-	for(int32_t i = CHANGE_FIRST; i <= CHANGE_LAST; ++i)
-	{
-		lua_pushnumber(L, i);
-		lua_pushboolean(L, item->floorChange[i - 1]);
-		pushTable(L);
-	}
-
 	pushTable(L);
 	setField(L, "magicEffect", (int32_t)item->magicEffect);
 	setField(L, "fluidSource", (int32_t)item->fluidSource);

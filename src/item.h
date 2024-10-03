@@ -266,7 +266,13 @@ class Item : virtual public Thing, public ItemAttributes
 		int32_t getWorth() const {return getItemCount() * items[id].worth;}
 		virtual int32_t getThrowRange() const {return (isPickupable() ? 15 : 2);}
 
-		bool floorChange(FloorChange_t change = CHANGE_NONE) const;
+		bool floorChangeDown() const {return items[id].floorChangeDown;}
+		bool floorChangeNorth() const {return items[id].floorChangeNorth;}
+		bool floorChangeSouth() const {return items[id].floorChangeSouth;}
+		bool floorChangeEast() const {return items[id].floorChangeEast;}
+		bool floorChangeWest() const {return items[id].floorChangeWest;}
+		bool floorChange() const {return floorChangeDown() || floorChangeNorth() || floorChangeSouth() || floorChangeEast() || floorChangeWest();}
+	
 		bool forceSerialize() const {return items[id].forceSerialize || canWriteText() || isContainer() || isBed() || isDoor();}
 
 		bool hasProperty(enum ITEMPROPERTY prop) const;
