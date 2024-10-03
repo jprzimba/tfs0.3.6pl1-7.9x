@@ -842,25 +842,6 @@ bool Player::canSeeCreature(const Creature* creature) const
 	return !creature->isInvisible() || canSeeInvisibility();
 }
 
-bool Player::canWalkthrough(const Creature* creature) const
-{
-	if(!creature)
-		return true;
-
-	if(creature == this)
-		return false;
-
-	const Player* player = creature->getPlayer();
-	if(!player)
-		return false;
-
-	if(g_game.getWorldType() == WORLD_TYPE_NO_PVP && player->getTile()->ground
-		&& player->getTile()->ground->getID() != ITEM_GLOWING_SWITCH)
-		return true;
-
-	return player->isGhost() && getGhostAccess() < player->getGhostAccess();
-}
-
 Depot* Player::getDepot(uint32_t depotId, bool autoCreateDepot)
 {
 	DepotMap::iterator it = depots.find(depotId);
