@@ -166,21 +166,16 @@ int32_t Items::loadFromOtb(std::string file)
 		}
 	}
 
+	if(Items::dwMajorVersion != 2)
+	{
+		std::cout << "Not supported items.otb version." << std::endl;
+		return ERROR_INVALID_FORMAT;
+	}
 	if(Items::dwMajorVersion == 0xFFFFFFFF)
-		std::cout << "[Warning - Items::loadFromOtb] items.otb using generic client version." << std::endl;
-	else if(Items::dwMajorVersion < 3)
+		std::cout << "[Warning] Items::loadFromOtb items.otb using generic client version." << std::endl;
+	else if(Items::dwMinorVersion < CLIENT_VERSION_792)
 	{
-		std::cout << "[Error - Items::loadFromOtb] Old version detected, a newer version of items.otb is required." << std::endl;
-		return ERROR_INVALID_FORMAT;
-	}
-	else if(Items::dwMajorVersion > 3)
-	{
-		std::cout << "[Error - Items::loadFromOtb] New version detected, an older version of items.otb is required." << std::endl;
-		return ERROR_INVALID_FORMAT;
-	}
-	else if(Items::dwMinorVersion != CLIENT_VERSION_854)
-	{
-		std::cout << "[Error - Items::loadFromOtb] Another (client) version of items.otb is required." << std::endl;
+		std::cout << "Not supported items.otb client version." << std::endl;
 		return ERROR_INVALID_FORMAT;
 	}
 

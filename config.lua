@@ -3,12 +3,12 @@
 	-- Account manager
 	accountManager = true
 	namelockManager = true
-	newPlayerChooseVoc = false
-	newPlayerSpawnPosX = 95
-	newPlayerSpawnPosY = 117
-	newPlayerSpawnPosZ = 7
-	newPlayerTownId = 1
-	newPlayerLevel = 1
+	newPlayerChooseVoc = true
+	newPlayerSpawnPosX = 438
+	newPlayerSpawnPosY = 503
+	newPlayerSpawnPosZ = 8
+	newPlayerTownId = 2
+	newPlayerLevel = 8
 	newPlayerMagicLevel = 0
 	generateAccountNumber = false
 
@@ -146,9 +146,10 @@
 
 	-- Map
 	-- NOTE: storeTrash costs more memory, but will perform alot faster cleaning.
-	mapName = "forgotten"
-	mapAuthor = "Komic"
-	randomizeTiles = true
+	-- NOTE: do not enable randomizeTiles for now, it need to be fixed.
+	mapName = "world"
+	mapAuthor = "Unknow"
+	randomizeTiles = false
 	storeTrash = true
 	cleanProtectedZones = true
 	mailboxDisabledTowns = "-1"
