@@ -85,7 +85,6 @@ Creature::Creature()
 	checkVector = -1;
 
 	scriptEventsBitField = 0;
-	onIdleStatus();
 }
 
 Creature::~Creature()
@@ -880,10 +879,6 @@ void Creature::gainHealth(Creature* caster, int32_t healthGain)
 	{
 		int32_t prevHealth = getHealth();
 		changeHealth(healthGain);
-
-		int32_t effectiveGain = getHealth() - prevHealth;
-		if(caster)
-			caster->onTargetCreatureGainHealth(this, effectiveGain);
 	}
 	else
 		changeHealth(healthGain);
@@ -1095,25 +1090,6 @@ void Creature::addDamagePoints(Creature* attacker, int32_t damagePoints)
 		lastHitCreature = attackerId;
 }
 
-void Creature::addHealPoints(Creature* caster, int32_t healthPoints)
-{
-	if(healthPoints <= 0)
-		return;
-
-	uint32_t casterId = 0;
-	if(caster)
-		casterId = caster->getID();
-
-	CountMap::iterator it = healMap.find(casterId);
-	if(it != healMap.end())
-	{
-		it->second.ticks = OTSYS_TIME();
-		it->second.total += healthPoints;
-	}
-	else
-		healMap[casterId] = CountBlock_t(healthPoints);
-}
-
 void Creature::onAddCondition(ConditionType_t type, bool hadCondition)
 {
 	if(type == CONDITION_INVISIBLE)
@@ -1168,15 +1144,6 @@ void Creature::onCombatRemoveCondition(const Creature* attacker, Condition* cond
 	removeCondition(condition);
 }
 
-void Creature::onIdleStatus()
-{
-	if(getHealth() > 0)
-	{
-		healMap.clear();
-		damageMap.clear();
-	}
-}
-
 void Creature::onAttackedCreatureDrainHealth(Creature* target, int32_t points)
 {
 	onAttackedCreatureDrain(target, points);
@@ -1190,11 +1157,6 @@ void Creature::onAttackedCreatureDrainMana(Creature* target, int32_t points)
 void Creature::onAttackedCreatureDrain(Creature* target, int32_t points)
 {
 	target->addDamagePoints(this, points);
-}
-
-void Creature::onTargetCreatureGainHealth(Creature* target, int32_t points)
-{
-	target->addHealPoints(this, points);
 }
 
 void Creature::onAttackedCreatureKilled(Creature* target)
@@ -1239,28 +1201,6 @@ void Creature::onGainExperience(double& gainExp, bool fromMonster, bool multipli
 	{
 		gainExp = gainExp / 2;
 		master->onGainExperience(gainExp, fromMonster, multiplied);
-	}
-	else if(!multiplied)
-		gainExp *= g_config.getDouble(ConfigManager::RATE_EXPERIENCE);
-
-	int16_t color = g_config.getNumber(ConfigManager::EXPERIENCE_COLOR);
-	if(color < 0)
-		color = random_range(0, 255);
-
-	std::stringstream ss;
-	ss << (uint64_t)gainExp;
-	g_game.addAnimatedText(getPosition(), (uint8_t)color, ss.str());
-}
-
-void Creature::onGainSharedExperience(double& gainExp, bool fromMonster, bool multiplied)
-{
-	if(gainExp <= 0)
-		return;
-
-	if(master)
-	{
-		gainExp = gainExp / 2;
-		master->onGainSharedExperience(gainExp, fromMonster, multiplied);
 	}
 	else if(!multiplied)
 		gainExp *= g_config.getDouble(ConfigManager::RATE_EXPERIENCE);

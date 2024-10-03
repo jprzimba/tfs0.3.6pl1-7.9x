@@ -522,7 +522,6 @@ void Monster::setIdle(bool _idle)
 	isIdle = _idle;
 	if(isIdle)
 	{
-		onIdleStatus();
 		clearTargetList();
 		clearFriendList();
 		g_game.removeCreatureCheck(this);
@@ -1146,7 +1145,6 @@ bool Monster::onDeath()
 	clearFriendList();
 
 	setAttackedCreature(NULL);
-	onIdleStatus();
 	if(raid)
 	{
 		raid->unRef();

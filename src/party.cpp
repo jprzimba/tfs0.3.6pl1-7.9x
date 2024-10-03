@@ -28,7 +28,6 @@ extern ConfigManager g_config;
 
 Party::Party(Player* _leader)
 {
-	sharedExpActive = sharedExpEnabled = false;
 	if(_leader)
 	{
 		leader = _leader;
@@ -103,9 +102,7 @@ bool Party::leave(Player* player)
 	player->sendTextMessage(MSG_INFO_DESCR, "You have left the party.");
 	player->sendPlayerPartyIcons(player);
 
-	updateSharedExperience();
 	updateIcons(player);
-	clearPlayerPoints(player);
 
 	char buffer[105];
 	sprintf(buffer, "%s has left the party.", player->getName().c_str());
@@ -136,7 +133,6 @@ bool Party::passLeadership(Player* player)
 	broadcastMessage(MSG_INFO_DESCR, buffer, true);
 
 	player->sendTextMessage(MSG_INFO_DESCR, "You are now the leader of the party.");
-	updateSharedExperience();
 
 	updateIcons(oldLeader);
 	updateIcons(player);
@@ -163,7 +159,6 @@ bool Party::join(Player* player)
 	sprintf(buffer, "You have joined %s'%s party. Open the party channel to communicate with your companions.", leader->getName().c_str(), (leader->getName()[leader->getName().length() - 1] == 's' ? "" : "s"));
 	player->sendTextMessage(MSG_INFO_DESCR, buffer);
 
-	updateSharedExperience();
 	updateIcons(player);
 	return true;
 }
@@ -275,150 +270,6 @@ void Party::broadcastMessage(MessageClasses messageClass, const std::string& tex
 
 	for(it = inviteList.begin(); it != inviteList.end(); ++it)
 		(*it)->sendTextMessage(messageClass, text);
-}
-
-void Party::updateSharedExperience()
-{
-	if(!sharedExpActive)
-		return;
-
-	bool result = canEnableSharedExperience();
-	if(result == sharedExpEnabled)
-		return;
-
-	sharedExpEnabled = result;
-	updateAllIcons();
-}
-
-bool Party::setSharedExperience(Player* player, bool _sharedExpActive)
-{
-	if(!player || player->isRemoved() || player != leader)
-		return false;
-
-	if(sharedExpActive == _sharedExpActive)
-		return true;
-
-	sharedExpActive = _sharedExpActive;
-	if(sharedExpActive)
-	{
-		sharedExpEnabled = canEnableSharedExperience();
-		if(sharedExpEnabled)
-			leader->sendTextMessage(MSG_INFO_DESCR, "Shared Experience is now active.");
-		else
-			leader->sendTextMessage(MSG_INFO_DESCR, "Shared Experience has been activated, but some members of your party are inactive.");
-	}
-	else
-		leader->sendTextMessage(MSG_INFO_DESCR, "Shared Experience has been deactivated.");
-
-	updateAllIcons();
-	return true;
-}
-
-void Party::shareExperience(double experience, bool fromMonster, bool multiplied)
-{
-	double shareExperience = (experience / (double)(memberList.size() + 1));
-	if(experience > (double)g_config.getNumber(ConfigManager::EXTRA_PARTY_LIMIT))
-		shareExperience += (experience * (double)(g_config.getNumber(ConfigManager::EXTRA_PARTY_PERCENT) / 100));
-
-	double tmpExperience = shareExperience;
-	leader->onGainSharedExperience(tmpExperience, fromMonster, multiplied);
-	for(PlayerVector::iterator it = memberList.begin(); it != memberList.end(); ++it)
-	{
-		tmpExperience = shareExperience;
-		(*it)->onGainSharedExperience(tmpExperience, fromMonster, multiplied);
-	}
-}
-
-bool Party::canUseSharedExperience(const Player* player, uint32_t highestLevel/* = 0*/) const
-{
-	if(!player || player->isRemoved())
-		return false;
-
-	if(!highestLevel)
-	{
-		highestLevel = leader->getLevel();
-		for(PlayerVector::const_iterator it = memberList.begin(); it != memberList.end(); ++it)
-		{
-			if((*it)->getLevel() > highestLevel)
-				highestLevel = (*it)->getLevel();
-		}
-	}
-
-	if(player->getLevel() < (uint32_t)std::ceil((double)highestLevel * g_config.getDouble(
-		ConfigManager::PARTY_DIFFERENCE)) || !Position::areInRange(Position(
-		g_config.getNumber(ConfigManager::PARTY_RADIUS_X), g_config.getNumber(
-		ConfigManager::PARTY_RADIUS_Y), g_config.getNumber(ConfigManager::PARTY_RADIUS_Z)),
-		leader->getPosition(), player->getPosition()))
-		return false;
-
-	CountMap::const_iterator it = pointMap.find(player->getID());
-	return it != pointMap.end() && (OTSYS_TIME() - it->second.ticks) <= g_config.getNumber(
-		ConfigManager::EXPERIENCE_SHARE_ACTIVITY);
-}
-
-bool Party::canEnableSharedExperience()
-{
-	if(!memberList.size())
-		return false;
-
-	uint32_t highestLevel = leader->getLevel();
-	for(PlayerVector::iterator it = memberList.begin(); it != memberList.end(); ++it)
-	{
-		if((*it)->getLevel() > highestLevel)
-			highestLevel = (*it)->getLevel();
-	}
-
-	for(PlayerVector::iterator it = memberList.begin(); it != memberList.end(); ++it)
-	{
-		if(!canUseSharedExperience((*it), highestLevel))
-			return false;
-	}
-
-	return canUseSharedExperience(leader, highestLevel);
-}
-
-void Party::addPlayerHealedMember(Player* player, uint32_t points)
-{
-	if(points <= 0)
-		return;
-
-	CountMap::iterator it = pointMap.find(player->getID());
-	if(it != pointMap.end())
-	{
-		it->second.totalHeal += points;
-		it->second.ticks = OTSYS_TIME();
-	}
-	else
-		pointMap[player->getID()] = CountBlock_t(points, 0);
-
-	updateSharedExperience();
-}
-
-void Party::addPlayerDamageMonster(Player* player, uint32_t points)
-{
-	if(points <= 0)
-		return;
-
-	CountMap::iterator it = pointMap.find(player->getID());
-	if(it != pointMap.end())
-	{
-		it->second.totalDamage += points;
-		it->second.ticks = OTSYS_TIME();
-	}
-	else
-		pointMap[player->getID()] = CountBlock_t(0, points);
-
-	updateSharedExperience();
-}
-
-void Party::clearPlayerPoints(Player* player)
-{
-	CountMap::iterator it = pointMap.find(player->getID());
-	if(it == pointMap.end())
-		return;
-
-	pointMap.erase(it);
-	updateSharedExperience();
 }
 
 bool Party::isPlayerMember(const Player* player, bool result/* = false*/) const

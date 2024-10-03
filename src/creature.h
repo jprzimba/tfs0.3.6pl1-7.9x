@@ -337,7 +337,6 @@ class Creature : public AutoId, virtual public Thing
 		virtual bool onDeath();
 		virtual double getGainedExperience(Creature* attacker) const {return getDamageRatio(attacker) * (double)getLostExperience();}
 		void addDamagePoints(Creature* attacker, int32_t damagePoints);
-		void addHealPoints(Creature* caster, int32_t healthPoints);
 		bool hasBeenAttacked(uint32_t attackerId) const;
 
 		//combat event functions
@@ -355,16 +354,13 @@ class Creature : public AutoId, virtual public Thing
 		virtual void onSummonAttackedCreatureDrainMana(Creature* summon, Creature* target, int32_t points) {}
 		virtual void onAttackedCreatureDrain(Creature* target, int32_t points);
 		virtual void onSummonAttackedCreatureDrain(Creature* summon, Creature* target, int32_t points) {}
-		virtual void onTargetCreatureGainHealth(Creature* target, int32_t points);
 		virtual void onAttackedCreatureKilled(Creature* target);
 		virtual bool onKilledCreature(Creature* target, uint32_t& flags);
 		virtual void onGainExperience(double& gainExp, bool fromMonster, bool multiplied);
-		virtual void onGainSharedExperience(double& gainExp, bool fromMonster, bool multiplied);
 		virtual void onAttackedCreatureBlockHit(Creature* target, BlockType_t blockType) {}
 		virtual void onBlockHit(BlockType_t blockType) {}
 		virtual void onChangeZone(ZoneType_t zone);
 		virtual void onAttackedCreatureChangeZone(ZoneType_t zone);
-		virtual void onIdleStatus();
 
 		virtual void getCreatureLight(LightInfo& light) const;
 		virtual void setNormalCreatureLight();
@@ -505,7 +501,6 @@ class Creature : public AutoId, virtual public Thing
 
 		typedef std::map<uint32_t, CountBlock_t> CountMap;
 		CountMap damageMap;
-		CountMap healMap;
 
 		CreatureEventList eventsList;
 		uint32_t scriptEventsBitField, blockCount, blockTicks, lastHitCreature;
