@@ -273,9 +273,13 @@ bool IOLoginData::createAccount(uint32_t accountNumber, std::string password)
 {
 	_encrypt(password, false);
 	Database* db = Database::getInstance();
-
 	DBQuery query;
-	query << "INSERT INTO `accounts` (`id`, `password`) VALUES (" << accountNumber << ", " << db->escapeString(password) << ")";
+	
+	std::stringstream ss;
+	ss << accountNumber;
+	std::string accountName = ss.str();
+ 
+	query << "INSERT INTO `accounts` (`id`, `name`, `password`) VALUES (" << accountNumber << ", " << db->escapeString(accountName) << ", " << db->escapeString(password) << ")";
 	if(!db->executeQuery(query.str()))
 		return 0;
 
