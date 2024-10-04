@@ -20,4 +20,5 @@
 
 [ BUGS
 	* Unknow client random debugs.
+	* Fix stamina minutes to 56 hours.
 ]
