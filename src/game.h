@@ -182,7 +182,7 @@ class Game
 		Cylinder* internalGetCylinder(Player* player, const Position& pos);
 		Thing* internalGetThing(Player* player, const Position& pos, int32_t index,
 			uint32_t spriteId = 0, stackposType_t type = STACKPOS_NORMAL);
-		void internalGetPosition(Item* item, Position& pos, int16_t& stackpos);
+		void internalGetPosition(Item* item, Position& pos, uint8_t& stackpos);
 
 		std::string getTradeErrorDescription(ReturnValue ret, Item* item);
 

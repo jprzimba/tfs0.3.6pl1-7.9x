@@ -264,19 +264,20 @@ Item::Item(const uint16_t type, uint16_t amount/* = 0*/):
 {
 	count = 1;
 	raid = NULL;
-	loadedFromMap = false;
 
 	const ItemType& it = items[id];
 	if(it.charges)
 		setCharges(it.charges);
 
-	setDefaultDuration();
 	if(it.isFluidContainer() || it.isSplash())
 		setFluidType(amount);
 	else if(it.stackable && amount)
 		count = amount;
 	else if(it.charges && amount)
 		setCharges(amount);
+
+	loadedFromMap = false;
+	setDefaultDuration();
 }
 
 Item* Item::clone() const
@@ -320,9 +321,10 @@ void Item::onRemoved()
 
 void Item::setDefaultSubtype()
 {
-	count = 1;
 	const ItemType& it = items[id];
-	if(it.charges)
+
+	count = 1;
+	if(it.charges != 0)
 		setCharges(it.charges);
 }
 
@@ -366,13 +368,19 @@ const Player* Item::getHoldingPlayer() const
 	return const_cast<Item*>(this)->getHoldingPlayer();
 }
 
-uint16_t Item::getSubType() const
+bool Item::hasSubType() const
 {
 	const ItemType& it = items[id];
+	return it.hasSubType();
+}
+
+uint16_t Item::getSubType() const
+{
+	const ItemType& it = items[getID()];
+
 	if(it.isFluidContainer() || it.isSplash())
 		return getFluidType();
-
-	if(it.charges)
+	else if(it.charges != 0)
 		return getCharges();
 
 	return count;
@@ -383,7 +391,7 @@ void Item::setSubType(uint16_t n)
 	const ItemType& it = items[id];
 	if(it.isFluidContainer() || it.isSplash())
 		setFluidType(n);
-	else if(it.charges)
+	else if(it.charges != 0)
 		setCharges(n);
 	else
 		count = n;
@@ -399,7 +407,7 @@ Attr_ReadValue Item::readAttr(AttrTypes_t attr, PropStream& propStream)
 			if(!propStream.GET_UCHAR(_count))
 				return ATTR_READ_ERROR;
 
-			setSubType((uint16_t)_count);
+			setSubType(_count);
 			break;
 		}
 
@@ -575,11 +583,11 @@ Attr_ReadValue Item::readAttr(AttrTypes_t attr, PropStream& propStream)
 
 		case ATTR_RUNE_CHARGES:
 		{
-			uint8_t charges;
-			if(!propStream.GET_UCHAR(charges))
+			uint8_t _charges = 1;
+			if(!propStream.GET_UCHAR(_charges))
 				return ATTR_READ_ERROR;
 
-			setSubType((uint16_t)charges);
+			setSubType(_charges);
 			break;
 		}
 
@@ -721,10 +729,18 @@ bool Item::unserializeAttr(PropStream& propStream)
 
 bool Item::serializeAttr(PropWriteStream& propWriteStream) const
 {
-	if(isStackable() || isFluidContainer() || isSplash())
+	if(isRune())
 	{
-		propWriteStream.ADD_UCHAR(ATTR_COUNT);
-		propWriteStream.ADD_UCHAR((uint8_t)getSubType());
+		uint8_t _count = (uint8_t)getCharges();
+		propWriteStream.ADD_UCHAR(ATTR_RUNE_CHARGES);
+		propWriteStream.ADD_UCHAR(_count);
+	}
+
+	if(hasCharges() && !isRune())
+	{
+		uint16_t _count = getCharges();
+		propWriteStream.ADD_UCHAR(ATTR_CHARGES);
+		propWriteStream.ADD_USHORT(_count);
 	}
 
 	if(attributes && !attributes->empty())

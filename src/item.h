@@ -275,7 +275,6 @@ class Item : virtual public Thing, public ItemAttributes
 		bool forceSerialize() const {return items[id].forceSerialize || canWriteText() || isContainer() || isBed() || isDoor();}
 
 		bool hasProperty(enum ITEMPROPERTY prop) const;
-		bool hasSubType() const {return items[id].hasSubType();}
 		bool hasCharges() const {return items[id].charges;}
 
 		bool canDecay();
@@ -315,6 +314,7 @@ class Item : virtual public Thing, public ItemAttributes
 		uint16_t getItemCount() const {return count;}
 		void setItemCount(uint16_t n) {count = n;}
 
+		bool hasSubType() const;
 		uint16_t getSubType() const;
 		void setSubType(uint16_t n);
 

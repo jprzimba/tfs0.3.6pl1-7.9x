@@ -605,7 +605,7 @@ Thing* Game::internalGetThing(Player* player, const Position& pos, int32_t index
 	return player->getInventoryItem((slots_t)static_cast<uint8_t>(pos.y));
 }
 
-void Game::internalGetPosition(Item* item, Position& pos, int16_t& stackpos)
+void Game::internalGetPosition(Item* item, Position& pos, uint8_t& stackpos)
 {
 	pos.x = pos.y = pos.z = stackpos = 0;
 	if(Cylinder* topParent = item->getTopParent())
@@ -1223,10 +1223,9 @@ bool Game::playerMoveItem(uint32_t playerId, const Position& fromPos,
 		return false;
 	}
 
-	player->setNextActionTask(NULL);
 	Cylinder* fromCylinder = internalGetCylinder(player, fromPos);
-
 	uint8_t fromIndex = 0;
+
 	if(fromPos.x == 0xFFFF)
 	{
 		if(fromPos.y & 0x40)
@@ -1271,8 +1270,8 @@ bool Game::playerMoveItem(uint32_t playerId, const Position& fromPos,
 
 	const Position& mapFromPos = fromCylinder->getTile()->getPosition();
 	const Position& mapToPos = toCylinder->getTile()->getPosition();
-
 	const Position& playerPos = player->getPosition();
+
 	if(playerPos.z > mapFromPos.z && !player->hasCustomFlag(PlayerCustomFlag_CanThrowAnywhere))
 	{
 		player->sendCancelMessage(RET_FIRSTGOUPSTAIRS);
@@ -1335,7 +1334,8 @@ bool Game::playerMoveItem(uint32_t playerId, const Position& fromPos,
 				walkPos.y -= -1;
 
 			Position itemPos = fromPos;
-			int16_t itemStackpos = fromStackpos;
+			uint8_t itemStackPos = fromStackpos;
+
 			if(fromPos.x != 0xFFFF && Position::areInRange<1,1,0>(mapFromPos, player->getPosition())
 				&& !Position::areInRange<1,1,0>(mapFromPos, walkPos))
 			{
@@ -1349,7 +1349,7 @@ bool Game::playerMoveItem(uint32_t playerId, const Position& fromPos,
 				}
 
 				//changing the position since its now in the inventory of the player
-				internalGetPosition(moveItem, itemPos, itemStackpos);
+				internalGetPosition(moveItem, itemPos, itemStackPos);
 			}
 
 			std::list<Direction> listDir;
@@ -1358,14 +1358,16 @@ bool Game::playerMoveItem(uint32_t playerId, const Position& fromPos,
 				Dispatcher::getInstance().addTask(createTask(boost::bind(&Game::playerAutoWalk,
 					this, player->getID(), listDir)));
 				SchedulerTask* task = createSchedulerTask(player->getStepDuration(), boost::bind(&Game::playerMoveItem, this,
-					playerId, itemPos, spriteId, itemStackpos, toPos, count));
+					playerId, itemPos, spriteId, itemStackPos, toPos, count));
 
 				player->setNextWalkActionTask(task);
 				return true;
 			}
-
-			player->sendCancelMessage(RET_THEREISNOWAY);
-			return false;
+			else
+			{
+				player->sendCancelMessage(RET_THEREISNOWAY);
+				return false;
+			}
 		}
 	}
 
@@ -1400,24 +1402,8 @@ ReturnValue Game::internalMoveItem(Creature* actor, Cylinder* fromCylinder, Cyli
 	if(!toCylinder)
 		return RET_NOTPOSSIBLE;
 
-	if(!item->getParent())
-	{
-		assert(fromCylinder == item->getParent());
-		return internalAddItem(actor, toCylinder, item, INDEX_WHEREEVER, FLAG_NOLIMIT);
-	}
-
 	Item* toItem = NULL;
-	Cylinder* subCylinder = NULL;
-
-	int32_t floor = 0;
-	while((subCylinder = toCylinder->__queryDestination(index, item, &toItem, flags)) != toCylinder)
-	{
-		toCylinder = subCylinder;
-		flags = 0;
-		//to prevent infinite loop
-		if(++floor >= MAP_MAX_LAYERS)
-			break;
-	}
+	toCylinder = toCylinder->__queryDestination(index, item, &toItem, flags);
 
 	//destination is the same as the source?
 	if(item == toItem)
@@ -2367,7 +2353,7 @@ bool Game::playerUseItemEx(uint32_t playerId, const Position& fromPos, int16_t f
 		if(ret == RET_TOOFARAWAY)
 		{
 			Position itemPos = fromPos;
-			int16_t itemStackpos = fromStackpos;
+			uint8_t itemStackPos = fromStackpos;
 			if(fromPos.x != 0xFFFF && toPos.x != 0xFFFF && Position::areInRange<1,1,0>(fromPos,
 				player->getPosition()) && !Position::areInRange<1,1,0>(fromPos, toPos))
 			{
@@ -2381,7 +2367,7 @@ bool Game::playerUseItemEx(uint32_t playerId, const Position& fromPos, int16_t f
 				}
 
 				//changing the position since its now in the inventory of the player
-				internalGetPosition(moveItem, itemPos, itemStackpos);
+				internalGetPosition(moveItem, itemPos, itemStackPos);
 			}
 
 			std::list<Direction> listDir;
@@ -2391,7 +2377,7 @@ bool Game::playerUseItemEx(uint32_t playerId, const Position& fromPos, int16_t f
 					this, player->getID(), listDir)));
 
 				SchedulerTask* task = createSchedulerTask(400, boost::bind(&Game::playerUseItemEx, this,
-					playerId, itemPos, itemStackpos, fromSpriteId, toPos, toStackpos, toSpriteId, isHotkey));
+					playerId, itemPos, itemStackPos, fromSpriteId, toPos, toStackpos, toSpriteId, isHotkey));
 
 				player->setNextWalkActionTask(task);
 				return true;
