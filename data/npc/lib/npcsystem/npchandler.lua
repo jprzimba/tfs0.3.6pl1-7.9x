@@ -10,14 +10,6 @@ if(NpcHandler == nil) then
 	-- Currently applied talkdelay behavior. TALKDELAY_ONTHINK is default.
 	NPCHANDLER_TALKDELAY = TALKDELAY_ONTHINK
 
-	-- Constant conversation behaviors.
-	CONVERSATION_DEFAULT = 0 -- Conversation through default window, like it was before 8.2 update.
-	CONVERSATION_PRIVATE = 1 -- Conversation through NPCs chat window, as of 8.2 update. (Default)
-		--Small Note: Private conversations also means the NPC will use multi-focus system.
-
-	-- Currently applied conversation behavior. CONVERSATION_PRIVATE is default.
-	NPCHANDLER_CONVBEHAVIOR = CONVERSATION_PRIVATE
-
 	-- Constant indexes for defining default messages.
 	MESSAGE_GREET 			= 1 -- When the player greets the npc.
 	MESSAGE_FAREWELL 		= 2 -- When the player unGreets the npc.
@@ -110,14 +102,11 @@ if(NpcHandler == nil) then
 		local obj = {}
 		obj.callbackFunctions = {}
 		obj.modules = {}
-		if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-			obj.focuses = {}
-			obj.talkStart = {}
-		else
-			obj.queue = Queue:new(obj)
-			obj.focuses = 0
-			obj.talkStart = 0
-		end
+
+		obj.queue = Queue:new(obj)
+		obj.focuses = 0
+		obj.talkStart = 0
+
 		obj.talkDelay = {}
 		obj.keywordHandler = keywordHandler
 		obj.messages = {}
@@ -143,73 +132,25 @@ if(NpcHandler == nil) then
 
 	-- Function used to change the focus of this npc.
 	function NpcHandler:addFocus(newFocus)
-		if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-			if(self:isFocused(newFocus)) then
-				return
-			end
-
-			table.insert(self.focuses, newFocus)
-		else
-			self.focuses = newFocus
-		end
-
+		self.focuses = newFocus
 		self:updateFocus()
 	end
 	NpcHandler.changeFocus = NpcHandler.addFocus --"changeFocus" looks better for CONVERSATION_DEFAULT
 
 	-- Function used to verify if npc is focused to certain player
 	function NpcHandler:isFocused(focus)
-		if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-			for k,v in pairs(self.focuses) do
-				if v == focus then
-					return true
-				end
-			end
-
-			return false
-		end
-
 		return (self.focuses == focus)
 	end
 
 	-- This function should be called on each onThink and makes sure the npc faces the player it is talking to.
 	--	Should also be called whenever a new player is focused.
 	function NpcHandler:updateFocus()
-		if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-			for pos, focus in pairs(self.focuses) do
-				if(focus ~= nil) then
-					doNpcSetCreatureFocus(focus)
-					return
-				end
-			end
-
-			doNpcSetCreatureFocus(0)
-		else
-			doNpcSetCreatureFocus(self.focuses)
-		end
+		doNpcSetCreatureFocus(self.focuses)
 	end
 
 	-- Used when the npc should un-focus the player.
 	function NpcHandler:releaseFocus(focus)
-		if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-			if(not self:isFocused(focus)) then
-				return
-			end
-
-			local pos = nil
-			for k,v in pairs(self.focuses) do
-				if v == focus then
-					pos = k
-				end
-			end
-			table.remove(self.focuses, pos)
-			self.talkStart[focus] = nil
-			closeShopWindow(focus) --Even if it can not exist, we need to prevent it.
-			self:updateFocus()
-		else
-			closeShopWindow(focus)
-			self:changeFocus(0)
-		end
+		self:changeFocus(0)
 	end
 
 	-- Returns the callback function with the specified id or nil if no such callback function exists.
@@ -327,7 +268,6 @@ if(NpcHandler == nil) then
 
 					self:say(msg, cid)
 					self:releaseFocus(cid)
-					self:say(msg)
 				end
 			end
 		end
@@ -343,7 +283,6 @@ if(NpcHandler == nil) then
 					local parseInfo = { [TAG_PLAYERNAME] = getCreatureName(cid) }
 					msg = self:parseMessage(msg, parseInfo)
 
-					self:say(msg)
 					self:addFocus(cid)
 					self:say(msg, cid)
 				end
@@ -383,24 +322,14 @@ if(NpcHandler == nil) then
 				end
 
 				if(self.keywordHandler ~= nil) then
-					if((self:isFocused(cid) and (class == TALKTYPE_PRIVATE_PN or NPCHANDLER_CONVBEHAVIOR == CONVERSATION_DEFAULT)) or not self:isFocused(cid)) then
-						local ret = self.keywordHandler:processMessage(cid, msg)
-						if(not ret) then
-							local callback = self:getCallback(CALLBACK_MESSAGE_DEFAULT)
-							if(callback ~= nil and callback(cid, class, msg)) then
-								if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-									self.talkStart[cid] = os.time()
-								else
-									self.talkStart = os.time()
-								end
-							end
-						else
-							if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-								self.talkStart[cid] = os.time()
-							else
-								self.talkStart = os.time()
-							end
+					local ret = self.keywordHandler:processMessage(cid, msg)
+					if(not ret) then
+						local callback = self:getCallback(CALLBACK_MESSAGE_DEFAULT)
+						if(callback ~= nil and callback(cid, class, msg)) then
+							self.talkStart = os.time()
 						end
+					else
+						self.talkStart = os.time()
 					end
 				end
 			end
@@ -458,14 +387,7 @@ if(NpcHandler == nil) then
 		local callback = self:getCallback(CALLBACK_ONTHINK)
 		if(callback == nil or callback()) then
 			if(NPCHANDLER_TALKDELAY == TALKDELAY_ONTHINK) then
-				if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-					for cid, talkDelay in pairs(self.talkDelay) do
-						if(talkDelay.time ~= nil and talkDelay.message ~= nil and os.time() >= talkDelay.time) then
-							selfSay(talkDelay.message, cid)
-							self.talkDelay[cid] = nil
-						end
-					end
-				elseif(self.talkDelay.time ~= nil and self.talkDelay.message ~= nil and os.time() >= self.talkDelay.time) then
+					if(self.talkDelay.time ~= nil and self.talkDelay.message ~= nil and os.time() >= self.talkDelay.time) then
 					selfSay(self.talkDelay.message)
 					self.talkDelay.time = nil
 					self.talkDelay.message = nil
@@ -473,19 +395,7 @@ if(NpcHandler == nil) then
 			end
 
 			if(self:processModuleCallback(CALLBACK_ONTHINK)) then
-				if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-					for pos, focus in pairs(self.focuses) do
-						if(focus ~= nil) then
-							if(not self:isInRange(focus)) then
-								self:onWalkAway(focus)
-							elseif((os.time() - self.talkStart[focus]) > self.idleTime) then
-								self:unGreet(focus)
-							else
-								self:updateFocus()
-							end
-						end
-					end
-				elseif(self.focuses ~= 0) then
+				if(self.focuses ~= 0) then
 					if(not self:isInRange(self.focuses)) then
 						self:onWalkAway(self.focuses)
 					elseif(os.time()-self.talkStart > self.idleTime) then
@@ -501,29 +411,22 @@ if(NpcHandler == nil) then
 	-- Tries to greet the player with the given cid.
 	function NpcHandler:onGreet(cid)
 		if(self:isInRange(cid)) then
-			if(NPCHANDLER_CONVBEHAVIOR == CONVERSATION_PRIVATE) then
-				if(not self:isFocused(cid)) then
-					self:greet(cid)
-					return
+			if(self.focuses == 0) then
+				self:greet(cid)
+			elseif(self.focuses == cid) then
+				local msg = self:getMessage(MESSAGE_ALREADYFOCUSED)
+				local parseInfo = { [TAG_PLAYERNAME] = getCreatureName(cid) }
+				msg = self:parseMessage(msg, parseInfo)
+				self:say(msg)
+			else
+				if(not self.queue:isInQueue(cid)) then
+					self.queue:push(cid)
 				end
-			elseif(NPCHANDLER_CONVBEHAVIOR == CONVERSATION_DEFAULT) then
-				if(self.focuses == 0) then
-					self:greet(cid)
-				elseif(self.focuses == cid) then
-					local msg = self:getMessage(MESSAGE_ALREADYFOCUSED)
-					local parseInfo = { [TAG_PLAYERNAME] = getCreatureName(cid) }
-					msg = self:parseMessage(msg, parseInfo)
-					self:say(msg)
-				else
-					if(not self.queue:isInQueue(cid)) then
-						self.queue:push(cid)
-					end
 
-					local msg = self:getMessage(MESSAGE_PLACEDINQUEUE)
-					local parseInfo = { [TAG_PLAYERNAME] = getCreatureName(cid), [TAG_QUEUESIZE] = self.queue:getSize() }
-					msg = self:parseMessage(msg, parseInfo)
-					self:say(msg)
-				end
+				local msg = self:getMessage(MESSAGE_PLACEDINQUEUE)
+				local parseInfo = { [TAG_PLAYERNAME] = getCreatureName(cid), [TAG_QUEUESIZE] = self.queue:getSize() }
+				msg = self:parseMessage(msg, parseInfo)
+				self:say(msg)
 			end
 		end
 	end
@@ -577,26 +480,14 @@ if(NpcHandler == nil) then
 	function NpcHandler:say(message, focus, shallDelay)
 		local shallDelay = shallDelay or false
 		if(NPCHANDLER_TALKDELAY == TALKDELAY_NONE or not shallDelay) then
-			if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-				selfSay(message, focus)
-				return
-			else
-				selfSay(message)
-				return
-			end
+			selfSay(message)
+			return
 		end
 
 		-- TODO: Add an event handling method for delayed messages
-		if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-			self.talkDelay[focus] = {
-				message = message,
-				time = os.time() + self.talkDelayTime,
-			}
-		else
-			self.talkDelay = {
-				message = message,
-				time = os.time() + self.talkDelayTime
-			}
-		end
+		self.talkDelay = {
+			message = message,
+			time = os.time() + self.talkDelayTime
+		}
 	end
 end

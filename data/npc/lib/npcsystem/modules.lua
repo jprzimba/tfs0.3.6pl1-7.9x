@@ -1187,11 +1187,7 @@ if(Modules == nil) then
 			parseInfo[TAG_ITEMCOUNT] = a
 
 			doPlayerSendCancel(cid, self.npcHandler:parseMessage(msg, parseInfo))
-			if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-				self.npcHandler.talkStart[cid] = os.time()
-			else
-				self.npcHandler.talkStart = os.time()
-			end
+			self.npcHandler.talkStart = os.time()
 
 			if(a > 0) then
 				doPlayerRemoveMoney(cid, ((a * shopItem.buy) + (b * 20)))
@@ -1205,11 +1201,7 @@ if(Modules == nil) then
 		doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, self.npcHandler:parseMessage(msg, parseInfo))
 
 		doPlayerRemoveMoney(cid, totalCost)
-		if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-			self.npcHandler.talkStart[cid] = os.time()
-		else
-			self.npcHandler.talkStart = os.time()
-		end
+		self.npcHandler.talkStart = os.time()
 
 		return true
 	end
@@ -1250,22 +1242,14 @@ if(Modules == nil) then
 			doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, self.npcHandler:parseMessage(msg, parseInfo))
 
 			doPlayerAddMoney(cid, amount * shopItem.sell)
-			if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-				self.npcHandler.talkStart[cid] = os.time()
-			else
-				self.npcHandler.talkStart = os.time()
-			end
+			self.npcHandler.talkStart = os.time()
 
 			return true
 		end
 
 		local msg = self.npcHandler:getMessage(MESSAGE_NEEDITEM)
 		doPlayerSendCancel(cid, self.npcHandler:parseMessage(msg, parseInfo))
-		if(NPCHANDLER_CONVBEHAVIOR ~= CONVERSATION_DEFAULT) then
-			self.npcHandler.talkStart[cid] = os.time()
-		else
-			self.npcHandler.talkStart = os.time()
-		end
+		self.npcHandler.talkStart = os.time()
 
 		return false
 	end
@@ -1287,14 +1271,6 @@ if(Modules == nil) then
 
 		local parseInfo = { [TAG_PLAYERNAME] = getPlayerName(cid) }
 		local msg = module.npcHandler:parseMessage(module.npcHandler:getMessage(MESSAGE_SENDTRADE), parseInfo)
-		openShopWindow(cid, module.npcHandler.shopItems,
-			function(cid, itemid, subType, amount, ignoreCap, inBackpacks)
-				module.npcHandler:onBuy(cid, itemid, subType, amount, ignoreCap, inBackpacks)
-			end,
-			function(cid, itemid, subType, amount, ignoreCap, inBackpacks)
-				module.npcHandler:onSell(cid, itemid, subType, amount, ignoreCap, inBackpacks)
-			end
-		)
 
 		module.npcHandler:say(msg, cid)
 		return true

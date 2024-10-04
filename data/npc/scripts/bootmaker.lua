@@ -13,7 +13,7 @@ function creatureSayCallback(cid, type, msg)
 		return false
 	end
 
-	local talkUser = NPCHANDLER_CONVBEHAVIOR == CONVERSATION_DEFAULT and 0 or cid
+	local talkUser = 0 or cid
 
 	if(msgcontains(msg, 'soft') or msgcontains(msg, 'boots')) then
 		selfSay('Do you want to repair your worn soft boots for 10000 gold coins?', cid)

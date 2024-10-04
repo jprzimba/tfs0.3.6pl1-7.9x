@@ -30,9 +30,6 @@ if(NpcSystem == nil) then
 	-- Talkdelay behavior. For more information, look at the top of npchandler.lua.
 	NPCHANDLER_TALKDELAY = TALKDELAY_ONTHINK
 
-	-- Conversation behavior. For more information, look at the top of npchandler.lua.
-	NPCHANDLER_CONVBEHAVIOR = CONVERSATION_PRIVATE
-
 	-- Constant strings defining the keywords to replace in the default messages.
 	--	For more information, look at the top of npchandler.lua...
 	TAG_PLAYERNAME = '|PLAYERNAME|'

@@ -575,22 +575,6 @@ void ProtocolGame::parsePacket(NetworkMessage &msg)
 				parseThrow(msg);
 				break;
 
-			case 0x79: // description in shop window
-				parseLookInShop(msg);
-				break;
-
-			case 0x7A: // player bought from shop
-				parsePlayerPurchase(msg);
-				break;
-
-			case 0x7B: // player sold to shop
-				parsePlayerSale(msg);
-				break;
-
-			case 0x7C: // player closed shop window
-				parseCloseShop(msg);
-				break;
-
 			case 0x7D: // Request trade
 				parseRequestTrade(msg);
 				break;
@@ -673,10 +657,6 @@ void ProtocolGame::parsePacket(NetworkMessage &msg)
 
 			case 0x9D: //player cancels report
 				parseCancelRuleViolation(msg);
-				break;
-
-			case 0x9E: // close NPC
-				parseCloseNpc(msg);
 				break;
 
 			case 0xA0: // set attack and follow mode
@@ -1066,11 +1046,6 @@ void ProtocolGame::parseCancelRuleViolation(NetworkMessage& msg)
 	addGameTask(&Game::playerCancelRuleViolation, player->getID());
 }
 
-void ProtocolGame::parseCloseNpc(NetworkMessage& msg)
-{
-	addGameTask(&Game::playerCloseNpcChannel, player->getID());
-}
-
 void ProtocolGame::parseCancelMove(NetworkMessage& msg)
 {
 	addGameTask(&Game::playerCancelAttackAndFollow, player->getID());
@@ -1259,8 +1234,8 @@ void ProtocolGame::parseSay(NetworkMessage& msg)
 			break;
 
 		case SPEAK_CHANNEL_Y:
-		case SPEAK_CHANNEL_RN:
-		case SPEAK_CHANNEL_RA:
+		case SPEAK_CHANNEL_R1:
+		case SPEAK_CHANNEL_R2:
 			channelId = msg.GetU16();
 			break;
 
@@ -1329,36 +1304,6 @@ void ProtocolGame::parseHouseWindow(NetworkMessage &msg)
 	uint32_t id = msg.GetU32();
 	const std::string text = msg.GetString();
 	addGameTask(&Game::playerUpdateHouseWindow, player->getID(), doorId, id, text);
-}
-
-void ProtocolGame::parseLookInShop(NetworkMessage &msg)
-{
-	uint16_t id = msg.GetU16();
-	uint16_t count = msg.GetByte();
-	addGameTaskTimed(DISPATCHER_TASK_EXPIRATION, &Game::playerLookInShop, player->getID(), id, count);
-}
-
-void ProtocolGame::parsePlayerPurchase(NetworkMessage &msg)
-{
-	uint16_t id = msg.GetU16();
-	uint16_t count = msg.GetByte();
-	uint16_t amount = msg.GetByte();
-	bool ignoreCap = msg.GetByte();
-	bool inBackpacks = msg.GetByte();
-	addGameTaskTimed(DISPATCHER_TASK_EXPIRATION, &Game::playerPurchaseItem, player->getID(), id, count, amount, ignoreCap, inBackpacks);
-}
-
-void ProtocolGame::parsePlayerSale(NetworkMessage &msg)
-{
-	uint16_t id = msg.GetU16();
-	uint16_t count = msg.GetByte();
-	uint16_t amount = msg.GetByte();
-	addGameTaskTimed(DISPATCHER_TASK_EXPIRATION, &Game::playerSellItem, player->getID(), id, count, amount);
-}
-
-void ProtocolGame::parseCloseShop(NetworkMessage &msg)
-{
-	addGameTask(&Game::playerCloseShop, player->getID());
 }
 
 void ProtocolGame::parseRequestTrade(NetworkMessage& msg)
@@ -1769,99 +1714,6 @@ void ProtocolGame::sendContainer(uint32_t cid, const Container* container, bool 
 		ItemList::const_iterator cit = container->getItems();
 		for(uint32_t i = 0; cit != container->getEnd() && i < 255; ++cit, ++i)
 			msg->AddItem(*cit);
-	}
-}
-
-void ProtocolGame::sendShop(const ShopInfoList& shop)
-{
-	NetworkMessage_ptr msg = getOutputBuffer();
-	if(msg)
-	{
-		TRACK_MESSAGE(msg);
-		msg->AddByte(0x7A);
-		msg->AddByte(std::min(shop.size(), (size_t)255));
-
-		ShopInfoList::const_iterator it = shop.begin();
-		for(uint32_t i = 0; it != shop.end() && i < 255; ++it, ++i)
-			AddShopItem(msg, (*it));
-	}
-}
-
-void ProtocolGame::sendCloseShop()
-{
-	NetworkMessage_ptr msg = getOutputBuffer();
-	if(msg)
-	{
-		TRACK_MESSAGE(msg);
-		msg->AddByte(0x7C);
-	}
-}
-
-void ProtocolGame::sendGoods(const ShopInfoList& shop)
-{
-	NetworkMessage_ptr msg = getOutputBuffer();
-	if(msg)
-	{
-		TRACK_MESSAGE(msg);
-		msg->AddByte(0x7B);
-		msg->AddU32(g_game.getMoney(player));
-
-		std::map<uint32_t, uint32_t> goodsMap;
-		if(shop.size() >= 5)
-		{
-			for(ShopInfoList::const_iterator sit = shop.begin(); sit != shop.end(); ++sit)
-			{
-				if(sit->sellPrice < 0)
-					continue;
-
-				int8_t subType = -1;
-				if(sit->subType)
-				{
-					const ItemType& it = Item::items[sit->itemId];
-					if(it.hasSubType() && !it.stackable)
-						subType = sit->subType;
-				}
-
-				uint32_t count = player->__getItemTypeCount(sit->itemId, subType);
-				if(count > 0)
-					goodsMap[sit->itemId] = count;
-			}
-		}
-		else
-		{
-			std::map<uint32_t, uint32_t> tmpMap;
-			player->__getAllItemTypeCount(tmpMap);
-			for(ShopInfoList::const_iterator sit = shop.begin(); sit != shop.end(); ++sit)
-			{
-				if(sit->sellPrice < 0)
-					continue;
-
-				int8_t subType = -1;
-				if(sit->subType)
-				{
-					const ItemType& it = Item::items[sit->itemId];
-					if(it.hasSubType() && !it.stackable)
-						subType = sit->subType;
-				}
-
-				if(subType != -1)
-				{
-					uint32_t count = player->__getItemTypeCount(sit->itemId, subType);
-					if(count > 0)
-						goodsMap[sit->itemId] = count;
-				}
-				else
-					goodsMap[sit->itemId] = tmpMap[sit->itemId];
-			}
-		}
-
-		msg->AddByte(std::min(goodsMap.size(), (size_t)255));
-		std::map<uint32_t, uint32_t>::const_iterator it = goodsMap.begin();
-		for(uint32_t i = 0; it != goodsMap.end() && i < 255; ++it, ++i)
-		{
-			msg->AddItemId(it->first);
-			msg->AddByte(std::min(it->second, (uint32_t)255));
-		}
 	}
 }
 
@@ -2697,46 +2549,36 @@ void ProtocolGame::AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* crea
 	std::string text, uint16_t channelId, uint32_t time/*= 0*/, Position* pos/* = NULL*/)
 {
 	msg->AddByte(0xAA);
-	if(creature)
+	const Player* speaker = creature->getPlayer();
+	if(speaker)
 	{
-		const Player* speaker = creature->getPlayer();
-		if(speaker)
-		{
-			msg->AddU32(++g_chat.statement);
-			g_chat.statementMap[g_chat.statement] = text;
-		}
-		else
-			msg->AddU32(0x00);
-
-		if(creature->getSpeakType() != SPEAK_CLASS_NONE)
-			type = creature->getSpeakType();
-
-		switch(type)
-		{
-			case SPEAK_CHANNEL_RA:
-				msg->AddString("");
-				break;
-			case SPEAK_RVR_ANSWER:
-				msg->AddString("Gamemaster");
-				break;
-			default:
-				msg->AddString(!creature->getHideName() ? creature->getName() : "");
-				break;
-		}
-
-		if(speaker && type != SPEAK_RVR_ANSWER && !speaker->isAccountManager()
-			&& !speaker->hasCustomFlag(PlayerCustomFlag_HideLevel))
-			msg->AddU16(speaker->getPlayerInfo(PLAYERINFO_LEVEL));
-		else
-			msg->AddU16(0x00);
-
+		msg->AddU32(++g_chat.statement);
+		g_chat.statementMap[g_chat.statement] = text;
 	}
 	else
-	{
 		msg->AddU32(0x00);
-		msg->AddString("");
-		msg->AddU16(0x00);
+
+	if(creature->getSpeakType() != SPEAK_CLASS_NONE)
+		type = creature->getSpeakType();
+
+	switch(type)
+	{
+		case SPEAK_CHANNEL_R2:
+			msg->AddString("");
+			break;
+		case SPEAK_RVR_ANSWER:
+			msg->AddString("Gamemaster");
+			break;
+		default:
+			msg->AddString(!creature->getHideName() ? creature->getName() : "");
+			break;
 	}
+
+	if(speaker && type != SPEAK_RVR_ANSWER && !speaker->isAccountManager()
+		&& !speaker->hasCustomFlag(PlayerCustomFlag_HideLevel))
+		msg->AddU16(speaker->getPlayerInfo(PLAYERINFO_LEVEL));
+	else
+		msg->AddU16(0x0000);
 
 	msg->AddByte(type);
 	switch(type)
@@ -2746,7 +2588,6 @@ void ProtocolGame::AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* crea
 		case SPEAK_YELL:
 		case SPEAK_MONSTER_SAY:
 		case SPEAK_MONSTER_YELL:
-		case SPEAK_PRIVATE_NP:
 		{
 			if(pos)
 				msg->AddPosition(*pos);
@@ -2759,10 +2600,9 @@ void ProtocolGame::AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* crea
 		}
 
 		case SPEAK_CHANNEL_Y:
-		case SPEAK_CHANNEL_RN:
-		case SPEAK_CHANNEL_RA:
+		case SPEAK_CHANNEL_R1:
+		case SPEAK_CHANNEL_R2:
 		case SPEAK_CHANNEL_O:
-		case SPEAK_CHANNEL_W:
 			msg->AddU16(channelId);
 			break;
 
@@ -3021,21 +2861,4 @@ void ProtocolGame::sendChannelMessage(std::string author, std::string text, Spea
 		msg->AddU16(channel);
 		msg->AddString(text);
 	}
-}
-
-void ProtocolGame::AddShopItem(NetworkMessage_ptr msg, const ShopInfo item)
-{
-	const ItemType& it = Item::items[item.itemId];
-	msg->AddU16(it.clientId);
-	if(it.isSplash() || it.isFluidContainer())
-		msg->AddByte(fluidMap[item.subType % 8]);
-	else if(it.stackable || it.charges)
-		msg->AddByte(item.subType);
-	else
-		msg->AddByte(0x01);
-
-	msg->AddString(item.itemName);
-	msg->AddU32(uint32_t(it.weight * 100));
-	msg->AddU32(item.buyPrice);
-	msg->AddU32(item.sellPrice);
 }
