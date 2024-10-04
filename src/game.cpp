@@ -5780,7 +5780,7 @@ bool Game::reloadInfo(ReloadInfo_t reload, uint32_t playerId/* = 0*/)
 		case RELOAD_ITEMS:
 		{
 			//TODO
-			std::cout << "[Notice - Game::reloadInfo] Reload type does not work." << std::endl;
+			std::cout << "[Notice - Game::reloadInfo] Reload type (ITEMS) does not work." << std::endl;
 			done = true;
 			break;
 		}
@@ -5826,7 +5826,7 @@ bool Game::reloadInfo(ReloadInfo_t reload, uint32_t playerId/* = 0*/)
 		case RELOAD_OUTFITS:
 		{
 			//TODO
-			std::cout << "[Notice - Game::reloadInfo] Reload type does not work." << std::endl;
+			std::cout << "[Notice - Game::reloadInfo] Reload type (OUTFITS) does not work." << std::endl;
 			done = true;
 			break;
 		}
@@ -5890,7 +5890,7 @@ bool Game::reloadInfo(ReloadInfo_t reload, uint32_t playerId/* = 0*/)
 			//if(Vocations::getInstance()->reload())
 				done = true;
 			//else
-			//	std::cout << "[Notice - Game::reloadInfo] Reload type does not work." << std::endl;
+			//	std::cout << "[Notice - Game::reloadInfo] Reload type (VOCATIONS) does not work." << std::endl;
 
 			break;
 		}
@@ -5898,7 +5898,7 @@ bool Game::reloadInfo(ReloadInfo_t reload, uint32_t playerId/* = 0*/)
 		case RELOAD_WEAPONS:
 		{
 			//TODO
-			std::cout << "[Notice - Game::reloadInfo] Reload type does not work." << std::endl;
+			std::cout << "[Notice - Game::reloadInfo] Reload type (WEAPONS) does not work." << std::endl;
 			done = true;
 			break;
 		}

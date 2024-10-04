@@ -138,6 +138,7 @@ bool argumentsHandler(StringVec args)
 			std::cout << STATUS_SERVER_NAME << ", version " << STATUS_SERVER_VERSION << " (" << STATUS_SERVER_CODENAME << ")\n"
 			"Compiled with " << BOOST_COMPILER << " at " << __DATE__ << ", " << __TIME__ << ".\n"
 			"A server developed by Elf, slawkens, Talaturen, Lithium, KaczooH, Kiper, Kornholijo.\n"
+			"Server modified to version 7.9x by Tryller.\n"
 			"Visit our forum for updates, support and resources: http://otland.net.\n";
 			return false;
 		}
@@ -388,6 +389,7 @@ StringVec args,
 	std::cout << STATUS_SERVER_NAME << ", version " << STATUS_SERVER_VERSION << " (" << STATUS_SERVER_CODENAME << ")" << std::endl;
 	std::cout << "Compiled with " << BOOST_COMPILER << " at " << __DATE__ << ", " << __TIME__ << "." << std::endl;
 	std::cout << "A server developed by Elf, slawkens, Talaturen, KaczooH, Lithium, Kiper, Kornholijo." << std::endl;
+	std::cout << "Server modified to version 7.9x by Tryller" << std::endl;
 	std::cout << "Visit our forum for updates, support and resources: http://otland.net." << std::endl << std::endl;
 
 	std::stringstream ss;
@@ -858,6 +860,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 						std::cout << STATUS_SERVER_NAME << ", version " << STATUS_SERVER_VERSION << " (" << STATUS_SERVER_CODENAME << ")" << std::endl;
 						std::cout << "Compiled with " << BOOST_COMPILER << " at " << __DATE__ << ", " << __TIME__ << "." << std::endl;
 						std::cout << "A server developed by Elf, slawkens, Talaturen, Lithium, KaczooH, Kiper, Kornholijo." << std::endl;
+						std::cout << "Server modified to version 7.9x by Tryller." << std::endl;
 						std::cout << "Visit our forum for updates, support and resources: http://otland.net." << std::endl;
 						std::cout << std::endl;
 					}
