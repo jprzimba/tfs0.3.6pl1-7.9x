@@ -406,9 +406,6 @@
 						* Shop-related functions fixes
 
 				monster/
-					Mutated/
-						mutated rat.xml
-							* Wrong drop
 					Pyro-Elementals/
 						blazing fire elemental.xml
 						blistering fire elemental.xml
