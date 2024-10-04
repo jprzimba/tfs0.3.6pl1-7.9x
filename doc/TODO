@@ -8,6 +8,9 @@
 	Codenamed
 		Crying Damson
 
+	Protocol
+		7.9x by Tryller
+
 	License
 		GNU GPLv3
 
@@ -16,9 +19,5 @@
 ]
 
 [ BUGS
-	Ghosts stacking may cause debug to the stacker (8.53+)
-		Assigned to: Elf
-
-	RVW control through the Comment not working
-		Assigned to: Elf
+	* Unknow client random debugs.
 ]
