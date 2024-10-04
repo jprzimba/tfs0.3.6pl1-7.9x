@@ -1717,11 +1717,7 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 
 void Npc::doSay(const std::string& text)
 {
-	std::string tmp = text;
-	replaceString(tmp, "{", "");
-	replaceString(tmp, "}", "");
-
-	g_game.internalCreatureSay(this, SPEAK_SAY, tmp, false);
+	g_game.internalCreatureSay(this, SPEAK_SAY, text, false);
 }
 
 void Npc::doTurn(Direction dir)
