@@ -8,14 +8,6 @@ if(Modules == nil) then
 	SHOPMODULE_BUY_ITEM = 2
 	SHOPMODULE_BUY_ITEM_CONTAINER = 3
 
-	-- Constants used for shop mode. Notice: addBuyableItemContainer is working on all modes
-	SHOPMODULE_MODE_TALK = 1 -- Old system used before Tibia 8.2: sell/buy item name
-	SHOPMODULE_MODE_TRADE = 2 -- Trade window system introduced in Tibia 8.2
-	SHOPMODULE_MODE_BOTH = 3 -- Both working at one time
-
-	-- Used in shop mode
-	SHOPMODULE_MODE = SHOPMODULE_MODE_BOTH
-
 	-- Constants used for outfit giving mode
 	OUTFITMODULE_FUNCTION_OLD = { doPlayerAddOutfit, canPlayerWearOutfit } -- lookType usage
 	OUTFITMODULE_FUNCTION_NEW = { doPlayerAddOutfitId, canPlayerWearOutfitId } -- OutfitId usage
@@ -824,11 +816,6 @@ if(Modules == nil) then
 		if(ret ~= nil) then
 			self:parseSellable(ret)
 		end
-
-		local ret = NpcSystem.getParameter('shop_buyable_containers')
-		if(ret ~= nil) then
-			self:parseBuyableContainers(ret)
-		end
 	end
 
 	-- Parse a string contaning a set of buyable items.
@@ -852,17 +839,7 @@ if(Modules == nil) then
 				i = i + 1
 			end
 
-			if(SHOPMODULE_MODE == SHOPMODULE_MODE_TRADE) then
-				if(itemid ~= nil and cost ~= nil) then
-					if((isItemFluidContainer(itemid)) and subType == nil) then
-						print('[Warning] NpcSystem:', 'SubType missing for parameter item:', item)
-					else
-						self:addBuyableItem(nil, itemid, cost, subType, realName)
-					end
-				else
-					print('[Warning] NpcSystem:', 'Parameter(s) missing for item:', itemid, cost)
-				end
-			elseif(name ~= nil and itemid ~= nil and cost ~= nil) then
+			if(name ~= nil and itemid ~= nil and cost ~= nil) then
 				if((isItemFluidContainer(itemid)) and subType == nil) then
 					print('[Warning] NpcSystem:', 'SubType missing for parameter item:', item)
 				else
@@ -895,13 +872,7 @@ if(Modules == nil) then
 				i = i + 1
 			end
 
-			if(SHOPMODULE_MODE == SHOPMODULE_MODE_TRADE) then
-				if(itemid ~= nil and cost ~= nil) then
-					self:addSellableItem(nil, itemid, cost, realName)
-				else
-					print('[Warning] NpcSystem:', 'Parameter(s) missing for item:', itemid, cost)
-				end
-			elseif(name ~= nil and itemid ~= nil and cost ~= nil) then
+			if(name ~= nil and itemid ~= nil and cost ~= nil) then
 				local names = {}
 				table.insert(names, name)
 				self:addSellableItem(names, itemid, cost, realName)
@@ -911,59 +882,12 @@ if(Modules == nil) then
 		end
 	end
 
-	-- Parse a string contaning a set of buyable items.
-	function ShopModule:parseBuyableContainers(data)
-		for item in string.gmatch(data, '[^;]+') do
-			local i, name, container, itemid, cost, subType, realName = 1, nil, nil, nil, nil, nil, nil
-			for temp in string.gmatch(item, '[^,]+') do
-				if(i == 1) then
-					name = temp
-				elseif(i == 2) then
-					itemid = tonumber(temp)
-				elseif(i == 3) then
-					itemid = tonumber(temp)
-				elseif(i == 4) then
-					cost = tonumber(temp)
-				elseif(i == 5) then
-					subType = tonumber(temp)
-				elseif(i == 6) then
-					realName = temp
-				else
-					print('[Warning] NpcSystem:', 'Unknown parameter found in buyable items parameter.', temp, item)
-				end
-				i = i + 1
-			end
-
-			if(name ~= nil and container ~= nil and itemid ~= nil and cost ~= nil) then
-				if((isItemFluidContainer(itemid)) and subType == nil) then
-					print('[Warning] NpcSystem:', 'SubType missing for parameter item:', item)
-				else
-					local names = {}
-					table.insert(names, name)
-					self:addBuyableItemContainer(names, container, itemid, cost, subType, realName)
-				end
-			else
-				print('[Warning] NpcSystem:', 'Parameter(s) missing for item:', name, container, itemid, cost)
-			end
-		end
-	end
-
 	-- Initializes the module and associates handler to it.
 	function ShopModule:init(handler)
 		self.npcHandler = handler
 		self.yesNode = KeywordNode:new(SHOP_YESWORD, ShopModule.onConfirm, {module = self})
 		self.noNode = KeywordNode:new(SHOP_NOWORD, ShopModule.onDecline, {module = self})
-
 		self.noText = handler:getMessage(MESSAGE_DECLINE)
-		if(SHOPMODULE_MODE ~= SHOPMODULE_MODE_TALK) then
-			for i, word in pairs(SHOP_TRADEREQUEST) do
-				local obj = {}
-				table.insert(obj, word)
-
-				obj.callback = SHOP_TRADEREQUEST.callback or ShopModule.messageMatcher
-				handler.keywordHandler:addKeyword(obj, ShopModule.requestTrade, {module = self})
-			end
-		end
 	end
 
 	-- Custom message matching callback function for requesting trade messages.
@@ -999,51 +923,23 @@ if(Modules == nil) then
 	--	subType - The subType of each rune or fluidcontainer item. Can be left out if it is not a rune/fluidcontainer. Default value is 1.
 	--	realName - The real, full name for the item. Will be used as ITEMNAME in MESSAGE_ONBUY and MESSAGE_ONSELL if defined. Default value is nil (getItemNameById will be used)
 	function ShopModule:addBuyableItem(names, itemid, cost, subType, realName)
-		if(SHOPMODULE_MODE ~= SHOPMODULE_MODE_TALK) then
-			local item = {
-				id = itemid,
-				buy = cost,
-				sell = -1,
-				subType = subType or 1,
-				name = realName or getItemNameById(itemid)
-			}
+		local parameters = {
+			itemid = itemid,
+			cost = cost,
+			eventType = SHOPMODULE_BUY_ITEM,
+			module = self,
+			realName = realName or getItemNameById(itemid),
+			subType = subType or 1
+		}
 
-			for i, shopItem in ipairs(self.npcHandler.shopItems) do
-				if(shopItem.id == item.id and shopItem.subType == item.subType) then
-					if(item.sell ~= shopItem.sell) then
-						item.sell = shopItem.sell
-					end
+		for i, name in pairs(names) do
+			local keywords = {}
+			table.insert(keywords, 'buy')
+			table.insert(keywords, name)
 
-					self.npcHandler.shopItems[i] = item
-					item = nil
-					break
-				end
-			end
-
-			if(item ~= nil) then
-				table.insert(self.npcHandler.shopItems, item)
-			end
-		end
-
-		if(names ~= nil and SHOPMODULE_MODE ~= SHOPMODULE_MODE_TRADE) then
-			local parameters = {
-				itemid = itemid,
-				cost = cost,
-				eventType = SHOPMODULE_BUY_ITEM,
-				module = self,
-				realName = realName or getItemNameById(itemid),
-				subType = subType or 1
-			}
-
-			for i, name in pairs(names) do
-				local keywords = {}
-				table.insert(keywords, 'buy')
-				table.insert(keywords, name)
-
-				local node = self.npcHandler.keywordHandler:addKeyword(keywords, ShopModule.tradeItem, parameters)
-				node:addChildKeywordNode(self.yesNode)
-				node:addChildKeywordNode(self.noNode)
-			end
+			local node = self.npcHandler.keywordHandler:addKeyword(keywords, ShopModule.tradeItem, parameters)
+			node:addChildKeywordNode(self.yesNode)
+			node:addChildKeywordNode(self.noNode)
 		end
 	end
 
@@ -1084,50 +980,22 @@ if(Modules == nil) then
 	--	cost = The price of one single item
 	--	realName - The real, full name for the item. Will be used as ITEMNAME in MESSAGE_ONBUY and MESSAGE_ONSELL if defined. Default value is nil (getItemNameById will be used)
 	function ShopModule:addSellableItem(names, itemid, cost, realName)
-		if(SHOPMODULE_MODE ~= SHOPMODULE_MODE_TALK) then
-			local item = {
-				id = itemid,
-				buy = -1,
-				sell = cost,
-				subType = 1,
-				name = realName or getItemNameById(itemid)
-			}
+		local parameters = {
+			itemid = itemid,
+			cost = cost,
+			eventType = SHOPMODULE_SELL_ITEM,
+			module = self,
+			realName = realName or getItemNameById(itemid)
+		}
 
-			for i, shopItem in ipairs(self.npcHandler.shopItems) do
-				if(shopItem.id == item.id and shopItem.subType == item.subType) then
-					if(item.buy ~= shopItem.buy) then
-						item.buy = shopItem.buy
-					end
+		for i, name in pairs(names) do
+			local keywords = {}
+			table.insert(keywords, 'sell')
+			table.insert(keywords, name)
 
-					self.npcHandler.shopItems[i] = item
-					item = nil
-					break
-				end
-			end
-
-			if(item ~= nil) then
-				table.insert(self.npcHandler.shopItems, item)
-			end
-		end
-
-		if(names ~= nil and SHOPMODULE_MODE ~= SHOPMODULE_MODE_TRADE) then
-			local parameters = {
-				itemid = itemid,
-				cost = cost,
-				eventType = SHOPMODULE_SELL_ITEM,
-				module = self,
-				realName = realName or getItemNameById(itemid)
-			}
-
-			for i, name in pairs(names) do
-				local keywords = {}
-				table.insert(keywords, 'sell')
-				table.insert(keywords, name)
-
-				local node = self.npcHandler.keywordHandler:addKeyword(keywords, ShopModule.tradeItem, parameters)
-				node:addChildKeywordNode(self.yesNode)
-				node:addChildKeywordNode(self.noNode)
-			end
+			local node = self.npcHandler.keywordHandler:addKeyword(keywords, ShopModule.tradeItem, parameters)
+			node:addChildKeywordNode(self.yesNode)
+			node:addChildKeywordNode(self.noNode)
 		end
 	end
 
