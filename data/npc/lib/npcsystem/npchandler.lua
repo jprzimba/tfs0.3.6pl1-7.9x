@@ -449,7 +449,6 @@ if(NpcHandler == nil) then
 
 						self:say(msg, cid)
 						self:releaseFocus(cid)
-						self:say(msg)
 					end
 				end
 			end
