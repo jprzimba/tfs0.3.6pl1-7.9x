@@ -13,12 +13,6 @@ endif
 if USE_SQLITE
 MAYBE_SQLITE = databasesqlite.cpp databasesqlite.h
 endif
-if USE_PGSQL
-MAYBE_PGSQL = databasepgsql.cpp databasepgsql.h
-endif
-if USE_ODBC
-MAYBE_ODBC = databaseodbc.cpp databaseodbc.h
-endif
 if LOGIN_SERVER
 MAYBE_LOGIN = gameservers.cpp gameservers.h
 endif

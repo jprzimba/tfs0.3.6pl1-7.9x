@@ -2133,7 +2133,6 @@
 		<attribute key="charges" value="5" />
 		<attribute key="showcharges" value="1" />
 		<attribute key="absorbPercentPhysical" value="80" />
-		<attribute key="absorbPercentDeath" value="80" />
 		<attribute key="showattributes" value="1" />
 	</item>
 	<item id="2198" article="an" name="elven amulet">
@@ -2970,10 +2969,9 @@
 	<item id="2396" article="an" name="ice rapier">
 		<attribute key="description" value="A deadly but fragile weapon." />
 		<attribute key="weight" value="1500" />
-		<attribute key="attack" value="60" />
+		<attribute key="attack" value="100" />
 		<attribute key="defense" value="1" />
 		<attribute key="weaponType" value="sword" />
-		<attribute key="elementIce" value="18" />
 		<attribute key="charges" value="1" />
 	</item>
 	<item id="2397" article="a" name="longsword">
@@ -6929,7 +6927,7 @@
 		<attribute key="weight" value="2200" />
 		<attribute key="attack" value="32" />
 		<attribute key="weaponType" value="distance" />
-		<attribute key="shootType" value="huntingspear" />
+		<attribute key="shootType" value="spear" />
 		<attribute key="range" value="5" />
 		<attribute key="breakChance" value="6" />
 		<attribute key="ammoAction" value="moveback" />

@@ -922,13 +922,7 @@ AmmoTypeNames ammoTypeNames[] =
 	{"sniperarrow",		AMMO_ARROW},
 	{"onyxarrow",		AMMO_ARROW},
 	{"piercingbolt",	AMMO_BOLT},
-	{"infernalbolt",	AMMO_BOLT},
-	{"flasharrow",		AMMO_ARROW},
-	{"flammingarrow",	AMMO_ARROW},
-	{"flamingarrow",	AMMO_ARROW},
-	{"shiverarrow",		AMMO_ARROW},
-	{"eartharrow",		AMMO_ARROW},
-	{"etherealspear",	AMMO_SPEAR}
+	{"infernalbolt",	AMMO_BOLT}
 };
 
 AmmoActionNames ammoActionNames[] =
