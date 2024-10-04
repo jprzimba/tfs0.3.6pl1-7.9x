@@ -21,7 +21,7 @@ function oracle(cid, message, keywords, parameters, node)
 
 	if(destination ~= nil and vocation ~= nil and town ~= nil) then
 		if(getPlayerLevel(cid) < parameters.level) then
-			npcHandler:say('You must first reach level ' .. parameters.level .. '!', cid)
+			npcHandler:say('You must first reach level ' .. parameters.level .. '!')
 			npcHandler:resetNpc()
 		else
 			if(getPlayerVocation(cid) > 0) then

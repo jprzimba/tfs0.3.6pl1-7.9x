@@ -42,14 +42,12 @@ if(NpcHandler == nil) then
 	CALLBACK_GREET 			= 5
 	CALLBACK_FAREWELL 		= 6
 	CALLBACK_MESSAGE_DEFAULT 	= 7
-	CALLBACK_PLAYER_ENDTRADE 	= 8
-	CALLBACK_PLAYER_CLOSECHANNEL	= 9
-	CALLBACK_ONBUY			= 10
-	CALLBACK_ONSELL			= 11
+	CALLBACK_ONBUY			= 8
+	CALLBACK_ONSELL			= 9
 
 	-- Addidional module callback ids
-	CALLBACK_MODULE_INIT		= 12
-	CALLBACK_MODULE_RESET		= 13
+	CALLBACK_MODULE_INIT		= 10
+	CALLBACK_MODULE_RESET		= 11
 
 	-- Constant strings defining the keywords to replace in the default messages.
 	TAG_PLAYERNAME = '|PLAYERNAME|'
@@ -196,10 +194,6 @@ if(NpcHandler == nil) then
 				tmpRet = module:callbackOnCreatureDisappear(unpack(arg))
 			elseif(id == CALLBACK_CREATURE_SAY and module.callbackOnCreatureSay ~= nil) then
 				tmpRet = module:callbackOnCreatureSay(unpack(arg))
-			elseif(id == CALLBACK_PLAYER_ENDTRADE and module.callbackOnPlayerEndTrade ~= nil) then
-				tmpRet = module:callbackOnPlayerEndTrade(unpack(arg))
-			elseif(id == CALLBACK_PLAYER_CLOSECHANNEL and module.callbackOnPlayerCloseChannel ~= nil) then
-				tmpRet = module:callbackOnPlayerCloseChannel(unpack(arg))
 			elseif(id == CALLBACK_ONBUY and module.callbackOnBuy ~= nil) then
 				tmpRet = module:callbackOnBuy(unpack(arg))
 			elseif(id == CALLBACK_ONSELL and module.callbackOnSell ~= nil) then
@@ -266,7 +260,7 @@ if(NpcHandler == nil) then
 					local parseInfo = { [TAG_PLAYERNAME] = getPlayerName(cid) }
 					msg = self:parseMessage(msg, parseInfo)
 
-					self:say(msg, cid)
+					self:say(msg)
 					self:releaseFocus(cid)
 				end
 			end
@@ -284,7 +278,7 @@ if(NpcHandler == nil) then
 					msg = self:parseMessage(msg, parseInfo)
 
 					self:addFocus(cid)
-					self:say(msg, cid)
+					self:say(msg)
 				end
 			end
 		end
@@ -331,32 +325,6 @@ if(NpcHandler == nil) then
 					else
 						self.talkStart = os.time()
 					end
-				end
-			end
-		end
-	end
-
-	-- Handles onPlayerEndTrade events. If you wish to handle this yourself, use the CALLBACK_PLAYER_ENDTRADE callback.
-	function NpcHandler:onPlayerEndTrade(cid)
-		local callback = self:getCallback(CALLBACK_PLAYER_ENDTRADE)
-		if(callback == nil or callback(cid)) then
-			if(self:processModuleCallback(CALLBACK_PLAYER_ENDTRADE, cid, class, msg)) then
-				if(self:isFocused(cid)) then
-					local parseInfo = { [TAG_PLAYERNAME] = getPlayerName(cid) }
-					local msg = self:parseMessage(self:getMessage(MESSAGE_ONCLOSESHOP), parseInfo)
-					self:say(msg, cid)
-				end
-			end
-		end
-	end
-
-	-- Handles onPlayerCloseChannel events. If you wish to handle this yourself, use the CALLBACK_PLAYER_CLOSECHANNEL callback.
-	function NpcHandler:onPlayerCloseChannel(cid)
-		local callback = self:getCallback(CALLBACK_PLAYER_CLOSECHANNEL)
-		if(callback == nil or callback(cid)) then
-			if(self:processModuleCallback(CALLBACK_PLAYER_CLOSECHANNEL, cid, class, msg)) then
-				if(self:isFocused(cid)) then
-					self:unGreet(cid)
 				end
 			end
 		end
@@ -447,7 +415,7 @@ if(NpcHandler == nil) then
 						local parseInfo = { [TAG_PLAYERNAME] = getPlayerName(cid) }
 						msg = self:parseMessage(msg, parseInfo)
 
-						self:say(msg, cid)
+						self:say(msg)
 						self:releaseFocus(cid)
 					end
 				end
@@ -476,17 +444,8 @@ if(NpcHandler == nil) then
 	-- Makes the npc represented by this instance of NpcHandler say something.
 	--	This implements the currently set type of talkdelay.
 	--	shallDelay is a boolean value. If it is false, the message is not delayed. Default value is false.
-	function NpcHandler:say(message, focus, shallDelay)
-		local shallDelay = shallDelay or false
-		if(NPCHANDLER_TALKDELAY == TALKDELAY_NONE or not shallDelay) then
-			selfSay(message)
-			return
-		end
-
-		-- TODO: Add an event handling method for delayed messages
-		self.talkDelay = {
-			message = message,
-			time = os.time() + self.talkDelayTime
-		}
+	function NpcHandler:say(message)
+		selfSay(message)
+		time = os.time() + self.talkDelayTime
 	end
 end

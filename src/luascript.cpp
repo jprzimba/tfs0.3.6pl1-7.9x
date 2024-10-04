@@ -2031,6 +2031,9 @@ void LuaScriptInterface::registerFunctions()
 	//isSightClear(fromPos, toPos, floorCheck)
 	lua_register(m_luaState, "isSightClear", LuaScriptInterface::luaIsSightClear);
 
+	//isItemRune(itemid)
+	lua_register(m_luaState, "isItemRune", LuaScriptInterface::luaIsItemRune);
+
 	//isInArray(array, value[, caseSensitive = false])
 	lua_register(m_luaState, "isInArray", LuaScriptInterface::luaIsInArray);
 
@@ -7858,6 +7861,18 @@ int32_t LuaScriptInterface::luaIsSightClear(lua_State* L)
 	popPosition(L, fromPos);
 
 	lua_pushboolean(L, g_game.isSightClear(fromPos, toPos, floorCheck));
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaIsItemRune(lua_State* L)
+{
+	//isItemRune(itemid)
+	uint32_t itemid = popNumber(L);
+	const ItemType& it = Item::items[itemid];
+	if(it.isRune())
+		lua_pushboolean(L, true);
+	else
+		lua_pushboolean(L, false);
 	return 1;
 }
 

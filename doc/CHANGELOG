@@ -981,7 +981,6 @@
 		Item absorb abilities (Elf, OpenTibia SVN, Gesior)
 		House Doors not being updated when player changes name (Elf)
 		MySQL reconnecting- dirty way... (Elf)
-		Brackets not being removed from publicized NPC speak (Elf)
 		Old protocols support (OpenTibia SVN, Elf)
 		Waterpolo Ball being removed from Trasholder (Elf)
 		Account Manager variables and return values (Elf)

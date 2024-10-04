@@ -110,8 +110,7 @@ class NpcScript : public NpcEventsHandler
 
 	private:
 		NpcScriptInterface* m_interface;
-		int32_t m_onCreatureAppear, m_onCreatureDisappear, m_onCreatureMove, m_onCreatureSay,
-			m_onPlayerCloseChannel, m_onPlayerEndTrade, m_onThink;
+		int32_t m_onCreatureAppear, m_onCreatureDisappear, m_onCreatureMove, m_onCreatureSay, m_onThink;
 };
 
 enum InteractType_t
@@ -384,8 +383,6 @@ class Npc : public Creature
 		void doTurn(Direction dir);
 		void doMove(Direction dir);
 		void doMoveTo(Position pos);
-
-		void onPlayerCloseChannel(const Player* player);
 
 		void setCreatureFocus(Creature* creature);
 		NpcScriptInterface* getInterface();

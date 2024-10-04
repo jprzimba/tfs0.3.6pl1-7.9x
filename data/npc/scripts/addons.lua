@@ -20,12 +20,12 @@ function buyAddons(cid, message, keywords, parameters, node)
 	if isPlayerPremiumCallback == nil or (isPlayerPremiumCallback(cid) and premium) then
 		if doPlayerRemoveMoney(cid, cost) then
 			doPlayerAddAddons(cid, addon)
-			npcHandler:say('There, you are now able to use all addons!', cid)
+			npcHandler:say('There, you are now able to use all addons!')
 		else
-			npcHandler:say('Sorry, you do not have enough money.', cid)
+			npcHandler:say('Sorry, you do not have enough money.')
 		end
 	else
-		npcHandler:say('I only serve customers with premium accounts.', cid)
+		npcHandler:say('I only serve customers with premium accounts.')
 	end
 
 	keywordHandler:moveUp(1)

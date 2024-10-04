@@ -102,23 +102,23 @@ function creatureSayCallback(cid, type, msg)
 	if(msgcontains(msg, 'first rod') or msgcontains(msg, 'first wand')) then
 		if(isSorcerer(cid) or isDruid(cid)) then
 			if(getPlayerStorageValue(cid, 30002) <= 0) then
-				selfSay('So you ask me for a {' .. getItemNameById(items[getPlayerVocation(cid)]) .. '} to begin your advanture?', cid)
+				selfSay('So you ask me for a {' .. getItemNameById(items[getPlayerVocation(cid)]) .. '} to begin your advanture?')
 				talkState[talkUser] = 1
 			else
-				selfSay('What? I have already gave you one {' .. getItemNameById(items[getPlayerVocation(cid)]) .. '}!', cid)
+				selfSay('What? I have already gave you one {' .. getItemNameById(items[getPlayerVocation(cid)]) .. '}!')
 			end
 		else
-			selfSay('Sorry, you aren\'t a druid either a sorcerer.', cid)
+			selfSay('Sorry, you aren\'t a druid either a sorcerer.')
 		end
 	elseif(msgcontains(msg, 'yes')) then
 		if(talkState[talkUser] == 1) then
 			doPlayerAddItem(cid, items[getPlayerVocation(cid)], 1)
-			selfSay('Here you are young adept, take care yourself.', cid)
+			selfSay('Here you are young adept, take care yourself.')
 			setPlayerStorageValue(cid, 30002, 1)
 		end
 		talkState[talkUser] = 0
 	elseif(msgcontains(msg, 'no') and isInArray({1}, talkState[talkUser])) then
-		selfSay('Ok then.', cid)
+		selfSay('Ok then.')
 		talkState[talkUser] = 0
 	end
 
