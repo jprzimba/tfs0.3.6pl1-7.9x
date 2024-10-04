@@ -1359,26 +1359,24 @@ uint32_t Tile::__getItemTypeCount(uint16_t itemId, int32_t subType /*= -1*/, boo
 	Thing* thing = NULL;
 	for(uint32_t i = 0; i < getThingCount(); ++i)
 	{
-		if(!(thing = __getThing(i)))
-			continue;
+		thing = __getThing(i);
 
 		if(const Item* item = thing->getItem())
 		{
-			if(item->getID() != itemId || (subType != -1 && subType != item->getSubType()))
-				continue;
-
-			if(!itemCount)
+			if(item->getID() == itemId && (subType == -1 || subType == item->getSubType()))
 			{
-				if(item->isRune())
-					count+= item->getCharges();
-				else
+				if(itemCount)
 					count+= item->getItemCount();
+				else
+				{
+					if(item->isRune())
+						count+= item->getCharges();
+					else
+						count+= item->getItemCount();
+				}
 			}
-			else
-				count+= item->getItemCount();
 		}
 	}
-
 	return count;
 }
 

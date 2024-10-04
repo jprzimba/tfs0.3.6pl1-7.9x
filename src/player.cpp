@@ -2922,51 +2922,46 @@ int32_t Player::__getLastIndex() const
 
 uint32_t Player::__getItemTypeCount(uint16_t itemId, int32_t subType /*= -1*/, bool itemCount /*= true*/) const
 {
-	Item* item = NULL;
-	Container* container = NULL;
-
 	uint32_t count = 0;
-	for(int32_t i = SLOT_FIRST; i < SLOT_LAST; ++i)
+
+	std::list<const Container*> listContainer;
+	ItemList::const_iterator cit;
+	Container* tmpContainer = NULL;
+	Item* item = NULL;
+	for(int i = SLOT_FIRST; i < SLOT_LAST; i++)
 	{
-		if(!(item = inventory[i]))
-			continue;
-
-		if(item->getID() == itemId)
-			count += Item::countByType(item, subType, itemCount);
-
-		if(!(container = item->getContainer()))
-			continue;
-
-		for(ContainerIterator it = container->begin(), end = container->end(); it != end; ++it)
+		if((item = inventory[i]))
 		{
-			if((*it)->getID() == itemId)
-				count += Item::countByType(*it, subType, itemCount);
+			if(item->getID() == itemId && (subType == -1 || subType == item->getSubType()))
+			{
+				if(itemCount)
+					count += item->getItemCount();
+				else
+				{
+					if(item->isRune())
+						count += item->getCharges();
+					else
+						count += item->getItemCount();
+				}
+			}
+
+			if((tmpContainer = item->getContainer()))
+				listContainer.push_back(tmpContainer);
 		}
 	}
 
-	return count;
-
-}
-
-std::map<uint32_t, uint32_t>& Player::__getAllItemTypeCount(std::map<uint32_t,
-	uint32_t>& countMap, bool itemCount/* = true*/) const
-{
-	Item* item = NULL;
-	Container* container = NULL;
-	for(int32_t i = SLOT_FIRST; i < SLOT_LAST; ++i)
+	while(listContainer.size() > 0)
 	{
-		if(!(item = inventory[i]))
-			continue;
-
-		countMap[item->getID()] += Item::countByType(item, -1, itemCount);
-		if(!(container = item->getContainer()))
-			continue;
-
-		for(ContainerIterator it = container->begin(), end = container->end(); it != end; ++it)
-			countMap[(*it)->getID()] += Item::countByType(*it, -1, itemCount);
+		const Container* container = listContainer.front();
+		listContainer.pop_front();
+		count += container->__getItemTypeCount(itemId, subType, itemCount);
+		for(cit = container->getItems(); cit != container->getEnd(); ++cit)
+		{
+			if((tmpContainer = (*cit)->getContainer()))
+				listContainer.push_back(tmpContainer);
+		}
 	}
-
-	return countMap;
+	return count;
 }
 
 void Player::postAddNotification(Creature* actor, Thing* thing, const Cylinder* oldParent,

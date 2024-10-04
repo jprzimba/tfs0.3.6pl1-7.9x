@@ -1707,12 +1707,15 @@ void ProtocolGame::sendContainer(uint32_t cid, const Container* container, bool 
 		msg->AddItemId(container);
 		msg->AddString(container->getName());
 		msg->AddByte(container->capacity());
-
 		msg->AddByte(hasParent ? 0x01 : 0x00);
-		msg->AddByte(std::min(container->size(), (uint32_t)255));
+		if(container->size() > 255)
+			msg->AddByte(255);
+		else
+			msg->AddByte(container->size());
 
-		ItemList::const_iterator cit = container->getItems();
-		for(uint32_t i = 0; cit != container->getEnd() && i < 255; ++cit, ++i)
+		ItemList::const_iterator cit;
+		uint32_t i = 0;
+		for(cit = container->getItems(); cit != container->getEnd() && i < 255; ++cit, ++i)
 			msg->AddItem(*cit);
 	}
 }
@@ -1939,7 +1942,7 @@ void ProtocolGame::sendFYIBox(const std::string& message)
 }
 
 //tile
-void ProtocolGame::sendAddTileItem(const Tile* tile, const Position& pos, uint32_t stackpos, const Item* item)
+void ProtocolGame::sendAddTileItem(const Tile* tile, const Position& pos, const Item* item)
 {
 	if(!canSee(pos))
 		return;
@@ -1948,7 +1951,7 @@ void ProtocolGame::sendAddTileItem(const Tile* tile, const Position& pos, uint32
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
-		AddTileItem(msg, pos, stackpos, item);
+		AddTileItem(msg, pos, item);
 	}
 }
 
@@ -2670,14 +2673,10 @@ void ProtocolGame::AddCreatureLight(NetworkMessage_ptr msg, const Creature* crea
 }
 
 //tile
-void ProtocolGame::AddTileItem(NetworkMessage_ptr msg, const Position& pos, uint32_t stackpos, const Item* item)
+void ProtocolGame::AddTileItem(NetworkMessage_ptr msg, const Position& pos, const Item* item)
 {
-	if(stackpos >= 10)
-		return;
-
 	msg->AddByte(0x6A);
 	msg->AddPosition(pos);
-	msg->AddByte(stackpos);
 	msg->AddItem(item);
 }
 

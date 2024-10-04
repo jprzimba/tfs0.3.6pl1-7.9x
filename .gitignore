@@ -50,7 +50,6 @@ compile_commands.json
 
 # Ignore logs, databases, and temporary files
 *.log
-*.sql
 *.sqlite
 *.db
 

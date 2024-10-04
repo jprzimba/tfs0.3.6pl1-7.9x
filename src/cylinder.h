@@ -169,25 +169,25 @@ class Cylinder
 		  * \param thing the object to get the index value from
 		  * \returns the index of the object, returns -1 if not found
 		  */
-		virtual int32_t __getIndexOfThing(const Thing* thing) const {return -1;}
+		virtual int32_t __getIndexOfThing(const Thing* thing) const;
 
 		/**
 		  * Returns the first index
 		  * \returns the first index, if not implemented -1 is returned
 		  */
-		virtual int32_t __getFirstIndex() const {return -1;}
+		virtual int32_t __getFirstIndex() const;
 
 		/**
 		  * Returns the last index
 		  * \returns the last index, if not implemented -1 is returned
 		  */
-		virtual int32_t __getLastIndex() const {return -1;}
+		virtual int32_t __getLastIndex() const;
 
 		/**
 		  * Gets the object based on index
 		  * \returns the object, returns NULL if not found
 		  */
-		virtual Thing* __getThing(uint32_t index) const {return NULL;}
+		virtual Thing* __getThing(uint32_t index) const;
 
 		/**
 		  * Get the amount of items of a certain type
@@ -196,30 +196,20 @@ class Cylinder
 		  * \param itemCount if set to true it will only count items and not other subtypes like charges
 		  * \param returns the amount of items of the asked item type
 		  */
-		virtual uint32_t __getItemTypeCount(uint16_t itemId, int32_t subType = -1,
-			bool itemCount = true) const {return 0;}
-
-		/**
-		  * Get the amount of items of a all types
-		  * \param countMap a map to put the itemID:count mapping in
-		  * \param itemCount if set to true it will only count items and not other subtypes like charges
-		  * \param returns a map mapping item id to count (same as first argument)
-		  */
-		virtual std::map<uint32_t, uint32_t>& __getAllItemTypeCount(std::map<uint32_t,
-			uint32_t>& countMap, bool itemCount = true) const {return countMap;}
+		virtual uint32_t __getItemTypeCount(uint16_t itemId, int32_t subType = -1, bool itemCount = true) const;
 
 		/**
 		  * Adds an object to the cylinder without sending to the client(s)
 		  * \param thing is the object to add
 		  */
-		virtual void __internalAddThing(Thing* thing) {}
+		virtual void __internalAddThing(Thing* thing);
 
 		/**
 		  * Adds an object to the cylinder without sending to the client(s)
 		  * \param thing is the object to add
 		  * \param index points to the destination index (inventory slot/container position)
 		  */
-		virtual void __internalAddThing(uint32_t index, Thing* thing) {}
+		virtual void __internalAddThing(uint32_t index, Thing* thing);
 
 		virtual void __startDecaying() {}
 };
