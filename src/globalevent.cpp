@@ -388,17 +388,8 @@ int32_t GlobalEvent::executeEvent()
 		ScriptEnviroment* env = m_interface->getEnv();
 		if(m_scripted == EVENT_SCRIPT_BUFFER)
 		{
-			std::stringstream scriptstream;
-			if(m_eventType == GLOBAL_EVENT_NONE)
-				scriptstream << "local interval = " << m_interval << std::endl;
-			else if(m_eventType == GLOBAL_EVENT_TIMER)
-				scriptstream << "local time = " << m_interval << std::endl;
-
-			if(m_scriptData)
-				scriptstream << *m_scriptData;
-
 			bool result = true;
-			if(m_interface->loadBuffer(scriptstream.str()))
+			if(m_interface->loadBuffer(m_scriptData))
 			{
 				lua_State* L = m_interface->getState();
 				result = m_interface->getGlobalBool(L, "_result", true);

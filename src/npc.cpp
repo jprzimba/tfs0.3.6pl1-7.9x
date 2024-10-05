@@ -1578,7 +1578,6 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 				case ACTION_SCRIPT:
 				{
 					NpcScriptInterface interface;
-					interface.loadDirectory(getFilePath(FILE_TYPE_OTHER, "npc/lib"), false, false, this);
 					if(interface.reserveEnv())
 					{
 						ScriptEnviroment* env = m_interface->getEnv();

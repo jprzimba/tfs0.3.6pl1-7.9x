@@ -277,11 +277,12 @@ if(NpcHandler == nil) then
 					local parseInfo = { [TAG_PLAYERNAME] = getCreatureName(cid) }
 					msg = self:parseMessage(msg, parseInfo)
 
-					self:addFocus(cid)
 					self:say(msg)
 				end
 			end
 		end
+
+		self:changeFocus(cid)
 	end
 
 	-- Handles onCreatureAppear events. If you with to handle this yourself, please use the CALLBACK_CREATURE_APPEAR callback.

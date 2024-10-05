@@ -58,7 +58,7 @@ class Event
 {
 	public:
 		Event(LuaScriptInterface* _interface): m_interface(_interface),
-			m_scripted(EVENT_SCRIPT_FALSE), m_scriptId(0), m_scriptData(NULL) {}
+			m_scripted(EVENT_SCRIPT_FALSE), m_scriptId(0) {}
 		Event(const Event* copy);
 		virtual ~Event() {}
 
@@ -66,7 +66,7 @@ class Event
 		virtual bool isScripted() const {return m_scripted != EVENT_SCRIPT_FALSE;}
 
 		bool loadBuffer(const std::string& buffer);
-		bool checkBuffer(const std::string& base, const std::string& buffer) const;
+		bool checkBuffer(const std::string& buffer);
 
 		bool loadScript(const std::string& script, bool file);
 		bool checkScript(const std::string& script, bool file);
@@ -81,7 +81,7 @@ class Event
 		EventScript_t m_scripted;
 
 		int32_t m_scriptId;
-		std::string* m_scriptData;
+		std::string m_scriptData;
 };
 
 class CallBack

@@ -238,7 +238,7 @@ class LuaScriptInterface
 
 		bool loadBuffer(const std::string& text, Npc* npc = NULL);
 		bool loadFile(const std::string& file, Npc* npc = NULL);
-		bool loadDirectory(std::string dir, bool recursively, bool loadSystems, Npc* npc = NULL);
+		bool loadDirectory(const std::string& dir, Npc* npc = NULL);
 
 		std::string getName() {return m_interfaceName;}
 		std::string getScript(int32_t scriptId);
@@ -584,6 +584,7 @@ class LuaScriptInterface
 		static int32_t luaGetCreatureSummons(lua_State* L);
 		static int32_t luaGetHighscoreString(lua_State* L);
 		static int32_t luaIsItemRune(lua_State* L);
+		static int32_t luaGetItemName(lua_State* L);
 		static int32_t luaIsSightClear(lua_State* L);
 		static int32_t luaIsInArray(lua_State* L);
 		static int32_t luaAddEvent(lua_State* L);

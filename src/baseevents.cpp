@@ -29,8 +29,7 @@ bool BaseEvents::loadFromXml()
 		return false;
 	}
 
-	std::string path = getFilePath(FILE_TYPE_OTHER, std::string(scriptsName + "/lib/"));
-	if(!getInterface().loadDirectory(path, false, true))
+	if(!getInterface().loadDirectory(getFilePath(FILE_TYPE_OTHER, std::string(scriptsName + "/lib/"))))
 		std::cout << "[Warning - BaseEvents::loadFromXml] Cannot load " << scriptsName << "/lib/" << std::endl;
 
 	xmlDocPtr doc = xmlParseFile(getFilePath(FILE_TYPE_OTHER, std::string(scriptsName + "/" + scriptsName + ".xml")).c_str());
@@ -96,8 +95,7 @@ bool BaseEvents::parseEventNode(xmlNodePtr p, std::string scriptsPath, bool over
 			if(!readXMLString(p, "value", strValue))
 				parseXMLContentString(p->children, strValue);
 
-			if(success)
-				success = event->checkBuffer(getScriptBaseName(), strValue) && event->loadBuffer(strValue);
+			success = event->checkBuffer(strValue) && event->loadBuffer(strValue);
 		}
 		else if(tmpStrValue == "function")
 		{
@@ -120,13 +118,11 @@ bool BaseEvents::parseEventNode(xmlNodePtr p, std::string scriptsPath, bool over
 		if(asLowerCaseString(strValue) == "cdata")
 			parseXMLContentString(p->children, strValue);
 
-		if(success)
-			success = event->checkBuffer(getScriptBaseName(), strValue) && event->loadBuffer(strValue);
+		success = event->checkBuffer(strValue) && event->loadBuffer(strValue);
 	}
 	else if(readXMLString(p, "function", strValue))
 		success = event->loadFunction(strValue);
-	else if(parseXMLContentString(p->children, strValue) && event->checkBuffer(
-			getScriptBaseName(), strValue))
+	else if(parseXMLContentString(p->children, strValue) && event->checkBuffer(strValue))
 		success = event->loadBuffer(strValue);
 
 	if(!override && readXMLString(p, "override", strValue) && booleanString(strValue))
@@ -158,52 +154,20 @@ Event::Event(const Event* copy)
 
 bool Event::loadBuffer(const std::string& buffer)
 {
-	if(!m_interface)
+	if(!m_interface || m_scriptData != "")
 	{
-		std::cout << "[Error - Event::loadBuffer] m_interface = NULL" << std::endl;
-		return false;
-	}
-
-	if(m_scriptData)
-	{
-		std::cout << "[Error - Event::loadBuffer] m_scriptData != NULL" << std::endl;
+		std::cout << "[Error - Event::loadScriptFile] m_interface == NULL, scriptData != \"\"" << std::endl;
 		return false;
 	}
 
 	m_scripted = EVENT_SCRIPT_BUFFER;
-	m_scriptData = new std::string(buffer);
+	m_scriptData = buffer;
 	return true;
 }
 
-bool Event::checkBuffer(const std::string& base, const std::string& script) const
+bool Event::checkBuffer(const std::string& buffer)
 {
-	LuaScriptInterface testInterface("Test Interface");
-	testInterface.initState();
-
-	std::string path = getFilePath(FILE_TYPE_OTHER, std::string(base + "/lib/"));
-	if(!testInterface.loadDirectory(path, false, true))
-		std::cout << "[Warning - Event::checkBuffer] Cannot load " << path << std::endl;
-
-	if(m_scriptData)
-	{
-		std::cout << "[Error - Event::checkBuffer] m_scriptData != NULL" << std::endl;
-		return false;
-	}
-
-	//TODO: is it really the way we should do it?...
-	std::string buffer = script;
-	trimString(buffer);
-
-	std::stringstream scriptstream;
-	scriptstream << "function " << getScriptEventName() << "(" << getScriptEventParams() << ")" << std::endl << buffer << std::endl << "end";
-
-	buffer = scriptstream.str();
-	if(testInterface.loadBuffer(buffer))
-		return true;
-
-	std::cout << "[Error - Event::checkBuffer] Cannot load buffer (" << script << ")"
-		<< std::endl << testInterface.getLastError() << std::endl;
-	return false;
+	return true; //TODO
 }
 
 bool Event::loadScript(const std::string& script, bool file)
