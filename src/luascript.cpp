@@ -711,13 +711,24 @@ bool LuaScriptInterface::loadFile(const std::string& file, Npc* npc/* = NULL*/)
 	return true;
 }
 
-bool LuaScriptInterface::loadDirectory(const std::string& dir, Npc* npc/* = NULL*/)
+bool LuaScriptInterface::loadDirectory(std::string dir, bool recursively, bool loadSystems, Npc* npc/* = NULL*/)
 {
+	if(dir[dir.size() - 1] != '/')
+		dir += '/';
+
 	StringVec files;
 	for(boost::filesystem::directory_iterator it(dir), end; it != end; ++it)
 	{
-		std::string s = it->leaf();
-		if(!boost::filesystem::is_directory(it->status()) && (s.size() > 4 ? s.substr(s.size() - 4) : "") == ".lua")
+		std::string s = BOOST_DIR_ITER_FILENAME(it);
+		if(!loadSystems && s[0] == '_')
+			continue;
+
+		if(boost::filesystem::is_directory(it->status()))
+		{
+			if(recursively && !loadDirectory(dir + s, recursively, loadSystems, npc))
+				return false;
+		}
+		else if((s.size() > 4 ? s.substr(s.size() - 4) : "") == ".lua")
 			files.push_back(s);
 	}
 
@@ -833,7 +844,8 @@ bool LuaScriptInterface::initState()
 
 	luaL_openlibs(m_luaState);
 	registerFunctions();
-	if(!loadDirectory(getFilePath(FILE_TYPE_OTHER, "lib/"), NULL))
+
+	if(!loadDirectory(getFilePath(FILE_TYPE_OTHER, "lib/"), false, true))
 		std::cout << "[Warning - LuaScriptInterface::initState] Cannot load " << getFilePath(FILE_TYPE_OTHER, "lib/") << std::endl;
 
 	lua_newtable(m_luaState);
@@ -9780,10 +9792,19 @@ int32_t LuaScriptInterface::luaL_domodlib(lua_State* L)
 
 int32_t LuaScriptInterface::luaL_dodirectory(lua_State* L)
 {
+	//dodirectory(dir[, recursively = false[, loadSystems = true]])
+	bool recursively = false, loadSystems = true;
+	int32_t params = lua_gettop(L);
+	if(params > 2)
+		loadSystems = popBoolean(L);
+
+	if(params > 1)
+		recursively = popBoolean(L);
+
 	std::string dir = popString(L);
-	if(!getEnv()->getInterface()->loadDirectory(dir, NULL))
+	if(!getEnv()->getInterface()->loadDirectory(dir, recursively, loadSystems, NULL))
 	{
-		errorEx("Failed to load directory " + dir + ".");
+		errorEx("Failed to load directory " + dir);
 		lua_pushboolean(L, false);
 	}
 	else

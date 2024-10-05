@@ -1014,46 +1014,49 @@ bool Npc::canSee(const Position& pos) const
 void Npc::onCreatureAppear(const Creature* creature)
 {
 	Creature::onCreatureAppear(creature);
-	if(creature == this && walkTicks > 0)
-		addEventWalk();
-
 	if(creature == this)
 	{
+		if(walkTicks)
+			addEventWalk();
+
 		if(m_npcEventHandler)
 			m_npcEventHandler->onCreatureAppear(creature);
 
 		return;
 	}
 
-	//only players for script events
-	if(Player* player = const_cast<Player*>(creature->getPlayer()))
-	{
-		if(m_npcEventHandler)
-			m_npcEventHandler->onCreatureAppear(creature);
+	if(m_npcEventHandler)
+		m_npcEventHandler->onCreatureAppear(creature);
 
-		NpcState* npcState = getState(player);
-		if(npcState && canSee(player->getPosition()))
-		{
-			npcState->respondToCreature = player->getID();
-			onPlayerEnter(player, npcState);
-		}
+	//only players for script events
+	Player* player = const_cast<Player*>(creature->getPlayer());
+	if(!player)
+		return;
+
+	if(NpcState* npcState = getState(player))
+	{
+		npcState->respondToCreature = player->getID();
+		onPlayerEnter(player, npcState);
 	}
 }
 
 void Npc::onCreatureDisappear(const Creature* creature, bool isLogout)
 {
 	Creature::onCreatureDisappear(creature, isLogout);
-	if(Player* player = const_cast<Player*>(creature->getPlayer()))
-	{
-		if(m_npcEventHandler)
-			m_npcEventHandler->onCreatureDisappear(creature);
+	if(creature == this)
+		return;
 
-		NpcState* npcState = getState(player);
-		if(npcState)
-		{
-			npcState->respondToCreature = player->getID();
-			onPlayerLeave(player, npcState);
-		}
+	if(m_npcEventHandler)
+		m_npcEventHandler->onCreatureDisappear(creature);
+
+	Player* player = const_cast<Player*>(creature->getPlayer());
+	if(!player)
+		return;
+
+	if(NpcState* npcState = getState(player))
+	{
+		npcState->respondToCreature = player->getID();
+		onPlayerLeave(player, npcState);
 	}
 }
 
@@ -1168,14 +1171,17 @@ void Npc::onThink(uint32_t interval)
 	if((uint32_t)(MAX_RAND_RANGE / idleInterval) >= (uint32_t)random_range(0, MAX_RAND_RANGE))
 		idleResponse = true;
 
+	if(getTimeSinceLastMove() >= walkTicks)
+		addEventWalk();
+
 	isIdle = true;
 	for(StateList::iterator it = stateList.begin(); it != stateList.end();)
 	{
 		NpcState* npcState = *it;
-		Player* player = g_game.getPlayerByID(npcState->respondToCreature);
-
 		const NpcResponse* response = NULL;
 		bool closeConversation = false, idleTimeout = false;
+
+		Player* player = g_game.getPlayerByID(npcState->respondToCreature);
 		if(!npcState->isQueued)
 		{
 			if(!npcState->prevInteraction)
@@ -1203,15 +1209,15 @@ void Npc::onThink(uint32_t interval)
 			}
 			else
 			{
-				Player* nextPlayer = NULL;
+				Player* tmpPlayer = NULL;
 				while(!queueList.empty())
 				{
-					if((nextPlayer = g_game.getPlayerByID(*queueList.begin())))
+					if((tmpPlayer = g_game.getPlayerByID(*queueList.begin())))
 					{
-						if(NpcState* nextPlayerState = getState(nextPlayer, false))
+						if(NpcState* tmpPlayerState = getState(tmpPlayer, false))
 						{
-							nextPlayerState->respondToText = nextPlayerState->prevRespondToText;
-							nextPlayerState->isQueued = false;
+							tmpPlayerState->respondToText = tmpPlayerState->prevRespondToText;
+							tmpPlayerState->isQueued = false;
 							break;
 						}
 					}
@@ -1221,7 +1227,7 @@ void Npc::onThink(uint32_t interval)
 			}
 
 			delete *it;
-			stateList.erase(it++);
+			it = stateList.erase(it);
 			continue;
 		}
 
@@ -1453,6 +1459,8 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 						int32_t subType = -1;
 						if(iit.hasSubType())
 							subType = npcState->subType;
+						else
+							subType = -1;
 
 						if(g_game.getMoney(player) >= moneyCount)
 						{
@@ -1505,9 +1513,11 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 					const ItemType& iit = Item::items[npcState->itemId];
 					if(iit.id != 0)
 					{
-						int32_t subType = -1;
+						int32_t subType;
 						if(iit.hasSubType())
 							subType = npcState->subType;
+						else
+							subType = -1;
 
 						int32_t itemCount = player->__getItemTypeCount(itemId, subType);
 						if(itemCount >= npcState->amount)
@@ -1525,9 +1535,11 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 					const ItemType& iit = Item::items[itemId];
 					if(iit.id != 0)
 					{
-						int32_t subType = -1;
+						int32_t subType;
 						if(iit.hasSubType())
 							subType = npcState->subType;
+						else
+							subType = -1;
 
 						for(int32_t i = 0; i < npcState->amount; ++i)
 						{
@@ -1566,6 +1578,7 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 				case ACTION_SCRIPT:
 				{
 					NpcScriptInterface interface;
+					interface.loadDirectory(getFilePath(FILE_TYPE_OTHER, "npc/lib"), false, false, this);
 					if(interface.reserveEnv())
 					{
 						ScriptEnviroment* env = m_interface->getEnv();
