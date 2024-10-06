@@ -36,7 +36,6 @@
 		<element firePercent="100"/>
 		<element earthPercent="80"/>
 		<element energyPercent="20"/>
-		<element icePercent="-10"/>
 	</elements>
 	<immunities>
 		<immunity paralyze="1"/>
@@ -57,7 +56,6 @@
 		<item id="2647" chance="2222"/><!-- plate legs -->
 		<item id="2457" chance="3333"/><!-- steel helmet -->
 		<item id="2387" chance="4000"/><!-- double axe -->
-		<item id="7430" chance="400"/><!-- dragonbone staff -->
 		<item id="2397" chance="5000"/><!-- longsword -->
 		<item id="2546" countmax="13" chance="39000"/><!-- burst arrow -->
 		<item id="5877" countmax="1" chance="4000"/><!-- green dragon leather -->

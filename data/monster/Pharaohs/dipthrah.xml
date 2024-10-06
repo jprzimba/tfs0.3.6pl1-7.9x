@@ -40,8 +40,6 @@
 	</defenses>
 	<elements>
 		<element physicalPercent="100"/>
-		<element deathPercent="100"/>
-		<element icePercent="30"/>
 	</elements>
 	<immunities>
 		<immunity invisible="1"/>

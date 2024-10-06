@@ -33,10 +33,7 @@
 		<element firePercent="100"/>
 		<element energyPercent="30"/>
 		<element earthPercent="25"/>
-		<element deathPercent="15"/>
 		<element physicalPercent="10"/>
-		<element icePercent="-20"/>
-		<element holyPercent="-10"/>
 	</elements>
 	<voices interval="5000" chance="10">
 		<voice sentence="Hot, eh?"/>

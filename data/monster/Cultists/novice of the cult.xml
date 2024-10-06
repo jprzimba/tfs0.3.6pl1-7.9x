@@ -34,12 +34,9 @@
 	</defenses>
 	<elements>
 		<element earthPercent="10"/>
-		<element icePercent="10"/>
-		<element holyPercent="10"/>
 		<element physicalPercent="-15"/>
 		<element energyPercent="-6"/>
 		<element firePercent="-5"/>
-		<element deathPercent="-5"/>
 	</elements>
 	<summons maxSummons="3">
 		<summon name="Chicken" interval="2000" chance="10000"/>

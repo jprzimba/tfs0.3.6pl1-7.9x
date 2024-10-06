@@ -34,8 +34,6 @@
 	<elements>
 		<element energyPercent="10"/>
 		<element earthPercent="-10"/>
-		<element holyPercent="5"/>
-		<element deathPercent="-15"/>
 	</elements>
 	<voices interval="5000" chance="10">
 		<voice sentence="Goblin Powahhh!"/>

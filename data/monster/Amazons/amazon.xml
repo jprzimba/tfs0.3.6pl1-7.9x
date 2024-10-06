@@ -26,7 +26,6 @@
 	<defenses armor="11" defense="11"/>
 	<elements>
 		<element physicalPercent="-8"/>
-		<element deathPercent="-7"/>
 	</elements>
 	<voices interval="5000" chance="10">
 		<voice sentence="Yeeee ha!"/>

@@ -64,7 +64,6 @@
 				<item id="5944" chance="10000"/><!-- soul orb -->
 				<item id="4851" chance="800"/><!-- life crystal -->
 				<item id="2207" chance="10000"/><!-- sword ring -->
-				<item id="7430" chance="50000"/><!-- dragonbone staff -->
 				<item id="2413" chance="4000"/><!-- broadsword -->
 			</inside>
 		</item>

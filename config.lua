@@ -202,7 +202,7 @@
 	-- monsterLootMessage 0 to disable, 1 - only party, 2 - only player, 3 - party or player (like Tibia's)
 	checkCorpseOwner = true
 	monsterLootMessage = 3
-	monsterLootMessageType = 25
+	monsterLootMessageType = 22
 
 	-- Ghost mode
 	ghostModeInvisibleEffect = false
@@ -264,7 +264,7 @@
 	rateStaminaLoss = 1
 	rateStaminaGain = 3
 	rateStaminaThresholdGain = 12
-	staminaRatingLimitTop = 41 * 60
+	staminaRatingLimitTop = 42 * 60
 	staminaRatingLimitBottom = 14 * 60
 	rateStaminaAboveNormal = 1.5
 	rateStaminaUnderNormal = 0.5

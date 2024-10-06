@@ -44,9 +44,6 @@
 		<element physicalPercent="25"/>
 		<element earthpercent="20"/>
 		<element energyPercent="20"/>
-		<element deathPercent="20"/>
-		<element icePercent="-25"/>
-		<element holyPercent="-10"/>
 	</elements>
 	<immunities>
 		<immunity lifedrain="1"/>
@@ -75,7 +72,6 @@
 		<item id="2164" chance="200"/><!-- might ring -->
 		<item id="2176" chance="3000"/><!-- orb -->
 		<item id="1982" chance="1300"/><!-- purple tome -->
-		<item id="7368" countmax="4" chance="1200"/><!-- assassin star -->
 		<item id="2165" chance="1400"/><!-- stealth ring -->
 		<item id="1987" chance="100000"><!-- bag -->
 			<inside>

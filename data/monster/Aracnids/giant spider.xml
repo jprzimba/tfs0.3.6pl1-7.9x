@@ -31,7 +31,6 @@
 	<elements>
 		<element earthPercent="100"/>
 		<element energyPercent="20"/>
-		<element icePercent="20"/>
 		<element firePercent="-10"/>
 	</elements>
 	<immunities>
@@ -60,8 +59,6 @@
 				<item id="2477" chance="500"/><!-- knight legs -->
 				<item id="2478" chance="10000"/><!-- brass legs -->
 				<item id="2169" chance="800"/><!-- time ring -->
-				<item id="7588" chance="500"/><!-- strong health potion -->
-				<item id="7901" chance="200"/><!-- lightning headband -->
 			</inside>
 		</item>
 	</loot>

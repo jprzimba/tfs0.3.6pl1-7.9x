@@ -54,9 +54,7 @@
 		<element firePercent="100"/>
 		<element earthPercent="100"/>
 		<element energyPercent="100"/>
-		<element deathPercent="60"/>
 		<element physicalPercent="40"/>
-		<element icePercent="-25"/>
 	</elements>
 	<immunities>
 		<immunity paralyze="1"/>

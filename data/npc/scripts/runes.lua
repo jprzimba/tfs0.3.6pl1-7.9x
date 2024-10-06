@@ -35,7 +35,7 @@ shopModule:addBuyableItem({'desintegrate'}, 2310, 80,  3, 'desintegreate rune')
 shopModule:addBuyableItemContainer({'bp ih'}, 2002, 2265, 1900, 1, 'backpack of intense healign rune')
 shopModule:addBuyableItemContainer({'bp uh'}, 2002, 2273, 3500, 1, 'backpack of ultimate healign rune')
 shopModule:addBuyableItemContainer({'bp sd'}, 2003, 2268, 7000, 1, 'backpack of sudden rune')
-shopModule:addBuyableItemContainer({'bp mp'}, 2001, 2006, 1000, 7, 'backpack of mana potions')
+shopModule:addBuyableItemContainer({'bp mp', 'bp mf'}, 2001, 2006, 1000, 7, 'backpack of mana fluid')
 
 shopModule:addBuyableItem({'wand of vortex', 'vortex'}, 2190, 500, 'wand of vortex')
 shopModule:addBuyableItem({'wand of dragonbreath', 'dragonbreath'}, 2191, 1000, 'wand of dragonbreath')

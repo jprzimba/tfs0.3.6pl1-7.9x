@@ -21,10 +21,6 @@
 		<attack name="melee" interval="2000" min="-10" max="-80"/>
 	</attacks>
 	<defenses armor="18" defense="19"/>
-	<elements>
-		<element deathPercent="100"/>
-		<element holyPercent="-20"/>
-	</elements>
 	<loot>
 		<item id="2148" countmax="25" chance="40000"/><!-- gold coin -->
 		<item id="2229" countmax="2" chance="9727"/><!-- skull -->

@@ -23,10 +23,8 @@
 	<defenses armor="7" defense="9"/>
 	<elements>
 		<element firePercent="7"/>
-		<element holyPercent="5"/>
 		<element earthPercent="-3"/>
 		<element energyPercent="-4"/>
-		<element deathPercent="-5"/>
 	</elements>
 	<voices interval="5000" chance="10">
 		<voice sentence="Brrrr"/>

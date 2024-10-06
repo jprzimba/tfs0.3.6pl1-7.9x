@@ -29,8 +29,6 @@
 		<element firePercent="20"/>
 		<element earthPercent="10"/>
 		<element energyPercent="5"/>
-		<element icePercent="-15"/>
-		<element deathPercent="-5"/>
 	</elements>
 	<voices interval="5000" chance="10">
 		<voice sentence="Hugah!"/>
@@ -47,7 +45,6 @@
 				<item id="2209" chance="3857"/><!-- club ring -->
 				<item id="2166" chance="1529"/><!-- power ring -->
 				<item id="2463" chance="1667"/><!-- plate armor -->
-				<item id="7618" chance="1467"/><!-- health potion -->
 			</inside>
 		</item>
 	</loot>

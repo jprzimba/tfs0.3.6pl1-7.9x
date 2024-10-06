@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <monster name="The Evil Eye" nameDescription="the Evil Eye" race="blood" experience="500" speed="240" manacost="0">
-	<health now="1200" max="1200"/>
+	<health now="1100" max="1100"/>
 	<look type="210" corpse="6037"/>
 	<targetchange interval="5000" chance="8"/>
 	<strategy attack="100" defense="0"/>
@@ -55,7 +55,6 @@
 	</defenses>
 	<elements>
 		<element earthPercent="100"/>
-		<element holyPercent="-20"/>
 	</elements>
 	<immunities>
 		<immunity invisible="1"/>

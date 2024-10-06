@@ -36,11 +36,8 @@
 		</defense>
 	</defenses>
 	<elements>
-		<element holyPercent="20"/>
-		<element icePercent="10"/>
 		<element physicalPercent="-10"/>
 		<element energyPercent="-7"/>
-		<element deathPercent="-5"/>
 	</elements>
 	<immunities>
 		<immunity paralyze="1"/>

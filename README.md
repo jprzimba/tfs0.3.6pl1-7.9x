@@ -4,10 +4,8 @@ This is a modified server based on **The Forgotten Server 0.3.6pl1**, designed t
 
 If you like the project, feel free to contribute with a pull request, and we will continue to keep the project updated.
 
-## Road Map
-- Unknow client random debugs.
-- Fix stamina minutes to 56 hours.
-- Replace runes subtype by charges.
+## Issues
+- You can use your [Issue Tracker](https://github.com/jprzimba/theforgottenserver0.3.6pl1_7.9_protocol/issues) to reporte bugs or request new feature.
 
 ## Developers of The Forgotten Server
 

@@ -45,7 +45,6 @@
 		</defense>
 	</defenses>
 	<elements>
-		<element icePercent="70"/>
 		<element earthPercent="40"/>
 	</elements>
 	<immunities>
