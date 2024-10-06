@@ -2034,6 +2034,12 @@ void LuaScriptInterface::registerFunctions()
 	//isItemRune(itemid)
 	lua_register(m_luaState, "isItemRune", LuaScriptInterface::luaIsItemRune);
 
+	//isItemFluidContainer(itemid)
+	lua_register(m_luaState, "isItemFluidContainer", LuaScriptInterface::luaIsItemFluidContainer);
+
+	//isItemStackable(itemid)
+	lua_register(m_luaState, "isItemStackable", LuaScriptInterface::luaIsItemStackable);
+
 	//getItemName(itemid)
 	lua_register(m_luaState, "getItemName", LuaScriptInterface::luaGetItemName);
 
@@ -7882,6 +7888,30 @@ int32_t LuaScriptInterface::luaIsItemRune(lua_State* L)
 	uint32_t itemid = popNumber(L);
 	const ItemType& it = Item::items[itemid];
 	if(it.isRune())
+		lua_pushboolean(L, true);
+	else
+		lua_pushboolean(L, false);
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaIsItemStackable(lua_State* L)
+{
+	//isItemStackable(itemid)
+	uint32_t itemid = popNumber(L);
+	const ItemType& it = Item::items[itemid];
+	if(it.stackable)
+		lua_pushboolean(L, true);
+	else
+		lua_pushboolean(L, false);
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaIsItemFluidContainer(lua_State* L)
+{
+	//isItemFluidContainer(itemid)
+	uint32_t itemid = popNumber(L);
+	const ItemType& it = Item::items[itemid];
+	if(it.isFluidContainer())
 		lua_pushboolean(L, true);
 	else
 		lua_pushboolean(L, false);

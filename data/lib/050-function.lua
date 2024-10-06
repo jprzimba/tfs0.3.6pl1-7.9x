@@ -592,11 +592,6 @@ function getItemLevelDoor(itemid)
 	return item and item.levelDoor or false
 end
 
-function isItemStackable(itemid)
-	local item = getItemInfo(itemid)
-	return item and item.stackable or false
-end
-
 function isItemDoor(itemid)
 	local item = getItemInfo(itemid)
 	return item and item.type == 5 or false
@@ -605,11 +600,6 @@ end
 function isItemContainer(itemid)
 	local item = getItemInfo(itemid)
 	return item and item.group == 2 or false
-end
-
-function isItemFluidContainer(itemid)
-	local item = getItemInfo(itemid)
-	return item and item.group == 12 or false
 end
 
 function isItemMovable(itemid)

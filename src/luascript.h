@@ -584,6 +584,8 @@ class LuaScriptInterface
 		static int32_t luaGetCreatureSummons(lua_State* L);
 		static int32_t luaGetHighscoreString(lua_State* L);
 		static int32_t luaIsItemRune(lua_State* L);
+		static int32_t luaIsItemFluidContainer(lua_State* L);
+		static int32_t luaIsItemStackable(lua_State* L);
 		static int32_t luaGetItemName(lua_State* L);
 		static int32_t luaIsSightClear(lua_State* L);
 		static int32_t luaIsInArray(lua_State* L);

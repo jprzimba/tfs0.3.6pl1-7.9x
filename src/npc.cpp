@@ -1655,7 +1655,7 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 		{
 			std::string responseString = formatResponse(player, npcState, response);
 			if(!responseString.empty())
-				doSay(responseString);
+				g_game.internalCreatureSay(this, SPEAK_SAY, responseString, false);
 		}
 		else
 		{

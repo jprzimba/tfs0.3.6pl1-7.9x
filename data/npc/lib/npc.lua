@@ -1,6 +1,24 @@
 -- Include the Advanced NPC System
 dofile(getDataDir() .. 'npc/lib/npcsystem/npcsystem.lua')
 
+function getCount(msg)
+	b, e = string.find(msg, "%d+")
+	
+	if b == nil or e == nil then
+		count = 1
+	else
+		count = tonumber(string.sub(msg, b, e))
+	end
+	
+	if count > 2000 then
+		count = 2000
+	elseif count == 0 then
+		count = 1
+	end
+	
+	return count
+end
+
 function selfIdle()
 	following = false
 	attacking = false
