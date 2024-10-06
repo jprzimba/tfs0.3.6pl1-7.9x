@@ -146,6 +146,52 @@ if(Modules == nil) then
 		return true
 	end
 
+	function StdModule.allBlessings(cid, message, keywords, parameters, node)
+		local npcHandler = parameters.npcHandler
+		if npcHandler == nil then
+			error('StdModule.allBlessings called without any npcHandler instance.')
+		end
+	
+		if not npcHandler:isFocused(cid) then
+			return false
+		end
+	
+		if isPlayerPremiumCallback(cid) or not getBooleanFromString(getConfigValue('blessingsOnlyPremium')) or not parameters.premium then
+			local price = parameters.baseCost
+			if getPlayerLevel(cid) > parameters.startLevel then
+				price = (price + ((math.min(parameters.endLevel, getPlayerLevel(cid)) - parameters.startLevel) * parameters.levelCost))
+			end
+	
+			local missingBlessings = {}
+			for i = 1, 5 do
+				if not getPlayerBlessing(cid, i) then
+					table.insert(missingBlessings, i)
+				end
+			end
+	
+			-- Se o jogador já tem todas as blessings
+			if #missingBlessings == 0 then
+				npcHandler:say("Gods have already blessed you with all blessings!")
+			else
+				local totalPrice = price * #missingBlessings
+	
+				if not doPlayerRemoveMoney(cid, totalPrice) then
+					npcHandler:say("You don't have enough money for all the blessings.")
+				else
+					for _, blessId in ipairs(missingBlessings) do
+						doPlayerAddBlessing(cid, blessId)
+					end
+					npcHandler:say("You have been blessed by all of the five gods!")
+				end
+			end
+		else
+			npcHandler:say('You need a premium account in order to be blessed.')
+		end
+	
+		npcHandler:resetNpc()
+		return true
+	end	
+
 	function StdModule.travel(cid, message, keywords, parameters, node)
 		local npcHandler = parameters.npcHandler
 		if(npcHandler == nil) then
@@ -1044,7 +1090,7 @@ if(Modules == nil) then
 		end
 
 		local subType = shopItem.subType or 1
-		local a, b = doNpcSellItem(cid, itemid, amount, subType, ignoreCap, inBackpacks, backpack)
+		local a, b = doNpcSellItem(cid, itemid, amount, totalCost)
 		if(a < amount) then
 			local msgId = MESSAGE_NEEDMORESPACE
 			if(a == 0) then
@@ -1068,7 +1114,6 @@ if(Modules == nil) then
 		local msg = self.npcHandler:getMessage(MESSAGE_BOUGHT)
 		doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, self.npcHandler:parseMessage(msg, parseInfo))
 
-		doPlayerRemoveMoney(cid, totalCost)
 		self.npcHandler.talkStart = os.time()
 
 		return true

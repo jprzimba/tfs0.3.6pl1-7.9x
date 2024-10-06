@@ -540,6 +540,7 @@ class LuaScriptInterface
 		static int32_t luaIsMovable(lua_State* L);
 		static int32_t luaGetContainerSize(lua_State* L);
 		static int32_t luaGetContainerCap(lua_State* L);
+		static int32_t luaGetContainerCapById(lua_State* L);
 		static int32_t luaGetContainerItem(lua_State* L);
 		static int32_t luaDoAddContainerItem(lua_State* L);
 		static int32_t luaCreateCombatObject(lua_State* L);

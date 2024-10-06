@@ -4,18 +4,8 @@ NpcSystem.parseParameters(npcHandler)
 local talkState = {}
 
 local itemsForSale = {
-    {name = "bag", id = 1987, cost = 8},
-    {name = "backpack", id = 1988, cost = 20},
-    {name = "rope", id = 2120, cost = 15},
-    {name = "shovel", id = 2554, cost = 50},
-    {name = "mace", id = 2398, cost = 30},
-    {name = "chain armor", id = 2464, cost = 60},
-    {name = "wooden shield", id = 2512, cost = 15},
-    {name = "brass shield", id = 2511, cost = 40},
-    {name = "leather boots", id = 2643, cost = 10},
-    {name = "brass helmet", id = 2460, cost = 25},
-    {name = "leather helmet", id = 2461, cost = 10},
-    {name = "torch", id = 2050, cost = 2}
+    {name = "parcel", id = 2595, cost = 15},
+    {name = "letter", id = 2597, cost = 10},
 }
 
 function onCreatureAppear(cid) npcHandler:onCreatureAppear(cid) end
@@ -28,7 +18,7 @@ function creatureSayCallback(cid, type, msg)
         return false
     end
     
-    local talkUser = 0 or cid
+    local talkUser = cid
     local selectedItem = nil
     local amount = getCount(msg)
 
@@ -47,11 +37,14 @@ function creatureSayCallback(cid, type, msg)
         local totalCost = selectedItem.cost * talkState[talkUser].amount
         doNpcSellItem(cid, selectedItem.id, talkState[talkUser].amount, totalCost)
         talkState[talkUser] = nil
-    elseif(msgcontains(msg, 'no') and talkState[talkUser] > 0) then
+    elseif msgcontains(msg, 'offer') or msgcontains(msg, 'help') then
+        selfSay('I sell parcel (15 gps) and letter (10 gps).')
+        talkState[talkUser] = nil
+    elseif msgcontains(msg, 'no') and talkState[talkUser] then
         selfSay('Maybe another time.')
         talkState[talkUser] = nil
     end
-    
+
     return true
 end
 

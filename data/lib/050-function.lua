@@ -609,15 +609,6 @@ function isCorpse(uid)
 	return item and item.corpseType ~= 0 or false
 end
 
-function getContainerCapById(itemid)
-	local item = getItemInfo(itemid)
-	if(not item or item.group ~= 2) then
-		return false
-	end
-
-	return item.maxItems
-end
-
 function getMonsterAttackSpells(name)
 	local monster = getMonsterInfo(name)
 	return monster and monster.attacks or false
