@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<npc name="Maria" script="furniture.lua" walkinterval="2000" floorchange="0">
+	<health now="800" max="800"/>
+	<look type="156" head="92" body="93" legs="92" feet="93" addons="3"/>
+	<parameters>
+		<parameter key="module_shop" value="1"/>
+		<parameter key="message_greet" value="Hello |PLAYERNAME|. I sell chairs, tables, plants, containers, pillows, tapestries and more. Everything for 500 gold pieces."/>
+	</parameters>
+</npc>
+

@@ -218,20 +218,12 @@ function getHouseTilesCount(houseId)
 	return getHouseInfo(houseId).tiles
 end
 
-function getItemNameById(itemid)
-	return getItemDescriptionsById(itemid).name
-end
-
 function getItemPluralNameById(itemid)
 	return getItemDescriptionsById(itemid).plural
 end
 
 function getItemArticleById(itemid)
 	return getItemDescriptionsById(itemid).article
-end
-
-function getItemName(uid)
-	return getItemDescriptions(uid).name
 end
 
 function getItemPluralName(uid)

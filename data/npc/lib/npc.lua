@@ -158,6 +158,34 @@ function selfGetPosition()
 	return t.x, t.y, t.z
 end
 
+function buyItems(cid, itemid, count, cost)
+	cost = count * cost
+	amount = count
+	if doPlayerRemoveMoney(cid, cost) then
+		if isItemStackable(itemid) then
+			while count > 100 do
+				doPlayerAddItem(cid, itemid, 100)
+				count = count - 100
+			end
+			
+			doPlayerAddItem(cid, itemid, count) -- add the last items, if there is left
+		else
+			while count > 0 do
+				doPlayerAddItem(cid, itemid, 1)
+				count = count - 1
+			end
+		end
+		
+		if amount <= 1 then
+			selfSay('Here is your '.. getItemName(itemid) .. '!')
+		else
+			selfSay('Here are your '.. amount ..' '.. getItemName(itemid) .. 's!')		
+		end
+	else
+		selfSay('Sorry, you do not have enough money.')
+	end
+end
+
 msgcontains = doMessageCheck
 moveToPosition = selfMoveTo
 moveToCreature = selfMoveToCreature
