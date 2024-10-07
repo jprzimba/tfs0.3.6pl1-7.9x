@@ -97,6 +97,7 @@
 		* Only mysql and sqlite support. (Tryller)
 		* Fix isItemStackable and isItemFluidContainer based on hard coded instead of lua. (Tryller)
 		* Fix stamina system with 56 hours instead of 42. (Tryller)
+		* Fix PlayerCustomFlag_HasFullLight not working properly. (Tryller)
 		* Replace getItemWeight(uid[, precise = true]) with new one getItemWeight(itemid, count, <optional: default: 1> precise). (Tryller)
 		* Replace account name with account number. (Tryller)
 		* Replace randomize ground with hard coded (need to be fixed). (Tryller)
