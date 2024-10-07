@@ -5,7 +5,7 @@
 
 #include "../src/gui_resources.rc"
 
-A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "TheForgottenServer-debug.ico"
+A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "TheForgottenServer-console-debug.ico"
 
 //
 // TO CHANGE VERSION INFORMATION, EDIT PROJECT OPTIONS...
