@@ -58,22 +58,16 @@
 		<item id="2666" countmax="3" chance="20000"/><!-- meat -->
 		<item id="2671" countmax="2" chance="50000"/><!-- ham -->
 		<item id="2230" chance="12500"/><!-- bone -->
-		<item id="7427" chance="3500"/><!-- chaos mace -->
 		<item id="2532" chance="4000"/><!-- ancient shield -->
 		<item id="6500" countmax="1" chance="2500"/><!-- demonic essence -->
 		<item id="2387" chance="3333"/><!-- double axe -->
-		<item id="1987" chance="100000"><!-- bag -->
-			<inside>
-				<item id="7419" chance="1100"/><!-- dreaded cleaver -->
-				<item id="5944" countmax="1" chance="1818"/><!-- soul orb -->
-				<item id="2457" chance="2857"/><!-- steel helmet -->
-				<item id="6300" chance="1429"/><!-- death ring -->
-				<item id="2477" chance="3333"/><!-- knight legs -->
-				<item id="2195" chance="1800"/><!-- boots of haste -->
-				<item id="6529" countmax="5" chance="1000"/><!-- infernal bolt -->
-				<item id="6526" chance="1333"/><!-- skeleton decoration -->
-				<item id="5810" chance="667"/><!-- pirate voodoo doll -->
-			</inside>
-		</item>
+		<item id="5944" countmax="1" chance="1818"/><!-- soul orb -->
+		<item id="2457" chance="2857"/><!-- steel helmet -->
+		<item id="6300" chance="1429"/><!-- death ring -->
+		<item id="2477" chance="3333"/><!-- knight legs -->
+		<item id="2195" chance="1800"/><!-- boots of haste -->
+		<item id="6529" countmax="5" chance="1000"/><!-- infernal bolt -->
+		<item id="6526" chance="1333"/><!-- skeleton decoration -->
+		<item id="5810" chance="667"/><!-- pirate voodoo doll -->
 	</loot>
 </monster>

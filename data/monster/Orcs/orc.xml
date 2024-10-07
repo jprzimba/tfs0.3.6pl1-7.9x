@@ -37,11 +37,7 @@
 		<item id="2484" chance="10000"/><!-- studded armor -->
 		<item id="2480" chance="10000"/><!-- legion helmet -->
 		<item id="2385" chance="10000"/><!-- sabre -->
-		<item id="1987" chance="100000"><!-- bag -->
-			<inside>
-				<item id="2526" chance="10000"/><!-- studded shield -->
-				<item id="2386" chance="10000"/><!-- axe -->
-			</inside>
-		</item>
+		<item id="2526" chance="10000"/><!-- studded shield -->
+		<item id="2386" chance="10000"/><!-- axe -->
 	</loot>
 </monster>

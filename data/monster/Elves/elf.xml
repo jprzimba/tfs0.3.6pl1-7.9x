@@ -43,14 +43,10 @@
 		<item id="2478" chance="4000"/><!-- brass legs -->
 		<item id="2643" chance="25000"/><!-- leather boots -->
 		<item id="2005" chance="6666"/><!-- bucket -->
-		<item id="1987" chance="100000"><!-- bag -->
-			<inside>
-				<item id="2397" chance="5000"/><!-- longsword -->
-				<item id="2674" countmax="4" chance="800000"/><!-- red apple -->
-				<item id="2642" chance="9000"/><!-- sandals -->
-				<item id="2456" chance="6666"/><!-- bow -->
-				<item id="5921" countmax="1" chance="5000"/><!-- heaven blossom -->
-			</inside>
-		</item>
+		<item id="2397" chance="5000"/><!-- longsword -->
+		<item id="2674" countmax="4" chance="800000"/><!-- red apple -->
+		<item id="2642" chance="9000"/><!-- sandals -->
+		<item id="2456" chance="6666"/><!-- bow -->
+		<item id="5921" countmax="1" chance="5000"/><!-- heaven blossom -->
 	</loot>
 </monster>

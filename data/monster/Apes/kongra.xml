@@ -38,14 +38,10 @@
 	<loot>
 		<item id="2148" countmax="40" chance="100000"/><!-- gold coin -->
 		<item id="5883" chance="1000"/><!-- ape fur -->
-		<item id="1987" chance="100000"><!-- bag -->
-			<inside>
-				<item id="2676" countmax="11" chance="5000"/><!-- banana -->
-				<item id="2200" chance="2000"/><!-- protection amulet -->
-				<item id="2209" chance="3857"/><!-- club ring -->
-				<item id="2166" chance="1529"/><!-- power ring -->
-				<item id="2463" chance="1667"/><!-- plate armor -->
-			</inside>
-		</item>
+		<item id="2676" countmax="11" chance="5000"/><!-- banana -->
+		<item id="2200" chance="2000"/><!-- protection amulet -->
+		<item id="2209" chance="3857"/><!-- club ring -->
+		<item id="2166" chance="1529"/><!-- power ring -->
+		<item id="2463" chance="1667"/><!-- plate armor -->
 	</loot>
 </monster>

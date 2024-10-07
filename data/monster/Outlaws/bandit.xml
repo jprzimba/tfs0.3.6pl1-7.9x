@@ -35,10 +35,6 @@
 		<item id="2484" chance="20000"/><!-- studded armor -->
 		<item id="2530" chance="6666"/><!-- copper shield -->
 		<item id="2649" chance="10000"/><!-- leather legs -->
-		<item id="1987" chance="100000"><!-- bag -->
-			<inside>
-				<item id="2787" countmax="2" chance="20000"/><!-- white mushroom -->
-			</inside>
-		</item>
+		<item id="2787" countmax="2" chance="20000"/><!-- white mushroom -->
 	</loot>
 </monster>

@@ -52,12 +52,8 @@
 		<item id="2654" chance="35000"/><!-- cape -->
 		<item id="2152" countmax="1" chance="50000"/><!-- platinum coin -->
 		<item id="2187" chance="1111"/><!-- wand of inferno -->
-		<item id="1987" chance="100000"><!-- bag -->
-			<inside>
-				<item id="2148" countmax="65" chance="100000"/><!-- gold coin -->
-				<item id="6500" countmax="1" chance="2500"/><!-- demonic essence -->
-				<item id="2153" chance="1666"/><!-- violet gem -->
-			</inside>
-		</item>
+		<item id="2148" countmax="65" chance="100000"/><!-- gold coin -->
+		<item id="6500" countmax="1" chance="2500"/><!-- demonic essence -->
+		<item id="2153" chance="1666"/><!-- violet gem -->
 	</loot>
 </monster>

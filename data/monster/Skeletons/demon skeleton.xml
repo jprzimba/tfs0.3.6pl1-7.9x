@@ -36,13 +36,9 @@
 		<item id="2515" chance="400"/><!-- guardian shield -->
 		<item id="2178" chance="1000"/><!-- mind stone -->
 		<item id="2050" chance="10000"/><!-- torch -->
-		<item id="1987" chance="100000"><!-- bag -->
-			<inside>
-				<item id="2417" chance="5000"/><!-- battle hammer -->
-				<item id="2482" chance="2857"/><!-- studded helmet -->
-				<item id="2194" chance="700"/><!-- mysterious fetish -->
-				<item id="2398" chance="10000"/><!-- mace -->
-			</inside>
-		</item>
+		<item id="2417" chance="5000"/><!-- battle hammer -->
+		<item id="2482" chance="2857"/><!-- studded helmet -->
+		<item id="2194" chance="700"/><!-- mysterious fetish -->
+		<item id="2398" chance="10000"/><!-- mace -->
 	</loot>
 </monster>

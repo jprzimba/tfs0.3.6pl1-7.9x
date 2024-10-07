@@ -56,7 +56,6 @@
 		<item id="2510" countmax="1" chance="2000"/><!-- plate shield -->
 		<item id="2145" countmax="1" chance="200"/><!-- small diamond -->
 		<item id="2457" countmax="1" chance="3000"/><!-- steel helmet -->
-		<item id="7366" countmax="4" chance="1500"/><!-- viper star -->
 		<item id="2509" countmax="1" chance="1000"/><!-- steel shield -->
 		<item id="2050" countmax="2" chance="30000"/><!-- torch -->
 	</loot>

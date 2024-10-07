@@ -50,7 +50,4 @@
 		<voice sentence="Its nothing but a dream!"/>
 		<voice sentence="Give in!"/>
 	</voices>
-	<loot>
-		<item id="2148" countmax="20" chance="100000"/><!-- gold coin -->
-	</loot>
 </monster>

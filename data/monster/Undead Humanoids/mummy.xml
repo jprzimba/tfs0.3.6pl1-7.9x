@@ -49,14 +49,10 @@
 		<item id="2411" chance="2857"/><!-- poison dagger -->
 		<item id="2529" chance="2557"/><!-- black shield -->
 		<item id="5914" countmax="1" chance="5000"/><!-- yellow piece of cloth -->
-		<item id="1987" chance="100000"><!-- bag -->
-			<inside>
-				<item id="2529" chance="1428"/><!-- black shield -->
-				<item id="2144" countmax="2" chance="5000"/><!-- black pearl -->
-				<item id="2124" chance="2000"/><!-- crystal ring -->
-				<item id="2169" chance="1333"/><!-- time ring -->
-				<item id="2170" chance="2500"/><!-- silver amulet -->
-			</inside>
-		</item>
+		<item id="2529" chance="1428"/><!-- black shield -->
+		<item id="2144" countmax="2" chance="5000"/><!-- black pearl -->
+		<item id="2124" chance="2000"/><!-- crystal ring -->
+		<item id="2169" chance="1333"/><!-- time ring -->
+		<item id="2170" chance="2500"/><!-- silver amulet -->
 	</loot>
 </monster>

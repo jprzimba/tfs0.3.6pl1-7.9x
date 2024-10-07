@@ -54,7 +54,7 @@
 	</voices>
 	<loot>
 		<item id="2148" countmax="62" chance="100000"/><!-- gold coin -->
-		<item id="2188" chance="1538"/><!-- wand of decay -->
+		<item id="2188" chance="1538"/><!-- wand of plague -->
 		<item id="2675" countmax="5" chance="10000"/><!-- orange -->
 		<item id="2676" countmax="12" chance="10000"/><!-- banana -->
 		<item id="2162" chance="2322"/><!-- magic lightwand -->

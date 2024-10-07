@@ -41,13 +41,9 @@
 		<item id="2484" chance="10000"/><!-- studded armor -->
 		<item id="2456" chance="10000"/><!-- bow -->
 		<item id="2681" chance="20000"/><!-- grapes -->
-		<item id="1987" chance="6666"><!-- bag -->
-			<inside>
-				<item id="2148" countmax="5" chance="80000"/><!-- gold coin -->
-				<item id="2642" chance="5500"/><!-- sandals -->
-				<item id="2397" chance="4000"/><!-- longsword -->
-				<item id="5921" countmax="1" chance="5000"/><!-- heaven blossom -->
-			</inside>
-		</item>
+		<item id="2148" countmax="5" chance="80000"/><!-- gold coin -->
+		<item id="2642" chance="5500"/><!-- sandals -->
+		<item id="2397" chance="4000"/><!-- longsword -->
+		<item id="5921" countmax="1" chance="5000"/><!-- heaven blossom -->
 	</loot>
 </monster>

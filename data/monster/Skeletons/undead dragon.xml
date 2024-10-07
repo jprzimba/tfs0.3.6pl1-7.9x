@@ -72,13 +72,9 @@
 		<item id="2413" chance="800"/><!-- dragon scale mail -->
 		<item id="2413" chance="1000"/><!-- war axe -->
 		<item id="2413" chance="4000"/><!-- underworld rod -->
-		<item id="1987" chance="100000"><!-- bag -->
-			<inside>
-				<item id="6500" countmax="1" chance="1818"/><!-- demonic essence -->
-				<item id="5944" countmax="1" chance="1538"/><!-- soul orb -->
-				<item id="2413" chance="4000"/><!-- hardened bone -->
-				<item id="2547" countmax="15" chance="4000"/><!-- power bolt -->
-			</inside>
-		</item>
+		<item id="6500" countmax="1" chance="1818"/><!-- demonic essence -->
+		<item id="5944" countmax="1" chance="1538"/><!-- soul orb -->
+		<item id="2413" chance="4000"/><!-- hardened bone -->
+		<item id="2547" countmax="15" chance="4000"/><!-- power bolt -->
 	</loot>
 </monster>

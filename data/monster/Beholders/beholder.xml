@@ -60,19 +60,15 @@
 		<item id="3976" countmax="10" chance="50000"/><!-- worm -->
 		<item id="2148" countmax="52" chance="100000"/><!-- gold coin -->
 		<item id="2175" chance="4000"/><!-- spellbook -->
-		<item id="2181" chance="1333"/><!-- terra rod -->
+		<item id="2181" chance="1333"/><!-- quagmire rod -->
 		<item id="2509" chance="3333"/><!-- steel shield -->
 		<item id="2377" chance="2000"/><!-- two handed sword -->
 		<item id="3972" chance="100"/><!-- beholder helmet -->
-		<item id="1987" chance="90000"><!-- bag -->
-			<inside>
-				<item id="2512" chance="3000"/><!-- wooden shield -->
-				<item id="2394" chance="5000"/><!-- morning star -->
-				<item id="2148" countmax="12" chance="100000"/><!-- gold coin -->
-				<item id="2518" chance="1000"/><!-- beholder shield -->
-				<item id="2397" chance="6666"/><!-- longsword -->
-				<item id="5898" countmax="1" chance="556"/><!-- beholder eye -->
-			</inside>
-		</item>
+		<item id="2512" chance="3000"/><!-- wooden shield -->
+		<item id="2394" chance="5000"/><!-- morning star -->
+		<item id="2148" countmax="12" chance="100000"/><!-- gold coin -->
+		<item id="2518" chance="1000"/><!-- beholder shield -->
+		<item id="2397" chance="6666"/><!-- longsword -->
+		<item id="5898" countmax="1" chance="556"/><!-- beholder eye -->
 	</loot>
 </monster>

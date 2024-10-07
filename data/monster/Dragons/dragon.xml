@@ -59,17 +59,13 @@
 		<item id="2397" chance="5000"/><!-- longsword -->
 		<item id="2546" countmax="13" chance="39000"/><!-- burst arrow -->
 		<item id="5877" countmax="1" chance="4000"/><!-- green dragon leather -->
-		<item id="1987" chance="59000"><!-- bag -->
-			<inside>
-				<item id="2187" chance="1111"/><!-- wand of inferno -->
-				<item id="2148" countmax="25" chance="100000"/><!-- gold coin -->
-				<item id="2516" chance="600"/><!-- dragon shield -->
-				<item id="2145" countmax="3" chance="1538"/><!-- small diamond -->
-				<item id="2177" chance="2000"/><!-- life crystal -->
-				<item id="2413" chance="6666"/><!-- broadsword -->
-				<item id="2409" chance="509"/><!-- serpent sword -->
-				<item id="5920" countmax="1" chance="5000"/><!-- green dragon scale -->
-			</inside>
-		</item>
+		<item id="2187" chance="1111"/><!-- wand of inferno -->
+		<item id="2148" countmax="25" chance="100000"/><!-- gold coin -->
+		<item id="2516" chance="600"/><!-- dragon shield -->
+		<item id="2145" countmax="3" chance="1538"/><!-- small diamond -->
+		<item id="2177" chance="2000"/><!-- life crystal -->
+		<item id="2413" chance="6666"/><!-- broadsword -->
+		<item id="2409" chance="509"/><!-- serpent sword -->
+		<item id="5920" countmax="1" chance="5000"/><!-- green dragon scale -->
 	</loot>
 </monster>
