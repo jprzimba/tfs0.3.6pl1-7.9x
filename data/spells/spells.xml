@@ -17,9 +17,6 @@
 	<rune name="Heavy Magic Missile" id="2311" allowfaruse="1" charges="10" lvl="25" exhaustion="2000" maglv="3" needtarget="1" blocktype="solid" event="script" value="attack/heavy magic missile.lua"/>
 	<rune name="Explosion" id="2313" allowfaruse="1" charges="6" lvl="31" maglv="6" exhaustion="2000" blocktype="solid" event="script" value="attack/explosion.lua"/>
 	<rune name="Sudden Death" id="2268" allowfaruse="1" charges="3" lvl="45" maglv="15" exhaustion="2000" needtarget="1" blocktype="solid" event="script" value="attack/sudden death.lua"/>
-	<rune name="Stone Shower" id="2288" allowfaruse="1" charges="4" lvl="28" maglv="4" exhaustion="2000" event="script" value="attack/stone shower.lua"/>
-	<rune name="Thunderstorm" id="2315" allowfaruse="1" charges="4" lvl="28" maglv="4" exhaustion="2000" event="script" value="attack/thunderstorm.lua"/>
-	<rune name="Stalagmite" id="2292" allowfaruse="1" charges="10" lvl="24" maglv="3" exhaustion="2000" needtarget="1" event="script" value="attack/stalagmite.lua"/>
 
 	<!-- Healing Runes -->
 	<rune name="Antidote Rune" id="2266" allowfaruse="1" charges="1" lvl="15" maglv="0" exhaustion="1000" aggressive="0" needtarget="1" blocktype="solid" event="script" value="healing/antidote rune.lua"/>
@@ -45,12 +42,6 @@
 	</rune>
 
 	<!-- Attack Spells -->
-	<instant name="Death Strike" words="exori mort" lvl="16" mana="20" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="2000" needlearn="0" event="script" value="attack/death strike.lua">
-		<vocation id="1"/>
-		<vocation id="2"/>
-		<vocation id="5"/>
-		<vocation id="6"/>
-	</instant>
 	<instant name="Flame Strike" words="exori flam" lvl="12" mana="20" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="2000" needlearn="0" event="script" value="attack/flame strike.lua">
 		<vocation id="1"/>
 		<vocation id="2"/>
@@ -63,17 +54,9 @@
 		<vocation id="5"/>
 		<vocation id="6"/>
 	</instant>
-	<instant name="Whirlwind Throw" words="exori hur" lvl="15" mana="40" prem="1" range="5" needtarget="1" blockwalls="1" needweapon="1" exhaustion="2000" needlearn="0" event="script" value="attack/whirlwind throw.lua">
-		<vocation id="4"/>
-		<vocation id="8"/>
-	</instant>
 	<instant name="Fire Wave" words="exevo flam hur" lvl="18" mana="25" direction="1" exhaustion="2000" needlearn="0" event="script" value="attack/fire wave.lua">
 		<vocation id="1"/>
 		<vocation id="5"/>
-	</instant>
-	<instant name="Ethereal Spear" words="exori con" lvl="23" mana="25" prem="1" range="5" needtarget="1" exhaustion="2000" blockwalls="1" needlearn="0" event="script" value="attack/ethereal spear.lua">
-		<vocation id="3"/>
-		<vocation id="7"/>
 	</instant>
 	<instant name="Energy Beam" words="exevo vis lux" lvl="23" mana="40" direction="1" exhaustion="2000" needlearn="0" event="script" value="attack/energy beam.lua">
 		<vocation id="1"/>
@@ -83,10 +66,6 @@
 		<vocation id="1"/>
 		<vocation id="5"/>
 	</instant>
-	<instant name="Groundshaker" words="exori mas" lvl="33" mana="160" prem="1" needweapon="1" exhaustion="2000" needlearn="0" event="script" value="attack/groundshaker.lua">
-		<vocation id="4"/>
-		<vocation id="8"/>
-	</instant>
 	<instant name="Berserk" words="exori" lvl="35" mana="115" prem="1" needweapon="1" exhaustion="2000" needlearn="0" event="script" value="attack/berserk.lua">
 		<vocation id="4"/>
 		<vocation id="8"/>
@@ -95,29 +74,11 @@
 		<vocation id="1"/>
 		<vocation id="5"/>
 	</instant>
-	<instant name="Rage of the Skies" words="exevo gran mas vis" lvl="55" mana="650" selftarget="1" prem="1" exhaustion="2000" needlearn="0" event="script" value="attack/rage of the skies.lua">
+	<instant name="Ultimate Explosion" words="exevo gran mas vis" lvl="55" mana="650" selftarget="1" prem="1" exhaustion="2000" needlearn="0" event="script" value="attack/ultimate explosion.lua">
 		<vocation id="1"/>
 		<vocation id="5"/>
 	</instant>
-	<instant name="Fierce Berserk" words="exori gran" lvl="70" mana="340" prem="1" needweapon="1" exhaustion="2000" needlearn="0" event="script" value="attack/fierce berserk.lua">
-		<vocation id="4"/>
-		<vocation id="8"/>
-	</instant>
-		<instant name="Hells Core" words="exevo gran mas flam" lvl="60" mana="1200" prem="1" exhaustion="2000" selftarget="1" needlearn="0" event="script" value="attack/hells core.lua">
-		<vocation id="1"/>
-		<vocation id="5"/>
-	</instant>
-	<instant name="Terra Strike" words="exori tera" lvl="13" mana="20" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="2000" needlearn="0" event="script" value="attack/terra strike.lua">
-		<vocation id="1"/>
-		<vocation id="5"/>
-		<vocation id="2"/>
-		<vocation id="6"/>
-	</instant>
-	<instant name="Terra Wave" words="exevo tera hur" lvl="38" mana="210" direction="1" exhaustion="2000" needlearn="0" event="script" value="attack/terra wave.lua">
-		<vocation id="2"/>
-		<vocation id="6"/>
-	</instant>
-	<instant name="Wrath of Nature" words="exevo gran mas tera" lvl="55" mana="770" prem="1" selftarget="1" exhaustion="2000" needlearn="0" event="script" value="attack/wrath of nature.lua">
+	<instant name="Poison Storm" words="exevo gran mas pox" lvl="55" mana="770" prem="1" selftarget="1" exhaustion="2000" needlearn="0" event="script" value="attack/poison storm.lua">
 		<vocation id="2"/>
 		<vocation id="6"/>
 	</instant>
@@ -166,14 +127,6 @@
 	<instant name="Mass Healing" words="exura gran mas res" lvl="36" mana="150" prem="1" aggressive="0" exhaustion="1000" needlearn="0" event="script" value="healing/mass healing.lua">
 		<vocation id="2"/>
 		<vocation id="6"/>
-	</instant>
-	<instant name="Divine Healing" words="exura san" lvl="35" mana="210" prem="1" selftarget="1" aggressive="0" exhaustion="1000" needlearn="0" event="script" value="healing/divine healing.lua">
-		<vocation id="3"/>
-		<vocation id="7"/>
-	</instant>
-	<instant name="Wound Cleansing" words="exana mort" lvl="30" mana="65" prem="1" selftarget="1" aggressive="0" exhaustion="1000" needlearn="0" event="script" value="healing/wound cleasing.lua">
-		<vocation id="4"/>
-		<vocation id="8"/>
 	</instant>
 
 	<!-- Support Spells -->
@@ -278,28 +231,6 @@
 		<vocation id="6"/>
 		<vocation id="7"/>
 	</instant>
-	<instant name="Sharpshooter" words="utito tempo san" lvl="60" mana="450" prem="1" aggressive="0" selftarget="1" exhaustion="1000" needlearn="0" event="script" value="support/sharpshooter.lua">
-		<vocation id="3"/>
-		<vocation id="7"/>
-	</instant>
-	<instant name="Blood Rage" words="utito tempo" lvl="60" mana="290" prem="1" aggressive="0" selftarget="1" exhaustion="1000" needlearn="0" event="script" value="support/blood rage.lua">
-		<vocation id="4"/>
-		<vocation id="8"/>
-	</instant>
-
-	<!-- Party Spells -->
-	<instant name="Train Party" words="utito mas sio" lvl="32" mana="60" prem="1" aggressive="0" selftarget="1" exhaustion="1000" needlearn="0" event="script" value="party/train.lua">
-		<vocation id="8"/>
-	</instant>
-	<instant name="Protect Party" words="utamo mas sio" lvl="32" mana="90" prem="1" aggressive="0" selftarget="1" exhaustion="1000" needlearn="0" event="script" value="party/protect.lua">
-		<vocation id="7"/>
-	</instant>
-	<instant name="Heal Party" words="utura mas sio" lvl="32" mana="120" prem="1" aggressive="0" selftarget="1" exhaustion="1000" needlearn="0" event="script" value="party/heal.lua">
-		<vocation id="6"/>
-	</instant>
-	<instant name="Enchant Party" words="utori mas sio" lvl="32" mana="120" prem="1" aggressive="0" selftarget="1" exhaustion="1000" needlearn="0" event="script" value="party/enchant.lua">
-		<vocation id="5"/>
-	</instant>
 
 	<!-- Summon Spells -->
 	<instant name="Summon Creature" words="utevo res" lvl="25" params="1" exhaustion="2000" needlearn="0" event="function" value="summonMonster">
@@ -332,24 +263,12 @@
 		<vocation id="3"/>
 		<vocation id="7"/>
 	</conjure>
-	<conjure name="Conjure Sniper Arrow" words="exevo con hur" lvl="24" mana="160" soul="3" prem="1" conjureId="7364" conjureCount="5" exhaustion="1000" needlearn="0" event="function" value="conjureItem">
-		<vocation id="3"/>
-		<vocation id="7"/>
-	</conjure>
 	<conjure name="Explosive Arrow" words="exevo con flam" lvl="25" mana="290" soul="3" conjureId="2546" conjureCount="8" exhaustion="1000" needlearn="0" event="function" value="conjureItem">
-		<vocation id="3"/>
-		<vocation id="7"/>
-	</conjure>
-	<conjure name="Conjure Piercing Bolt" words="exevo con grav" lvl="33" mana="180" soul="3" prem="1" conjureId="7363" conjureCount="5" exhaustion="1000" needlearn="0" event="function" value="conjureItem">
 		<vocation id="3"/>
 		<vocation id="7"/>
 	</conjure>
 	<conjure name="Enchant Staff" words="exeta vis" lvl="41" mana="80" prem="1" conjureId="2433" reagentId="2401" exhaustion="1000" needlearn="0" event="function" value="conjureItem">
 		<vocation id="5"/>
-	</conjure>
-	<conjure name="Enchant Spear" words="exeta con" lvl="45" mana="350" soul="3" prem="1" conjureId="7367" reagentId="2389" exhaustion="1000" needlearn="0" event="function" value="conjureItem">
-		<vocation id="3"/>
-		<vocation id="7"/>
 	</conjure>
 	<conjure name="Power Bolt" words="exevo con vis" lvl="59" mana="800" soul="4" prem="1" conjureId="2547" conjureCount="10" exhaustion="1000" needlearn="0" event="function" value="conjureItem">
 		<vocation id="7"/>
@@ -380,12 +299,6 @@
 		<vocation id="1"/>
 		<vocation id="2"/>
 		<vocation id="5"/>
-		<vocation id="6"/>
-	</conjure>
-	<conjure name="Stalagmite" words="adori tera" lvl="24" mana="400" soul="2" prem="2" reagentId="2260" conjureId="2292" conjureCount="10" exhaustion="1000" needlearn="0" event="function" value="conjureRune">
-		<vocation id="1"/>
-		<vocation id="5"/>
-		<vocation id="2"/>
 		<vocation id="6"/>
 	</conjure>
 	<conjure name="Great Fireball" words="adori mas flam" lvl="30" mana="530" soul="3" reagentId="2260" conjureId="2304" conjureCount="4" exhaustion="1000" needlearn="0" event="function" value="conjureRune">
@@ -499,17 +412,5 @@
 	<conjure name="Paralyze" words="adana ani" lvl="54" mana="1400" soul="3" prem="1" reagentId="2260" conjureId="2278" conjureCount="1" exhaustion="1000" needlearn="0" event="function" value="conjureRune">
 		<vocation id="2"/>
 		<vocation id="6"/>
-	</conjure>
-	<conjure name="Stone Shower" words="adori mas tera" lvl="28" mana="430" soul="3" prem="1" reagentId="2260" conjureId="2288" conjureCount="4" exhaustion="1000" needlearn="0" event="function" value="conjureRune">
-		<vocation id="2"/>
-		<vocation id="6"/>
-	</conjure>
-	<conjure name="Thunderstorm" words="adori mas vis" lvl="28" mana="430" soul="3" prem="1" reagentId="2260" conjureId="2315" conjureCount="4" exhaustion="1000" needlearn="0" event="function" value="conjureRune">
-		<vocation id="1"/>
-		<vocation id="5"/>
-	</conjure>
-	<conjure name="Holy Missile" words="adori san" lvl="27" mana="350" soul="3" prem="1" reagentId="2260" conjureId="2295" conjureCount="5" exhaustion="1000" needlearn="0" event="function" value="conjureRune">
-		<vocation id="3"/>
-		<vocation id="7"/>
 	</conjure>
 </spells>
