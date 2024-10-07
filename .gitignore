@@ -50,8 +50,9 @@ compile_commands.json
 
 # Ignore logs, databases, and temporary files
 *.log
-*.sqlite
 *.db
+*.sqlite
+*.s3db
 
 # Ignore backup and temporary files
 *~

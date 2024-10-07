@@ -2217,7 +2217,7 @@ void LuaScriptInterface::registerFunctions()
 	//doItemEraseAttribute(uid, key)
 	lua_register(m_luaState, "doItemEraseAttribute", LuaScriptInterface::luaDoItemEraseAttribute);
 
-	//getItemWeight(uid[, precise = true])
+	//getItemWeight(itemid, count, <optional: default: 1> precise)
 	lua_register(m_luaState, "getItemWeight", LuaScriptInterface::luaGetItemWeight);
 
 	//hasItemProperty(uid)
@@ -9318,21 +9318,18 @@ int32_t LuaScriptInterface::luaDoItemEraseAttribute(lua_State* L)
 
 int32_t LuaScriptInterface::luaGetItemWeight(lua_State* L)
 {
-	//getItemWeight(itemid[, precise = true])
+	//getItemWeight(itemid, count, <optional: default: 1> precise)
+	int32_t parameters = lua_gettop(L);
+
 	bool precise = true;
-	if(lua_gettop(L) > 2)
-		precise = popNumber(L);
+	if(parameters > 2)
+		precise = popBoolean(L);
 
-	ScriptEnviroment* env = getEnv();
-	Item* item = env->getItemByUID(popNumber(L));
-	if(!item)
-	{
-		errorEx(getError(LUA_ERROR_ITEM_NOT_FOUND));
-		lua_pushboolean(L, false);
-		return 1;
-	}
+	int32_t count = popNumber(L);
+	uint32_t itemid = popNumber(L);
 
-	double weight = item->getWeight();
+	const ItemType& it = Item::items[itemid];
+	double weight = it.weight * std::max<double>(1, count);
 	if(precise)
 	{
 		std::stringstream ws;
