@@ -7,6 +7,9 @@ If you like the project, feel free to contribute with a pull request, and we wil
 ## Issues
 - You can use your [Issue Tracker](https://github.com/jprzimba/theforgottenserver0.3.6pl1_7.9_protocol/issues) to reporte bugs or request new feature.
 
+## Know Bugs
+- Wild Growth and Magic Wall Runes not working.
+
 ## Developers of The Forgotten Server
 
 - [Talaturen](https://github.com/MarkSamman)
