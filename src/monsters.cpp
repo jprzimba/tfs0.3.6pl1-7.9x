@@ -730,8 +730,7 @@ bool Monsters::deserializeSpell(xmlNodePtr node, spellBlock_t& sb, const std::st
 		else if(tmpName == "energyfield")
 			combat->setParam(COMBATPARAM_CREATEITEM, 1495);
 		else if(tmpName == "firecondition" || tmpName == "energycondition" || tmpName == "drowncondition" ||
-			tmpName == "poisoncondition" || tmpName == "earthcondition" || tmpName == "freezecondition" ||
-			tmpName == "cursecondition" || tmpName == "dazzlecondition")
+			tmpName == "poisoncondition" || tmpName == "earthcondition")
 		{
 			ConditionType_t conditionType = CONDITION_NONE;
 			uint32_t tickInterval = 2000;
