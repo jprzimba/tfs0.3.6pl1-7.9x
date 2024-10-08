@@ -971,8 +971,6 @@ InstantSpell::InstantSpell(LuaScriptInterface* _interface) : TalkAction(_interfa
 	needDirection = false;
 	hasParam = false;
 	checkLineOfSight = true;
-	casterTargetOrDirection = false;
-	limitRange = 0;
 	function = NULL;
 }
 
@@ -991,15 +989,8 @@ bool InstantSpell::configureEvent(xmlNodePtr p)
 	if(readXMLString(p, "direction", strValue))
 		needDirection = booleanString(strValue);
 
-	if(readXMLString(p, "casterTargetOrDirection", strValue))
-		casterTargetOrDirection = booleanString(strValue);
-
 	if(readXMLString(p, "blockwalls", strValue))
 		checkLineOfSight = booleanString(strValue);
-
-	int32_t intValue;
-	if(readXMLInteger(p, "limitRange", intValue))
-		limitRange = intValue;
 
 	return true;
 }
@@ -1044,72 +1035,24 @@ bool InstantSpell::playerCastInstant(Player* player, const std::string& param)
 		if(!playerInstantSpellCheck(player, player))
 			return false;
 	}
-	else if(needTarget || casterTargetOrDirection)
+	else if(needTarget)
 	{
-		Creature* target = NULL;
-		bool useDirection = false;
-		if(hasParam)
+		Player* target = g_game.getPlayerByName(param);
+		if(!target || target->getHealth() <= 0)
 		{
-			Player* targetPlayer = NULL;
-			ReturnValue ret = g_game.getPlayerByNameWildcard(param, targetPlayer);
-
-			target = targetPlayer;
-			if(limitRange && target && !Position::areInRange(Position(limitRange, limitRange, 0), target->getPosition(), player->getPosition()))
-				useDirection = true;
-
-			if((!target || target->getHealth() <= 0) && !useDirection)
-			{
-				if(!casterTargetOrDirection)
-				{
-					player->sendCancelMessage(ret);
-					g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-					return false;
-				}
-
-				useDirection = true;
-			}
-		}
-		else
-		{
-			target = player->getAttackedCreature();
-			if(limitRange && target && !Position::areInRange(Position(limitRange, limitRange, 0), target->getPosition(), player->getPosition()))
-				useDirection = true;
-
-			if((!target || target->getHealth() <= 0) && !useDirection)
-			{
-				if(!casterTargetOrDirection)
-				{
-					player->sendCancelMessage(RET_YOUCANONLYUSEITONCREATURES);
-					g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-					return false;
-				}
-
-				useDirection = true;
-			}
+			player->sendCancelMessage(RET_PLAYERWITHTHISNAMEISNOTONLINE);
+			g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+			return false;
 		}
 
-		if(!useDirection)
-		{
-			bool canSee = player->canSeeCreature(target);
-			if(!canSee || !canThrowSpell(player, target))
-			{
-				player->sendCancelMessage(canSee ? RET_CREATUREISNOTREACHABLE : RET_PLAYERWITHTHISNAMEISNOTONLINE);
-				g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-				return false;
-			}
+		if(!g_game.canThrowObjectTo(player->getPosition(), target->getPosition())){
+			player->sendCancelMessage(RET_PLAYERISNOTREACHABLE);
+			g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+			return false;
+		}
 
-			var.type = VARIANT_NUMBER;
-			var.number = target->getID();
-			if(!playerInstantSpellCheck(player, target))
-				return false;
-		}
-		else
-		{
-			var.type = VARIANT_POSITION;
-			var.pos = Spells::getCasterPosition(player, player->getDirection());
-			if(!playerInstantSpellCheck(player, var.pos))
-				return false;
-		}
+		var.type = VARIANT_NUMBER;
+		var.number = target->getID();
 	}
 	else if(hasParam)
 	{
@@ -1137,36 +1080,12 @@ bool InstantSpell::playerCastInstant(Player* player, const std::string& param)
 	return true;
 }
 
-bool InstantSpell::canThrowSpell(const Creature* creature, const Creature* target) const
-{
-	const Position& fromPos = creature->getPosition();
-	const Position& toPos = target->getPosition();
-	return (!(fromPos.z != toPos.z || (range == -1 && !g_game.canThrowObjectTo(fromPos, toPos, checkLineOfSight))
-		|| (range != -1 && !g_game.canThrowObjectTo(fromPos, toPos, checkLineOfSight, range, range))));
-}
-
 bool InstantSpell::castSpell(Creature* creature)
 {
 	if(!BaseSpell::castSpell(creature))
 		return false;
 
 	LuaVariant var;
-	if(casterTargetOrDirection)
-	{
-		Creature* target = creature->getAttackedCreature();
-		if(target && target->getHealth() > 0)
-		{
-			if(!creature->canSeeCreature(target) || !canThrowSpell(creature, target))
-				return false;
-
-			var.type = VARIANT_NUMBER;
-			var.number = target->getID();
-			return internalCastSpell(creature, var);
-		}
-
-		return false;
-	}
-
 	if(needDirection)
 	{
 		var.type = VARIANT_POSITION;

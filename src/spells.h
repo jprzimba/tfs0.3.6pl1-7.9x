@@ -191,7 +191,6 @@ class InstantSpell : public TalkAction, public Spell
 		virtual bool isInstant() const {return true;}
 		bool getHasParam() const {return hasParam;}
 		bool canCast(const Player* player) const;
-		bool canThrowSpell(const Creature* creature, const Creature* target) const;
 
 	protected:
 		virtual std::string getScriptEventName() const {return "onCastSpell";}
@@ -207,8 +206,6 @@ class InstantSpell : public TalkAction, public Spell
 		bool needDirection;
 		bool hasParam;
 		bool checkLineOfSight;
-		bool casterTargetOrDirection;
-		uint8_t limitRange;
 
 		InstantSpellFunction* function;
 };
