@@ -76,27 +76,19 @@
 	</outfit>
 
 	<!-- Special outfits -->
-	<outfit id="24" access="5" premium="yes">
-		<list gender="0-3" lookType="12" name="Archdemon"/>
-	</outfit>
-
-	<outfit id="25" access="5" premium="yes">
+	<outfit id="20" access="5" premium="yes">
 		<list gender="0-3" lookType="159" name="Elf"/>
 	</outfit>
 
-	<outfit id="26" access="5" premium="yes">
+	<outfit id="21" access="5" premium="yes">
 		<list gender="0-3" lookType="160" name="Dwarf"/>
 	</outfit>
 
-	<outfit id="27" access="5" premium="yes">
-		<list gender="0-3" lookType="226" name="Frog"/>
-	</outfit>
-
-	<outfit id="28" access="5" premium="yes">
+	<outfit id="22" access="5" premium="yes">
 		<list gender="0-3" lookType="194" name="Cult"/>
 	</outfit>
 
-	<outfit id="29" access="3" premium="yes">
+	<outfit id="23" access="3" premium="yes">
 		<list gender="0-3" lookType="75" name="Gamemaster"/>
 	</outfit>
 </outfits>

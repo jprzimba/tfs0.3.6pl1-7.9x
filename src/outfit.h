@@ -21,7 +21,7 @@
 #include "otsystem.h"
 #include "enums.h"
 
-#define OUTFITS_MAX_NUMBER 25
+#define OUTFITS_MAX_NUMBER 15
 
 enum AddonRequirement_t
 {
