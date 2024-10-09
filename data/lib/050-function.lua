@@ -218,14 +218,6 @@ function getHouseTilesCount(houseId)
 	return getHouseInfo(houseId).tiles
 end
 
-function getItemPluralNameById(itemid)
-	return getItemDescriptionsById(itemid).plural
-end
-
-function getItemArticleById(itemid)
-	return getItemDescriptionsById(itemid).article
-end
-
 function getItemPluralName(uid)
 	return getItemDescriptions(uid).plural
 end
@@ -501,92 +493,8 @@ function doSetItemText(uid, text, writer, date)
 	return true
 end
 
-function getFluidSourceType(itemid)
-	local item = getItemInfo(itemid)
-	return item and item.fluidSource or false
-end
-
 function getDepotId(uid)
 	return getItemAttribute(uid, "depotid") or false
-end
-
-function getItemDescriptions(uid)
-	local thing = getThing(uid)
-	if(thing.itemid < 100) then
-		return false
-	end
-
-	local item = getItemInfo(thing.itemid)
-	return {
-		name = getItemAttribute(uid, "name") or item.name,
-		plural = getItemAttribute(uid, "pluralname") or item.plural,
-		article = getItemAttribute(uid, "article") or item.article,
-		special = getItemAttribute(uid, "description") or "",
-		text = getItemAttribute(uid, "text") or "",
-		writer = getItemAttribute(uid, "writer") or "",
-		date = getItemAttribute(uid, "date") or 0
-	}	
-end
-
-function getItemWeightById(itemid, count, precision)
-	local item, count, precision = getItemInfo(itemid), count or 1, precision or false
-	if(not item) then
-		return false
-	end
-
-	if(count > 100) then
-		-- print a warning, as its impossible to have more than 100 stackable items without "cheating" the count
-		print('[Warning] getItemWeightById', 'Calculating weight for more than 100 items!')
-	end
-
-	local weight = item.weight * count
-	--[[if(precision) then
-		return weight
-	end
-
-	local t = string.explode(tostring(weight), ".")
-	if(table.maxn(t) == 2) then
-		return tonumber(t[1] .. "." .. string.sub(t[2], 1, 2))
-	end]]--
-
-	return weight
-end
-
-function getItemWeaponType(uid)
-	local thing = getThing(uid)
-	if(thing.itemid < 100) then
-		return false
-	end
-
-	return getItemInfo(thing.itemid).weaponType
-end
-
-function getItemRWInfo(uid)
-	local thing = getThing(uid)
-	if(thing.itemid < 100) then
-		return false
-	end
-
-	local item, flags = getItemInfo(thing.itemid), 0
-	if(item.readable) then
-		flags = 1
-	end
-
-	if(item.writable) then
-		flags = flags + 2
-	end
-
-	return flags
-end
-
-function isCorpse(uid)
-	local thing = getThing(uid)
-	if(thing.itemid < 100) then
-		return false
-	end
-
-	local item = getItemInfo(thing.itemid)
-	return item and item.corpseType ~= 0 or false
 end
 
 function getMonsterAttackSpells(name)

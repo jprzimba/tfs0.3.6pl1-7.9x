@@ -1146,7 +1146,7 @@ if(Modules == nil) then
 			[TAG_ITEMNAME] = shopItem.name
 		}
 
-		if(subType < 1 or getItemInfo(itemid).stackable) then
+		if(subType < 1 or isItemStackable(itemid)) then
 			subType = -1
 		end
 

@@ -588,6 +588,8 @@ class LuaScriptInterface
 		static int32_t luaIsItemFluidContainer(lua_State* L);
 		static int32_t luaIsItemStackable(lua_State* L);
 		static int32_t luaGetItemName(lua_State* L);
+		static int32_t luaGetItemPluralNameById(lua_State* L);
+		static int32_t luaGetItemArticleById(lua_State* L);
 		static int32_t luaIsSightClear(lua_State* L);
 		static int32_t luaIsInArray(lua_State* L);
 		static int32_t luaAddEvent(lua_State* L);
@@ -620,7 +622,6 @@ class LuaScriptInterface
 		static int32_t luaDoRefreshMap(lua_State* L);
 		static int32_t luaDoUpdateHouseAuctions(lua_State* L);
 		static int32_t luaGetItemIdByName(lua_State* L);
-		static int32_t luaGetItemInfo(lua_State* L);
 		static int32_t luaGetItemWeight(lua_State* L);
 		static int32_t luaGetItemAttribute(lua_State* L);
 		static int32_t luaDoItemSetAttribute(lua_State* L);
@@ -636,6 +637,14 @@ class LuaScriptInterface
 		static int32_t luaGetConfigValue(lua_State* L);
 		static int32_t luaGetModList(lua_State* L);
 
+		static int32_t luaGetItemRWInfo(lua_State* L);
+		static int32_t luaGetItemDescriptionsById(lua_State* L);
+		static int32_t luaGetItemDescriptions(lua_State* L);
+		static int32_t luaGetItemWeightById(lua_State* L);
+		static int32_t luaGetItemWeaponType(lua_State* L);
+
+		static int32_t luaGetFluidSourceType(lua_State* L);
+		static int32_t luaIsCorpse(lua_State* L);
 		static int32_t luaIsItemMovable(lua_State* L);
 		static int32_t luaIsItemContainer(lua_State* L);
 		static int32_t luaIsItemDoor(lua_State* L);

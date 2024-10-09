@@ -120,7 +120,6 @@ doAreaCombatHealth = doCombatAreaHealth
 doAreaCombatMana = doCombatAreaMana
 doAreaCombatCondition = doCombatAreaCondition
 doAreaCombatDispel = doCombatAreaDispel
-getItemDescriptionsById = getItemInfo
 hasProperty = hasItemProperty
 hasClient = hasPlayerClient
 print = std.cout
