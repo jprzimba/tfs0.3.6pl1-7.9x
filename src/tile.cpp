@@ -1709,3 +1709,4 @@ void Tile::updateTileFlags(Item* item, bool removed)
 			resetFlag(TILESTATE_IMMOVABLENOFIELDBLOCKPATH);
 	}
 }
+

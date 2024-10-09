@@ -579,11 +579,6 @@ function getItemRWInfo(uid)
 	return flags
 end
 
-function getItemLevelDoor(itemid)
-	local item = getItemInfo(itemid)
-	return item and item.levelDoor or false
-end
-
 function isItemDoor(itemid)
 	local item = getItemInfo(itemid)
 	return item and item.type == 5 or false

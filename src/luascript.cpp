@@ -2208,6 +2208,9 @@ void LuaScriptInterface::registerFunctions()
 	//getItemInfo(itemid)
 	lua_register(m_luaState, "getItemInfo", LuaScriptInterface::luaGetItemInfo);
 
+	//getItemLevelDoor(itemid)
+	lua_register(m_luaState, "getItemLevelDoor", LuaScriptInterface::luaGetItemLevelDoor);
+
 	//getItemAttribute(uid, key)
 	lua_register(m_luaState, "getItemAttribute", LuaScriptInterface::luaGetItemAttribute);
 
@@ -9075,6 +9078,15 @@ int32_t LuaScriptInterface::luaGetItemIdByName(lua_State* L)
 
 	return 1;
 }
+
+
+int32_t LuaScriptInterface::luaGetItemLevelDoor(lua_State* L)
+{
+	//getItemLevelDoor(itemid)
+	lua_pushnumber(L, Item::items[popNumber(L)].levelDoor);
+	return 1;
+}
+
 
 int32_t LuaScriptInterface::luaGetItemInfo(lua_State* L)
 {
