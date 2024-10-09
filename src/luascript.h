@@ -635,6 +635,10 @@ class LuaScriptInterface
 		static int32_t luaGetConfigFile(lua_State* L);
 		static int32_t luaGetConfigValue(lua_State* L);
 		static int32_t luaGetModList(lua_State* L);
+
+		static int32_t luaIsItemMovable(lua_State* L);
+		static int32_t luaIsItemContainer(lua_State* L);
+		static int32_t luaIsItemDoor(lua_State* L);
 		static int32_t luaGetItemLevelDoor(lua_State* L);
 
 		static int32_t luaL_loadmodlib(lua_State* L);

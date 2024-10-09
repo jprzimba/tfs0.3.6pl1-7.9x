@@ -2208,6 +2208,15 @@ void LuaScriptInterface::registerFunctions()
 	//getItemInfo(itemid)
 	lua_register(m_luaState, "getItemInfo", LuaScriptInterface::luaGetItemInfo);
 
+	//isItemMovable(itemid)
+	lua_register(m_luaState, "isItemMovable", LuaScriptInterface::luaIsItemMovable);
+
+	//isItemContainer(itemid)
+	lua_register(m_luaState, "isItemContainer", LuaScriptInterface::luaIsItemContainer);
+
+	//isItemDoor(itemid)
+	lua_register(m_luaState, "isItemDoor", LuaScriptInterface::luaIsItemDoor);
+
 	//getItemLevelDoor(itemid)
 	lua_register(m_luaState, "getItemLevelDoor", LuaScriptInterface::luaGetItemLevelDoor);
 
@@ -9079,6 +9088,28 @@ int32_t LuaScriptInterface::luaGetItemIdByName(lua_State* L)
 	return 1;
 }
 
+int32_t LuaScriptInterface::luaIsItemContainer(lua_State* L)
+{
+	//isItemContainer(itemid)
+	const ItemType& it = Item::items[popNumber(L)];
+	lua_pushboolean(L, it.isContainer() ? true : false);
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaIsItemMovable(lua_State* L)
+{
+	const ItemType& it = Item::items[popNumber(L)];
+	lua_pushboolean(L, it.moveable ? true : false);
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaIsItemDoor(lua_State* L)
+{
+	//isItemDoor(itemid)
+	const ItemType& it = Item::items[popNumber(L)];
+	lua_pushboolean(L, it.isDoor() ? true : false);
+	return 1;
+}
 
 int32_t LuaScriptInterface::luaGetItemLevelDoor(lua_State* L)
 {
@@ -9086,7 +9117,6 @@ int32_t LuaScriptInterface::luaGetItemLevelDoor(lua_State* L)
 	lua_pushnumber(L, Item::items[popNumber(L)].levelDoor);
 	return 1;
 }
-
 
 int32_t LuaScriptInterface::luaGetItemInfo(lua_State* L)
 {

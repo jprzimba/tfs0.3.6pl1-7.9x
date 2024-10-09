@@ -579,21 +579,6 @@ function getItemRWInfo(uid)
 	return flags
 end
 
-function isItemDoor(itemid)
-	local item = getItemInfo(itemid)
-	return item and item.type == 5 or false
-end
-
-function isItemContainer(itemid)
-	local item = getItemInfo(itemid)
-	return item and item.group == 2 or false
-end
-
-function isItemMovable(itemid)
-	local item = getItemInfo(itemid)
-	return item and item.movable or false
-end
-
 function isCorpse(uid)
 	local thing = getThing(uid)
 	if(thing.itemid < 100) then
