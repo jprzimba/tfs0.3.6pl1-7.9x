@@ -11,7 +11,6 @@ If you like the project, feel free to contribute with a pull request, and we wil
 - You can use your [Issue Tracker](https://github.com/jprzimba/tfs0.3.6pl1-7.9x/issues) to reporte bugs.
 
 ## Know Bugs
-- Wild Growth and Magic Wall Runes not working.
 - Players can't move mini map.
 
 ## Developers of The Forgotten Server

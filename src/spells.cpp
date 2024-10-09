@@ -826,79 +826,78 @@ bool Spell::playerRuneSpellCheck(Player* player, const Position& toPos)
 	if(!playerSpellCheck(player))
 		return false;
 
-	if(toPos.x == 0xFFFF)
-		return true;
-
-	const Position& playerPos = player->getPosition();
-	if(playerPos.z > toPos.z)
+	if(toPos.x != 0xFFFF)
 	{
-		player->sendCancelMessage(RET_FIRSTGOUPSTAIRS);
-		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-		return false;
-	}
+		const Position& playerPos = player->getPosition();
+		if(playerPos.z > toPos.z)
+		{
+			player->sendCancelMessage(RET_FIRSTGOUPSTAIRS);
+			g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+			return false;
+		}
+		else if(playerPos.z < toPos.z)
+		{
+			player->sendCancelMessage(RET_FIRSTGODOWNSTAIRS);
+			g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+			return false;
+		}
+		else
+		{
+			Tile* tile = g_game.getTile(toPos.x, toPos.y, toPos.z);
+			if(!tile)
+			{
+				player->sendCancelMessage(RET_NOTPOSSIBLE);
+				g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+				return false;
+			}
 
-	if(playerPos.z < toPos.z)
-	{
-		player->sendCancelMessage(RET_FIRSTGODOWNSTAIRS);
-		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-		return false;
-	}
+			if(range != -1 && !g_game.canThrowObjectTo(playerPos, toPos, true, range, range))
+			{
+				player->sendCancelMessage(RET_DESTINATIONOUTOFREACH);
+				g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+				return false;
+			}
 
-	Tile* tile = g_game.getTile(toPos);
-	if(!tile)
-	{
-		player->sendCancelMessage(RET_NOTPOSSIBLE);
-		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-		return false;
-	}
+			ReturnValue ret;
+			if((ret = Combat::canDoCombat(player, tile, isAggressive)) != RET_NOERROR)
+			{
+				player->sendCancelMessage(ret);
+				g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+				return false;
+			}
 
-	if(range != -1 && !g_game.canThrowObjectTo(playerPos, toPos, true, range, range))
-	{
-		player->sendCancelMessage(RET_DESTINATIONOUTOFREACH);
-		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-		return false;
-	}
+			if(blockingCreature && tile->getCreatures() && !tile->getCreatures()->empty())
+			{
+				player->sendCancelMessage(RET_NOTENOUGHROOM);
+				g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+				return false;
+			}
+			else if(blockingSolid && tile->hasProperty(BLOCKSOLID))
+			{
+				player->sendCancelMessage(RET_NOTENOUGHROOM);
+				g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+				return false;
+			}
 
-	ReturnValue ret;
-	if((ret = Combat::canDoCombat(player, tile, isAggressive)) != RET_NOERROR)
-	{
-		player->sendCancelMessage(ret);
-		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-		return false;
-	}
+			if(needTarget && (!tile->getCreatures() || tile->getCreatures()->empty()))
+			{
+				player->sendCancelMessage(RET_CANONLYUSETHISRUNEONCREATURES);
+				g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+				return false;
+			}
 
-	Creature* targetCreature = tile->getTopVisibleCreature(player);
-	if(blockingCreature && targetCreature)
-	{
-		player->sendCancelMessage(RET_NOTENOUGHROOM);
-		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-		return false;
-	}
-
-	if(blockingSolid && tile->hasProperty(BLOCKSOLID))
-	{
-		player->sendCancelMessage(RET_NOTENOUGHROOM);
-		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-		return false;
-	}
-
-	if(!targetCreature)
-	{
-		player->sendCancelMessage(RET_CANONLYUSETHISRUNEONCREATURES);
-		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-		return false;
-	}
-
-	Player* targetPlayer = targetCreature->getPlayer();
-	if(!isAggressive || !targetPlayer || Combat::isInPvpZone(player, targetPlayer)
-		|| player->getSkullClient(targetPlayer) != SKULL_NONE)
-		return true;
-
-	if(player->getSecureMode() == SECUREMODE_ON)
-	{
-		player->sendCancelMessage(RET_TURNSECUREMODETOATTACKUNMARKEDPLAYERS);
-		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-		return false;
+			if(isAggressive && needTarget && player->getSecureMode() == SECUREMODE_ON
+				&& tile->getCreatures() && !tile->getCreatures()->empty())
+			{
+				Player* targetPlayer = tile->getTopCreature()->getPlayer();
+				if(targetPlayer && targetPlayer != player && targetPlayer->getSkull() == SKULL_NONE && !Combat::isInPvpZone(player, targetPlayer))
+				{
+					player->sendCancelMessage(RET_TURNSECUREMODETOATTACKUNMARKEDPLAYERS);
+					g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+					return false;
+				}
+			}
+		}
 	}
 
 	return true;
@@ -1753,7 +1752,7 @@ bool RuneSpell::executeUse(Player* player, Item* item, const PositionEx& posFrom
 	if(isScripted())
 	{
 		LuaVariant var;
-		if(creatureId && needTarget)
+		if(creatureId != 0)
 		{
 			var.type = VARIANT_NUMBER;
 			var.number = creatureId;
