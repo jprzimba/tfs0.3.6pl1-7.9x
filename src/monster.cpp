@@ -125,6 +125,8 @@ void Monster::onAttackedCreatureDisappear(bool isLogout)
 #endif
 	attackTicks = 0;
 	extraMeleeAttack = true;
+	if(g_config.getBool(ConfigManager::MONSTER_SPAWN_WALKBACK))
+		g_game.steerCreature(this, masterPosition, 5000);
 }
 
 void Monster::onAttackedCreatureDrain(Creature* target, int32_t points)

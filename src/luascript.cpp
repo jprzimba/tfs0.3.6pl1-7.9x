@@ -1935,6 +1935,9 @@ void LuaScriptInterface::registerFunctions()
 	//addOutfitCondition(condition, outfit)
 	lua_register(m_luaState, "addOutfitCondition", LuaScriptInterface::luaAddOutfitCondition);
 
+	//doSteerCreature(cid, position[, maxNodes])
+	lua_register(m_luaState, "doSteerCreature", LuaScriptInterface::luaDoSteerCreature);
+
 	//setCombatCallBack(combat, key, function_name)
 	lua_register(m_luaState, "setCombatCallback", LuaScriptInterface::luaSetCombatCallBack);
 
@@ -7019,6 +7022,28 @@ int32_t LuaScriptInterface::luaDoMoveCreature(lua_State* L)
 	ScriptEnviroment* env = getEnv();
 	if(Creature* creature = env->getCreatureByUID(popNumber(L)))
 		lua_pushnumber(L, g_game.internalMoveCreature(creature, (Direction)direction, FLAG_NOLIMIT));
+	else
+	{
+		errorEx(getError(LUA_ERROR_CREATURE_NOT_FOUND));
+		lua_pushboolean(L, false);
+	}
+
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaDoSteerCreature(lua_State* L)
+{
+	//doSteerCreature(cid, position[, maxNodes])
+	uint16_t maxNodes = 100;
+	if(lua_gettop(L) > 2)
+		maxNodes = popNumber(L);
+
+	PositionEx pos;
+	popPosition(L, pos);
+
+	ScriptEnviroment* env = getEnv();
+	if(Creature* creature = env->getCreatureByUID(popNumber(L)))
+		lua_pushboolean(L, g_game.steerCreature(creature, pos, maxNodes));
 	else
 	{
 		errorEx(getError(LUA_ERROR_CREATURE_NOT_FOUND));

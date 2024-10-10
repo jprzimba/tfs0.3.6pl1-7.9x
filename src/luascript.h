@@ -536,6 +536,7 @@ class LuaScriptInterface
 		static int32_t luaIsPlayerPzLocked(lua_State* L);
 		static int32_t luaIsPlayerSaving(lua_State* L);
 		static int32_t luaIsCreature(lua_State* L);
+		static int32_t luaDoSteerCreature(lua_State* L);
 		static int32_t luaIsContainer(lua_State* L);
 		static int32_t luaIsMovable(lua_State* L);
 		static int32_t luaGetContainerSize(lua_State* L);

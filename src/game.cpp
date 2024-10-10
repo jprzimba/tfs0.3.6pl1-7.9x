@@ -3805,6 +3805,27 @@ bool Game::getPathToEx(const Creature* creature, const Position& targetPos, std:
 	return getPathToEx(creature, targetPos, dirList, fpp);
 }
 
+bool Game::steerCreature(Creature* creature, const Position& position, uint16_t maxNodes/* = 100*/)
+{
+	FindPathParams fpp;
+	fpp.maxClosedNodes = maxNodes;
+
+	fpp.fullPathSearch = true;
+	fpp.maxSearchDist = -1;
+	fpp.minTargetDist = 0;
+	fpp.maxTargetDist = 1;
+
+	std::list<Direction> dirList;
+	if(!getPathToEx(creature, position, dirList, fpp))
+		return false;
+
+	if(Player* player = creature->getPlayer())
+		player->setNextWalkTask(NULL);
+
+	creature->startAutoWalk(dirList);
+	return true;
+}
+
 void Game::checkCreatureWalk(uint32_t creatureId)
 {
 	Creature* creature = getCreatureByID(creatureId);

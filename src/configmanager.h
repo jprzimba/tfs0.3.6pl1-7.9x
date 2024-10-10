@@ -250,6 +250,7 @@ class ConfigManager
 			VIPLIST_PER_PLAYER,
 			USE_FRAG_HANDLER,
 			ADDONS_PREMIUM,
+			MONSTER_SPAWN_WALKBACK,
 			LAST_BOOL_CONFIG /* this must be the last one */
 		};
 

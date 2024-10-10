@@ -526,6 +526,8 @@ class Game
 		bool getPathToEx(const Creature* creature, const Position& targetPos, std::list<Direction>& dirList,
 			const FindPathParams& fpp);
 
+		bool steerCreature(Creature* creature, const Position& position, uint16_t maxNodes/* = 100*/);
+
 		bool getPathToEx(const Creature* creature, const Position& targetPos, std::list<Direction>& dirList,
 			uint32_t minTargetDist, uint32_t maxTargetDist, bool fullPathSearch = true,
 			bool clearSight = true, int32_t maxSearchDist = -1);
