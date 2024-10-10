@@ -24,7 +24,7 @@
 #include "protocolgame.h"
 #include "protocollogin.h"
 #include "status.h"
-#include "tasks.h"
+#include "dispatcher.h"
 #include "scheduler.h"
 #include "connection.h"
 #include "configmanager.h"
@@ -43,7 +43,7 @@ ConnectionManager::ConnectionManager()
 Connection* ConnectionManager::createConnection(boost::asio::io_service& io_service)
 {
 	#ifdef __DEBUG_NET_DETAIL__
-	std::cout << "Create new Connection" << std::endl;
+	std::clog << "Create new Connection" << std::endl;
 	#endif
 
 	boost::recursive_mutex::scoped_lock lockClass(m_connectionManagerLock);
@@ -55,7 +55,7 @@ Connection* ConnectionManager::createConnection(boost::asio::io_service& io_serv
 void ConnectionManager::releaseConnection(Connection* connection)
 {
 	#ifdef __DEBUG_NET_DETAIL__
-	std::cout << "Releasing connection" << std::endl;
+	std::clog << "Releasing connection" << std::endl;
 	#endif
 
 	boost::recursive_mutex::scoped_lock lockClass(m_connectionManagerLock);
@@ -65,13 +65,13 @@ void ConnectionManager::releaseConnection(Connection* connection)
 	if(it != m_connections.end())
 		m_connections.erase(it);
 	else
-		std::cout << "Error: [ConnectionManager::releaseConnection] Connection not found" << std::endl;
+		std::clog << "Error: [ConnectionManager::releaseConnection] Connection not found" << std::endl;
 }
 
 void ConnectionManager::closeAll()
 {
 	#ifdef __DEBUG_NET_DETAIL__
-	std::cout << "Closing all connections" << std::endl;
+	std::clog << "Closing all connections" << std::endl;
 	#endif
 	boost::recursive_mutex::scoped_lock lockClass(m_connectionManagerLock);
 	std::list<Connection*>::iterator it = m_connections.begin();
@@ -140,7 +140,7 @@ void Connection::close()
 {
 	//any thread
 	#ifdef __DEBUG_NET_DETAIL__
-	std::cout << "Connection::close" << std::endl;
+	std::clog << "Connection::close" << std::endl;
 	#endif
 
 	boost::recursive_mutex::scoped_lock lockClass(m_connectionLock);
@@ -157,13 +157,13 @@ void Connection::closeConnectionTask()
 {
 	//dispatcher thread
 	#ifdef __DEBUG_NET_DETAIL__
-	std::cout << "Connection::closeConnectionTask" << std::endl;
+	std::clog << "Connection::closeConnectionTask" << std::endl;
 	#endif
 
 	m_connectionLock.lock();
 	if(m_closeState != CLOSE_STATE_REQUESTED)
 	{
-		std::cout << "Error: [Connection::closeConnectionTask] m_closeState = " << m_closeState << std::endl;
+		std::clog << "Error: [Connection::closeConnectionTask] m_closeState = " << m_closeState << std::endl;
 		m_connectionLock.unlock();
 		return;
 	}
@@ -186,7 +186,7 @@ bool Connection::closingConnection()
 {
 	//any thread
 	#ifdef __DEBUG_NET_DETAIL__
-	std::cout << "Connection::closingConnection" << std::endl;
+	std::clog << "Connection::closingConnection" << std::endl;
 	#endif
 
 	if(m_pendingWrite == 0 || m_writeError == true)
@@ -194,7 +194,7 @@ bool Connection::closingConnection()
 		if(!m_socketClosed)
 		{
 			#ifdef __DEBUG_NET_DETAIL__
-			std::cout << "Closing socket" << std::endl;
+			std::clog << "Closing socket" << std::endl;
 			#endif
 
 			boost::system::error_code error;
@@ -217,7 +217,7 @@ bool Connection::closingConnection()
 		if(m_pendingRead == 0)
 		{
 			#ifdef __DEBUG_NET_DETAIL__
-			std::cout << "Deleting Connection" << std::endl;
+			std::clog << "Deleting Connection" << std::endl;
 			#endif
 
 			m_connectionLock.unlock();
@@ -385,14 +385,14 @@ bool Connection::send(OutputMessage_ptr msg)
 	if(m_pendingWrite == 0)
 	{
       #ifdef __DEBUG_NET_DETAIL__
-		std::cout << "Connection::send " << msg->getMessageLength() << std::endl;
+		std::clog << "Connection::send " << msg->getMessageLength() << std::endl;
 	  #endif
 		internalSend(msg);
 	}
 	else
 	{
 	  #ifdef __DEBUG_NET__
-		std::cout << "Connection::send Adding to queue " << msg->getMessageLength() << std::endl;
+		std::clog << "Connection::send Adding to queue " << msg->getMessageLength() << std::endl;
 	  #endif
 		m_outputQueue.push_back(msg);
 	}
@@ -425,7 +425,7 @@ uint32_t Connection::getIP() const
 void Connection::onWriteOperation(OutputMessage_ptr msg, const boost::system::error_code& error)
 {
   #ifdef __DEBUG_NET_DETAIL__
-	std::cout << "onWriteOperation" << std::endl;
+	std::clog << "onWriteOperation" << std::endl;
   #endif
 
 	msg.reset();
@@ -442,7 +442,7 @@ void Connection::onWriteOperation(OutputMessage_ptr msg, const boost::system::er
 				m_outputQueue.pop_front();
 				internalSend(msg);
 			  #ifdef __DEBUG_NET_DETAIL__
-				std::cout << "Connection::onWriteOperation send " << msg->getMessageLength() << std::endl;
+				std::clog << "Connection::onWriteOperation send " << msg->getMessageLength() << std::endl;
 			  #endif
 			}
 			
@@ -450,7 +450,7 @@ void Connection::onWriteOperation(OutputMessage_ptr msg, const boost::system::er
 		}
 		else
 		{
-			std::cout << "Error: [Connection::onWriteOperation] Getting unexpected notification!" << std::endl;
+			std::clog << "Error: [Connection::onWriteOperation] Getting unexpected notification!" << std::endl;
 			// Error. Pending operations counter is 0, but we are getting a
 			// notification!!
 		}

@@ -12,6 +12,7 @@ If you like the project, feel free to contribute with a pull request, and we wil
 
 ## Know Bugs
 - Players can't move mini map.
+- Client debugs when GOD walks using control + directional arrows keys and passes through a door.
 
 ## Developers of The Forgotten Server
 

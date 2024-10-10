@@ -25,9 +25,6 @@
 #include "iologindata.h"
 #include "ioban.h"
 
-#if defined(WINDOWS) && !defined(__CONSOLE__)
-#include "gui.h"
-#endif
 #include "outputmessage.h"
 #include "connection.h"
 
@@ -47,7 +44,7 @@ uint32_t ProtocolLogin::protocolLoginCount = 0;
 void ProtocolLogin::deleteProtocolTask()
 {
 #ifdef __DEBUG_NET_DETAIL__
-	std::cout << "Deleting ProtocolLogin" << std::endl;
+	std::clog << "Deleting ProtocolLogin" << std::endl;
 #endif
 	Protocol::deleteProtocolTask();
 }
@@ -68,11 +65,7 @@ void ProtocolLogin::disconnectClient(uint8_t error, const char* message)
 
 bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 {
-	if(
-#if defined(WINDOWS) && !defined(__CONSOLE__)
-		!GUI::getInstance()->m_connections ||
-#endif
-		g_game.getGameState() == GAME_STATE_SHUTDOWN)
+	if(g_game.getGameState() == GAME_STATE_SHUTDOWN)
 	{
 		getConnection()->close();
 		return false;

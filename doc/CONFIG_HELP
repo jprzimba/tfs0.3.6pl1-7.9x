@@ -901,7 +901,7 @@
 			It will save process pid to this file if specified.
 			Default: ""
 
-		outLogName
+		outputLog
 			Default: ""
 
 		errorLogName

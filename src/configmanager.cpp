@@ -30,7 +30,7 @@ ConfigManager::ConfigManager()
 	m_confBool[LOGIN_ONLY_LOGINSERVER] = false;
 
 	m_confNumber[LOGIN_PORT] = 0;
-	m_confString[DATA_DIRECTORY] = m_confString[IP] = m_confString[RUNFILE] = m_confString[ERROR_LOG] = m_confString[OUT_LOG] = "";
+	m_confString[DATA_DIRECTORY] =  m_confString[LOGS_DIRECTORY] = m_confString[IP] = m_confString[RUNFILE] = m_confString[OUTPUT_LOG] = "";
 }
 
 bool ConfigManager::load()
@@ -55,6 +55,9 @@ bool ConfigManager::load()
 		if(m_confString[DATA_DIRECTORY] == "")
 			m_confString[DATA_DIRECTORY] = getGlobalString("dataDirectory", "data/");
 
+		if(m_confString[LOGS_DIRECTORY] == "")
+			m_confString[LOGS_DIRECTORY] = getGlobalString("logsDirectory", "logs/");
+
 		if(m_confString[IP] == "")
 			m_confString[IP] = getGlobalString("ip", "127.0.0.1");
 
@@ -64,13 +67,10 @@ bool ConfigManager::load()
 		if(m_confString[RUNFILE] == "")
 			m_confString[RUNFILE] = getGlobalString("runFile", "");
 
-		if(m_confString[OUT_LOG] == "")
-			m_confString[OUT_LOG] = getGlobalString("outLogName", "");
+		if(m_confString[OUTPUT_LOG] == "")
+			m_confString[OUTPUT_LOG] = getGlobalString("outputLog", "");
 
-		if(m_confString[ERROR_LOG] == "")
-			m_confString[ERROR_LOG] = getGlobalString("errorLogName", "");
-
-		m_confBool[TRUNCATE_LOGS] = getGlobalBool("truncateLogsOnStartup", true);
+		m_confBool[TRUNCATE_LOG] = getGlobalBool("truncateLogsOnStartup", true);
 		#ifdef MULTI_SQL_DRIVERS
 		m_confString[SQL_TYPE] = getGlobalString("sqlType", "sqlite");
 		#endif
@@ -291,7 +291,7 @@ const std::string& ConfigManager::getString(uint32_t _what) const
 		return m_confString[_what];
 
 	if(!m_startup)
-		std::cout << "[Warning - ConfigManager::getString] " << _what << std::endl;
+		std::clog << "[Warning - ConfigManager::getString] " << _what << std::endl;
 
 	return m_confString[DUMMY_STR];
 }
@@ -302,7 +302,7 @@ bool ConfigManager::getBool(uint32_t _what) const
 		return m_confBool[_what];
 
 	if(!m_startup)
-		std::cout << "[Warning - ConfigManager::getBool] " << _what << std::endl;
+		std::clog << "[Warning - ConfigManager::getBool] " << _what << std::endl;
 
 	return false;
 }
@@ -313,7 +313,7 @@ int32_t ConfigManager::getNumber(uint32_t _what) const
 		return m_confNumber[_what];
 
 	if(!m_startup)
-		std::cout << "[Warning - ConfigManager::getNumber] " << _what << std::endl;
+		std::clog << "[Warning - ConfigManager::getNumber] " << _what << std::endl;
 
 	return 0;
 }
@@ -324,7 +324,7 @@ double ConfigManager::getDouble(uint32_t _what) const
 		return m_confDouble[_what];
 
 	if(!m_startup)
-		std::cout << "[Warning - ConfigManager::getDouble] " << _what << std::endl;
+		std::clog << "[Warning - ConfigManager::getDouble] " << _what << std::endl;
 
 	return 0;
 }
@@ -337,7 +337,7 @@ bool ConfigManager::setString(uint32_t _what, const std::string& _value)
 		return true;
 	}
 
-	std::cout << "[Warning - ConfigManager::setString] " << _what << std::endl;
+	std::clog << "[Warning - ConfigManager::setString] " << _what << std::endl;
 	return false;
 }
 
@@ -349,6 +349,6 @@ bool ConfigManager::setNumber(uint32_t _what, int32_t _value)
 		return true;
 	}
 
-	std::cout << "[Warning - ConfigManager::setNumber] " << _what << std::endl;
+	std::clog << "[Warning - ConfigManager::setNumber] " << _what << std::endl;
 	return false;
 }

@@ -130,7 +130,7 @@ bool IOMap::loadMap(Map* map, const std::string& identifier)
 	if(headerMinorItems > (uint32_t)Items::dwMinorVersion)
 		setLastErrorString("This map needs an updated items.otb.");
 
-	std::cout << "> Map size: " << rootHeader->width << "x" << rootHeader->height << "." << std::endl;
+	std::clog << "Map size: " << rootHeader->width << "x" << rootHeader->height << "." << std::endl;
 	map->mapWidth = rootHeader->width;
 	map->mapHeight = rootHeader->height;
 
@@ -196,9 +196,12 @@ bool IOMap::loadMap(Map* map, const std::string& identifier)
 		}
 	}
 
-	std::cout << "> Map descriptions: " << std::endl;
+	std::clog << "Map descriptions: " << std::endl;
 	for(StringVec::iterator it = map->descriptions.begin(); it != map->descriptions.end(); ++it)
-		std::cout << "\"" << (*it) << "\"" << std::endl;
+	{
+		if (!(*it).empty())
+			std::clog << "" << (*it) << std::endl;
+	}
 
 	NODE nodeMapData = f.getChildNode(nodeMap, type);
 	while(nodeMapData != NO_NODE)
@@ -312,7 +315,7 @@ bool IOMap::loadMap(Map* map, const std::string& identifier)
 								if((flags & TILESTATE_REFRESH) == TILESTATE_REFRESH)
 								{
 									if(house)
-										std::cout << "[x:" << px << ", y:" << py << ", z:" << pz << "] House tile flagged as refreshing!";
+										std::clog << "[x:" << px << ", y:" << py << ", z:" << pz << "] House tile flagged as refreshing!";
 
 									tileflags |= TILESTATE_REFRESH;
 								}
@@ -334,9 +337,9 @@ bool IOMap::loadMap(Map* map, const std::string& identifier)
 
 								if(house && item->isMoveable())
 								{
-									std::cout << "[Warning - IOMap::loadMap] Movable item in house: " << house->getId();
-									std::cout << ", item type: " << item->getID() << ", at position " << px << "/" << py << "/";
-									std::cout << pz << std::endl;
+									std::clog << "[Warning - IOMap::loadMap] Movable item in house: " << house->getId();
+									std::clog << ", item type: " << item->getID() << ", at position " << px << "/" << py << "/";
+									std::clog << pz << std::endl;
 
 									delete item;
 									item = NULL;
@@ -399,9 +402,9 @@ bool IOMap::loadMap(Map* map, const std::string& identifier)
 							{
 								if(house && item->isMoveable())
 								{
-									std::cout << "[Warning - IOMap::loadMap] Movable item in house: ";
-									std::cout << house->getId() << ", item type: " << item->getID();
-									std::cout << ", pos " << px << "/" << py << "/" << pz << std::endl;
+									std::clog << "[Warning - IOMap::loadMap] Movable item in house: ";
+									std::clog << house->getId() << ", item type: " << item->getID();
+									std::clog << ", pos " << px << "/" << py << "/" << pz << std::endl;
 
 									delete item;
 									item = NULL;

@@ -585,17 +585,17 @@ std::string parseParams(tokenizer::iterator &it, tokenizer::iterator end)
 
 std::string formatDate(time_t _time/* = 0*/)
 {
-	char buffer[21];
 	if(!_time)
 		_time = time(NULL);
 
 	const tm* tms = localtime(&_time);
+	std::stringstream s;
 	if(tms)
-		sprintf(buffer, "%02d/%02d/%04d %02d:%02d:%02d", tms->tm_mday, tms->tm_mon + 1, tms->tm_year + 1900, tms->tm_hour, tms->tm_min, tms->tm_sec);
+		s << tms->tm_mday << "/" << (tms->tm_mon + 1) << "/" << (tms->tm_year + 1900) << " " << tms->tm_hour << ":" << tms->tm_min << ":" << tms->tm_sec;
 	else
-		sprintf(buffer, "UNIX Time: %d", (int32_t)_time);
+		s << "UNIX Time: " << (int32_t)_time;
 
-	return buffer;
+	return s.str();
 }
 
 std::string formatDateShort(time_t _time, bool detailed/* = false*/)
@@ -619,16 +619,41 @@ std::string formatDateShort(time_t _time, bool detailed/* = false*/)
 	return buffer;
 }
 
-std::string formatTime(int32_t hours, int32_t minutes)
+std::string formatTime(time_t _time/* = 0*/, bool ms/* = false*/)
 {
-	std::stringstream time;
-	if(hours)
-		time << hours << " " << (hours > 1 ? "hours" : "hour") << (minutes ? " and " : "");
+	if(!_time)
+		_time = time(NULL);
+	else if(ms)
+		ms = false;
 
-	if(minutes)
-		time << minutes << " " << (minutes > 1 ? "minutes" : "minute");
+	const tm* tms = localtime(&_time);
+	std::stringstream s;
+	if(tms)
+	{
+		s << tms->tm_hour << ":" << tms->tm_min << ":";
+		if(tms->tm_sec < 10)
+			s << "0";
 
-	return time.str();
+		s << tms->tm_sec;
+		if(ms)
+		{
+			timeb t;
+			ftime(&t);
+
+			s << "."; // make it format zzz
+			if(t.millitm < 10)
+				s << "0";
+
+			if(t.millitm < 100)
+				s << "0";
+
+			s << t.millitm;
+		}
+	}
+	else
+		s << "UNIX Time: " << (int32_t)_time;
+
+	return s.str();
 }
 
 std::string convertIPAddress(uint32_t ip)
@@ -1364,54 +1389,55 @@ bool fileExists(const char* filename)
 	return true;
 }
 
-std::string getFilePath(FileType_t filetype, std::string filename)
+std::string getFilePath(FileType_t type, std::string name/* = ""*/)
 {
 	#ifdef __FILESYSTEM_HIERARCHY_STANDARD__
-	std::string path = "/usr/share/tfs/";
-	#endif
+	std::string path = "/var/lib/tfs/";
+	#else
 	std::string path = g_config.getString(ConfigManager::DATA_DIRECTORY);
-	switch(filetype)
+	#endif
+	switch(type)
 	{
 		case FILE_TYPE_OTHER:
-			path += filename;
+			path += name;
 			break;
 		case FILE_TYPE_XML:
-			path += "XML/" + filename;
+			path += "XML/" + name;
 			break;
 		case FILE_TYPE_LOG:
 			#ifndef __FILESYSTEM_HIERARCHY_STANDARD__
-			path += "logs/" + filename;
+			path = g_config.getString(ConfigManager::LOGS_DIRECTORY) + name;
 			#else
-			path = "/var/log/tfs/" + filename;
+			path = "/var/log/tfs/" + name;
 			#endif
 			break;
 		case FILE_TYPE_MOD:
 		{
 			#ifndef __FILESYSTEM_HIERARCHY_STANDARD__
-			path = "mods/" + filename;
+			path = "mods/" + name;
 			#else
-			path = "/etc/tfs/mods/" + filename;
+			path = "/usr/share/tfs/" + name;
 			#endif
 			break;
 		}
 		case FILE_TYPE_CONFIG:
 		{
-			#if defined(__FILESYSTEM_HIERARCHY_STANDARD__) && defined(__HOMEDIR_CONF__)
-			if(fileExists("~/.tfs/" + filename))
-				path = "~/.tfs/" + filename;
+			#if defined(__HOMEDIR_CONF__)
+			if(fileExists("~/.tfs/" + name))
+				path = "~/.tfs/" + name;
 			else
-				path = "/etc/tfs/" + filename;
-
-			#elif defined(__FILESYSTEM_HIERARCHY_STANDARD__)
-			path = "/etc/tfs/" + filename;
+			#endif
+			#if defined(__FILESYSTEM_HIERARCHY_STANDARD__)
+				path = "/etc/tfs/" + name;
 			#else
-			path = filename;
+				path = name;
 			#endif
 			break;
 		}
 		default:
-			std::cout << "ERROR: Wrong file type!" << std::endl;
+			std::clog << "ERROR: Wrong file type!" << std::endl;
 			break;
 	}
 	return path;
 }
+

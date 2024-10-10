@@ -27,8 +27,8 @@ theforgottenserver_SOURCES = account.h actions.cpp actions.h $(MAYBE_REMOTE) \
 	connection.h const.h container.cpp container.h creature.cpp \
 	creature.h creatureevent.cpp creatureevent.h cylinder.cpp cylinder.h \
 	database.cpp database.h databasemanager.cpp databasemanager.h \
-	$(MAYBE_MYSQL) $(MAYBE_SQLITE) $(MAYBE_PGSQL) $(MAYBE_ODBC) \
-	depot.cpp depot.h exception.cpp exception.h fileloader.cpp \
+	$(MAYBE_MYSQL) $(MAYBE_SQLITE) depot.cpp depot.h dispatcher.cpp \
+	dispatcher.h exception.cpp exception.h fileloader.cpp \
 	fileloader.h game.cpp game.h $(MAYBE_LOGIN) globalevent.cpp \
 	globalevent.h group.cpp group.h gui.cpp gui.h house.cpp house.h \
 	housetile.cpp housetile.h inputbox.cpp inputbox.h ioban.cpp ioban.h \
@@ -46,7 +46,7 @@ theforgottenserver_SOURCES = account.h actions.cpp actions.h $(MAYBE_REMOTE) \
 	resources.h rsa.cpp rsa.h scheduler.cpp scheduler.h scriptmanager.cpp \
 	scriptmanager.h server.cpp server.h sha1.cpp sha1.h spawn.cpp spawn.h \
 	spells.cpp spells.h status.cpp status.h talkaction.cpp talkaction.h \
-	tasks.cpp tasks.h teleport.cpp teleport.h templates.h textlogger.cpp \
+	teleport.cpp teleport.h templates.h textlogger.cpp \
 	textlogger.h thing.cpp thing.h tile.cpp tile.h tools.cpp tools.h \
 	town.h trashholder.cpp trashholder.h waitlist.cpp waitlist.h \
 	waypoints.h weapons.cpp weapons.h vocation.cpp vocation.h

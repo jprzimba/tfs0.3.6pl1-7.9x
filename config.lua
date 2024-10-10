@@ -312,6 +312,5 @@
 	displayPlayersLogging = true
 	prefixChannelLogs = ""
 	runFile = ""
-	outLogName = ""
-	errorLogName = ""
-	truncateLogsOnStartup = false
+	outputLog = ""
+	truncateLogOnStartup = false

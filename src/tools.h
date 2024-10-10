@@ -110,7 +110,7 @@ Position getNextPosition(Direction direction, Position pos);
 
 std::string formatDate(time_t _time = 0);
 std::string formatDateShort(time_t _time = 0, bool detailed = false);
-std::string formatTime(int32_t hours, int32_t minutes);
+std::string formatTime(time_t _time = 0, bool miliseconds = false);
 std::string convertIPAddress(uint32_t ip);
 
 MagicEffect_t getMagicEffect(const std::string& strValue);
@@ -132,6 +132,5 @@ bool parseVocationNode(xmlNodePtr vocationNode, VocationMap& vocationMap, String
 bool parseIntegerVec(std::string str, IntegerVec& intVector);
 
 bool fileExists(const char* filename);
-
-std::string getFilePath(FileType_t filetype, std::string filename);
+std::string getFilePath(FileType_t type, std::string name = "");
 #endif

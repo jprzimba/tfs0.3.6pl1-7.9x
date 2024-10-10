@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////
 #include "otpch.h"
-#include "tasks.h"
+#include "dispatcher.h"
 
 #include "outputmessage.h"
 #if defined __EXCEPTION_TRACER__
@@ -99,7 +99,7 @@ void Dispatcher::addTask(Task* task, bool front/* = false*/)
 	}
 	#ifdef __DEBUG_SCHEDULER__
 	else
-		std::cout << "[Error - Dispatcher::addTask] Dispatcher thread is terminated." << std::endl;
+		std::clog << "[Error - Dispatcher::addTask] Dispatcher thread is terminated." << std::endl;
 	#endif
 
 	m_taskLock.unlock();
