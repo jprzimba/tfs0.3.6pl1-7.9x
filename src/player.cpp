@@ -508,7 +508,8 @@ void Player::sendIcons() const
 void Player::updateInventoryWeight()
 {
 	inventoryWeight = 0.00;
-	if(hasFlag(PlayerFlag_HasInfiniteCapacity))
+	if(hasFlag(PlayerFlag_HasInfiniteCapacity)
+		|| !g_config.getBool(ConfigManager::USE_CAPACITY))
 		return;
 
 	for(int32_t i = SLOT_FIRST; i < SLOT_LAST; ++i)
@@ -2390,9 +2391,6 @@ void Player::autoCloseContainers(const Container* container)
 
 bool Player::hasCapacity(const Item* item, uint32_t count) const
 {
-	if(hasFlag(PlayerFlag_CannotPickupItem))
-		return false;
-
 	if(hasFlag(PlayerFlag_HasInfiniteCapacity) || item->getTopParent() == this)
 		return true;
 
@@ -2405,11 +2403,24 @@ bool Player::hasCapacity(const Item* item, uint32_t count) const
 	return (itemWeight < getFreeCapacity());
 }
 
+double Player::getFreeCapacity() const
+{
+	if(hasFlag(PlayerFlag_HasInfiniteCapacity)
+		|| !g_config.getBool(ConfigManager::USE_CAPACITY))
+		return 10000.00;
+
+	return std::max(0.00, capacity - inventoryWeight);
+}
+
 ReturnValue Player::__queryAdd(int32_t index, const Thing* thing, uint32_t count, uint32_t flags) const
 {
 	const Item* item = thing->getItem();
 	if(!item)
 		return RET_NOTPOSSIBLE;
+
+	if(!item->isPickupable() || (hasFlag(PlayerFlag_CannotPickupItem) &&
+		item->getParent() && item->getParent() != VirtualCylinder::virtualCylinder))
+		return RET_CANNOTPICKUP;
 
 	bool childIsOwner = ((flags & FLAG_CHILDISOWNER) == FLAG_CHILDISOWNER), skipLimit = ((flags & FLAG_NOLIMIT) == FLAG_NOLIMIT);
 	if(childIsOwner)
@@ -2420,9 +2431,6 @@ ReturnValue Player::__queryAdd(int32_t index, const Thing* thing, uint32_t count
 
 		return RET_NOTENOUGHCAPACITY;
 	}
-
-	if(!item->isPickupable())
-		return RET_CANNOTPICKUP;
 
 	ReturnValue ret = RET_NOERROR;
 	if((item->getSlotPosition() & SLOTP_HEAD) || (item->getSlotPosition() & SLOTP_NECKLACE) ||

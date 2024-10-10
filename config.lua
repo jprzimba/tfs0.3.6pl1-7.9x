@@ -190,6 +190,7 @@
 	promptExceptionTracerErrorBox = true
 	maximumDoorLevel = 500
 	maxMessageBuffer = 4
+	useCapacity = true
 
 	-- Depot
 	defaultDepotSizePremium = 2000

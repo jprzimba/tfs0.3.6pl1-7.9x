@@ -255,6 +255,7 @@ class ConfigManager
 			USE_FRAG_HANDLER,
 			ADDONS_PREMIUM,
 			MONSTER_SPAWN_WALKBACK,
+			USE_CAPACITY,
 			LAST_BOOL_CONFIG /* this must be the last one */
 		};
 

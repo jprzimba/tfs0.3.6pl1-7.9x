@@ -277,6 +277,7 @@ bool ConfigManager::load()
 	m_confNumber[DEFAULT_DEPOT_SIZE] = getGlobalNumber("defaultDepotSize", 2000);
 	m_confNumber[VIPLIST_DEFAULT_LIMIT] = getGlobalNumber("vipListDefaultLimit", 20);
 	m_confNumber[VIPLIST_DEFAULT_PREMIUM_LIMIT] = getGlobalNumber("vipListDefaultPremiumLimit", 100);
+	m_confBool[USE_CAPACITY] = getGlobalBool("useCapacity", true);
 
 	m_loaded = true;
 	return true;
