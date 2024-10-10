@@ -188,9 +188,17 @@
 	bankSystem = true
 	displaySkillLevelOnAdvance = false
 	promptExceptionTracerErrorBox = true
-	separateViplistPerCharacter = false
 	maximumDoorLevel = 500
 	maxMessageBuffer = 4
+
+	-- Depot
+	defaultDepotSizePremium = 2000
+	defaultDepotSize = 1000
+
+	-- VIP list
+	separateViplistPerCharacter = false
+	vipListDefaultLimit = 20
+	vipListDefaultPremiumLimit = 100
 
 	-- Saving-related
 	-- useHouseDataStorage usage may be found at README.

@@ -22,6 +22,9 @@
 
 #include "group.h"
 #include "tools.h"
+#include "configmanager.h"
+
+extern ConfigManager g_config;
 
 Group Groups::defGroup = Group();
 
@@ -152,7 +155,8 @@ uint32_t Group::getDepotLimit(bool premium) const
 	if(m_depotLimit > 0)
 		return m_depotLimit;
 
-	return (premium ? 2000 : 1000);
+	return (premium ? g_config.getNumber(ConfigManager::DEFAULT_DEPOT_SIZE_PREMIUM)
+		: g_config.getNumber(ConfigManager::DEFAULT_DEPOT_SIZE));
 }
 
 uint32_t Group::getMaxVips(bool premium) const
@@ -160,5 +164,5 @@ uint32_t Group::getMaxVips(bool premium) const
 	if(m_maxVips > 0)
 		return m_maxVips;
 
-	return (premium ? 100 : 20);
+	return (premium ? g_config.getNumber(ConfigManager::VIPLIST_DEFAULT_PREMIUM_LIMIT) : g_config.getNumber(ConfigManager::VIPLIST_DEFAULT_LIMIT));
 }

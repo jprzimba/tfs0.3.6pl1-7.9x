@@ -92,7 +92,8 @@
 		* Add SadSoul Map with Evolutions map. (Tryller)
 		* Add GOD account to forgottenserver.s3db 2/2. (Tryller)
 		* Add new shop module to npc system StdModule.allBlessings. (Tryller)
-		* Add new feature from TFS 0.4 monsterSpawnWalkback. (Tryller)
+		* Add new configs from TFS 0.4 monsterSpawnWalkback, defaultDepotSizePremium, defaultDepotSize.
+			vipListDefaultLimit and vipListDefaultPremiumLimit. (Tryller)
 		* Add new lua functions from TFS 0.4 doSteerCreature(cid, position[, maxNodes]). (Tryller)
 		* Add old quest system based on unique id (quests.lua). (Tryller)
 		* Clean actions, movements and weapons scripts to work only with 7.9 items (Tryller)
