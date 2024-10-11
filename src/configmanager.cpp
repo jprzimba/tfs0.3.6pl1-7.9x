@@ -278,6 +278,9 @@ bool ConfigManager::load()
 	m_confNumber[VIPLIST_DEFAULT_LIMIT] = getGlobalNumber("vipListDefaultLimit", 20);
 	m_confNumber[VIPLIST_DEFAULT_PREMIUM_LIMIT] = getGlobalNumber("vipListDefaultPremiumLimit", 100);
 	m_confBool[USE_CAPACITY] = getGlobalBool("useCapacity", true);
+	m_confNumber[MAIL_ATTEMPTS] = getGlobalNumber("mailMaxAttempts", 20);
+	m_confNumber[MAIL_BLOCK] = getGlobalNumber("mailBlockPeriod", 3600000);
+	m_confNumber[MAIL_ATTEMPTS_FADE] = getGlobalNumber("mailAttemptsFadeTime", 600000);
 
 	m_loaded = true;
 	return true;

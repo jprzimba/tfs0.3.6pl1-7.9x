@@ -42,8 +42,8 @@ class TrashHolder : public Item, public Cylinder
 		virtual Creature* getCreature() {return NULL;}
 		virtual const Creature* getCreature() const {return NULL;}
 
-		virtual ReturnValue __queryAdd(int32_t index, const Thing* thing, uint32_t count,
-			uint32_t flags) const {return RET_NOERROR;}
+		virtual ReturnValue __queryAdd(int32_t, const Thing*, uint32_t,
+			uint32_t, Creature* = NULL) const {return RET_NOERROR;}
 		virtual ReturnValue __queryMaxCount(int32_t index, const Thing* thing, uint32_t count,
 			uint32_t& maxQueryCount, uint32_t flags) const {return RET_NOERROR;}
 		virtual ReturnValue __queryRemove(const Thing* thing, uint32_t count,

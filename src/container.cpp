@@ -264,7 +264,7 @@ void Container::onRemoveContainerItem(uint32_t index, Item* item)
 }
 
 ReturnValue Container::__queryAdd(int32_t index, const Thing* thing, uint32_t count,
-	uint32_t flags) const
+	uint32_t flags, Creature* actor/* = NULL*/) const
 {
 	if(((flags & FLAG_CHILDISOWNER) == FLAG_CHILDISOWNER))
 	{
@@ -292,12 +292,15 @@ ReturnValue Container::__queryAdd(int32_t index, const Thing* thing, uint32_t co
 		}
 	}
 
-	if(index == INDEX_WHEREEVER && !((flags & FLAG_NOLIMIT) == FLAG_NOLIMIT) && full())
-		return RET_CONTAINERNOTENOUGHROOM;
+	if((flags & FLAG_NOLIMIT) != FLAG_NOLIMIT)
+	{
+		if((index == INDEX_WHEREEVER && full()))
+			return RET_CONTAINERNOTENOUGHROOM;
+	}
 
 	const Cylinder* topParent = getTopParent();
 	if(topParent != this)
-		return topParent->__queryAdd(INDEX_WHEREEVER, item, count, flags | FLAG_CHILDISOWNER);
+		return topParent->__queryAdd(INDEX_WHEREEVER, item, count, flags | FLAG_CHILDISOWNER, actor);
 
 	return RET_NOERROR;
 }

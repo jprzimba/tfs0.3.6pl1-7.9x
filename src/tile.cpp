@@ -499,8 +499,8 @@ void Tile::moveCreature(Creature* actor, Creature* creature, Cylinder* toCylinde
 	newTile->postAddNotification(actor, creature, this, newStackpos);
 }
 
-ReturnValue Tile::__queryAdd(int32_t index, const Thing* thing, uint32_t count,
-	uint32_t flags) const
+ReturnValue Tile::__queryAdd(int32_t, const Thing* thing, uint32_t,
+	uint32_t flags, Creature*) const
 {
 	const CreatureVector* creatures = getCreatures();
 	const TileItemVector* items = getItemList();

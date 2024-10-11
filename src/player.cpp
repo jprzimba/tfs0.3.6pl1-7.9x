@@ -65,7 +65,7 @@ Player::Player(const std::string& _name, ProtocolGame* p):
 	guildLevel = GUILDLEVEL_NONE;
 
 	promotionLevel = walkTaskEvent = actionTaskEvent = nextStepEvent = bloodHitCount = shieldBlockCount = 0;
-	lastAttack = idleTime = marriage = blessings = balance = premiumDays = mana = manaMax = manaSpent = 0;
+	mailAttempts = lastAttack = idleTime = marriage = blessings = balance = premiumDays = mana = manaMax = manaSpent = 0;
 	soul = guildId = levelPercent = magLevelPercent = magLevel = experience = damageImmunities = 0;
 	conditionImmunities = conditionSuppressions = groupId = vocation_id = town = skullEnd = 0;
 	lastLogin = lastLogout = lastIP = messageTicks = messageBuffer = nextAction = 0;
@@ -77,7 +77,7 @@ Player::Player(const std::string& _name, ProtocolGame* p):
 	soulMax = 100;
 	capacity = 400.00;
 	stamina = STAMINA_MAX;
-	lastLoad = lastPing = lastPong = OTSYS_TIME();
+	lastLoad = lastPing = lastPong = lastMail = OTSYS_TIME();
 
 	writeItem = NULL;
 	group = NULL;
@@ -1625,6 +1625,9 @@ void Player::onThink(uint32_t interval)
 		messageTicks = 0;
 		addMessageBuffer();
 	}
+
+	if(lastMail && lastMail < (uint64_t)(OTSYS_TIME() + g_config.getNumber(ConfigManager::MAIL_ATTEMPTS_FADE)))
+		mailAttempts = lastMail = 0;
 }
 
 bool Player::isMuted(uint16_t channelId, SpeakClasses type, uint32_t& time)
@@ -2412,7 +2415,7 @@ double Player::getFreeCapacity() const
 	return std::max(0.00, capacity - inventoryWeight);
 }
 
-ReturnValue Player::__queryAdd(int32_t index, const Thing* thing, uint32_t count, uint32_t flags) const
+ReturnValue Player::__queryAdd(int32_t index, const Thing* thing, uint32_t count, uint32_t flags, Creature*) const
 {
 	const Item* item = thing->getItem();
 	if(!item)
