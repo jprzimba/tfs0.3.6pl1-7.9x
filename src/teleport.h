@@ -52,8 +52,8 @@ class Teleport : public Item, public Cylinder
 			uint32_t, Creature* = NULL) const {return RET_NOTPOSSIBLE;}
 		virtual ReturnValue __queryMaxCount(int32_t index, const Thing* thing, uint32_t count,
 			uint32_t& maxQueryCount, uint32_t flags) const {return RET_NOTPOSSIBLE;}
-		virtual ReturnValue __queryRemove(const Thing* thing, uint32_t count,
-			uint32_t flags) const {return RET_NOERROR;}
+		virtual ReturnValue __queryRemove(const Thing*, uint32_t,
+			uint32_t, Creature* = NULL) const {return RET_NOERROR;}
 		virtual Cylinder* __queryDestination(int32_t& index, const Thing* thing, Item** destItem,
 			uint32_t& flags) {return this;}
 

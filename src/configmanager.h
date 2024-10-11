@@ -259,6 +259,7 @@ class ConfigManager
 			ADDONS_PREMIUM,
 			MONSTER_SPAWN_WALKBACK,
 			USE_CAPACITY,
+			HOUSE_PROTECTION,
 			LAST_BOOL_CONFIG /* this must be the last one */
 		};
 

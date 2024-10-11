@@ -736,7 +736,7 @@ ReturnValue Tile::__queryMaxCount(int32_t index, const Thing* thing, uint32_t co
 	return RET_NOERROR;
 }
 
-ReturnValue Tile::__queryRemove(const Thing* thing, uint32_t count, uint32_t flags) const
+ReturnValue Tile::__queryRemove(const Thing* thing, uint32_t count, uint32_t flags, Creature*) const
 {
 	int32_t index = __getIndexOfThing(thing);
 	if(index == -1)
@@ -744,7 +744,7 @@ ReturnValue Tile::__queryRemove(const Thing* thing, uint32_t count, uint32_t fla
 
 	const Item* item = thing->getItem();
 	if(!item || !count || (item->isStackable() && count > item->getItemCount())
-		|| (item->isNotMoveable() && !hasBitSet(FLAG_IGNORENOTMOVEABLE, flags)))
+		|| (!item->isMoveable() && !hasBitSet(FLAG_IGNORENOTMOVEABLE, flags)))
 		return RET_NOTPOSSIBLE;
 
 	return RET_NOERROR;

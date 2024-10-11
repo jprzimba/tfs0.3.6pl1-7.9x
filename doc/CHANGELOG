@@ -93,7 +93,8 @@
 		* Add GOD account to forgottenserver.s3db 2/2. (Tryller)
 		* Add new shop module to npc system StdModule.allBlessings. (Tryller)
 		* Add new configs from TFS 0.4 useCapacity, monsterSpawnWalkback, defaultDepotSizePremium, defaultDepotSize.
-			vipListDefaultLimit and vipListDefaultPremiumLimit, mailMaxAttempts, mailBlockPeriod and mailAttemptsFadeTime. (Tryller)
+			vipListDefaultLimit and vipListDefaultPremiumLimit, mailMaxAttempts, mailBlockPeriod and mailAttemptsFadeTime,
+			houseProtection. (Tryller)
 		* Add new lua functions from TFS 0.4 doSteerCreature(cid, position[, maxNodes]). (Tryller)
 		* Add old quest system based on unique id (quests.lua). (Tryller)
 		* Clean actions, movements and weapons scripts to work only with 7.9 items (Tryller)

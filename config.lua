@@ -138,6 +138,7 @@
 	houseRentPeriod = "never"
 	houseCleanOld = 0
 	guildHalls = false
+	houseProtection = true
 
 	-- Item usage
 	timeBetweenActions = 200
