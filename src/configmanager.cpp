@@ -282,6 +282,7 @@ bool ConfigManager::load()
 	m_confNumber[MAIL_BLOCK] = getGlobalNumber("mailBlockPeriod", 3600000);
 	m_confNumber[MAIL_ATTEMPTS_FADE] = getGlobalNumber("mailAttemptsFadeTime", 600000);
 	m_confBool[HOUSE_PROTECTION] = getGlobalBool("houseProtection", true);
+	m_confBool[HOUSE_SKIP_INIT_RENT] = getGlobalBool("houseSkipInitialRent", true);
 
 	m_loaded = true;
 	return true;

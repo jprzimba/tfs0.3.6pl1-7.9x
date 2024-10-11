@@ -135,6 +135,7 @@
 	houseRentAsPrice = false
 	housePriceAsRent = false
 	housePriceEachSquare = 1000
+	houseSkipInitialRent = true
 	houseRentPeriod = "never"
 	houseCleanOld = 0
 	guildHalls = false

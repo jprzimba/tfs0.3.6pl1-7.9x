@@ -260,6 +260,7 @@ class ConfigManager
 			MONSTER_SPAWN_WALKBACK,
 			USE_CAPACITY,
 			HOUSE_PROTECTION,
+			HOUSE_SKIP_INIT_RENT,
 			LAST_BOOL_CONFIG /* this must be the last one */
 		};
 

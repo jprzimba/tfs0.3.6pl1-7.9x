@@ -366,15 +366,7 @@ bool TalkAction::houseBuy(Creature* creature, const std::string& cmd, const std:
 		return false;
 	}
 
-	HouseTile* houseTile = tile->getHouseTile();
-	if(!houseTile)
-	{
-		player->sendCancel("You have to be looking at door of flat you would like to purchase.");
-		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
-		return false;
-	}
-
-	House* house = houseTile->getHouse();
+	House* house = tile->getHouse();
 	if(!house)
 	{
 		player->sendCancel("You have to be looking at door of flat you would like to purchase.");
@@ -385,6 +377,13 @@ bool TalkAction::houseBuy(Creature* creature, const std::string& cmd, const std:
 	if(!house->getDoorByPosition(pos))
 	{
 		player->sendCancel("You have to be looking at door of flat you would like to purchase.");
+		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
+		return false;
+	}
+
+	if(house->isBidded())
+	{
+		player->sendCancel("You cannot buy house which is currently bidded on an auction.");
 		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
 		return false;
 	}
@@ -450,7 +449,7 @@ bool TalkAction::houseBuy(Creature* creature, const std::string& cmd, const std:
 		return false;
 	}
 
-	if(g_game.getMoney(player) < house->getPrice() || !g_game.removeMoney(player, house->getPrice()))
+	if((uint32_t)g_game.getMoney(player) < house->getPrice() || !g_game.removeMoney(player, house->getPrice()))
 	{
 		player->sendCancel("You do not have enough money.");
 		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
@@ -458,6 +457,31 @@ bool TalkAction::houseBuy(Creature* creature, const std::string& cmd, const std:
 	}
 
 	house->setOwnerEx(player->getGUID(), true);
+	if(g_config.getBool(ConfigManager::HOUSE_SKIP_INIT_RENT))
+	{
+		uint32_t paidUntil = time(NULL);
+		switch(Houses::getInstance()->getRentPeriod())
+		{
+			case RENTPERIOD_DAILY:
+				paidUntil += 86400;
+				break;
+			case RENTPERIOD_WEEKLY:
+				paidUntil += 7 * 86400;
+				break;
+			case RENTPERIOD_MONTHLY:
+				paidUntil += 30 * 86400;
+				break;
+			case RENTPERIOD_YEARLY:
+				paidUntil += 365 * 86400;
+				break;
+			default:
+				break;
+		}
+
+		house->setPaidUntil(paidUntil);
+		house->setLastWarning(0);
+	}
+
 	std::string ret = "You have successfully bought this ";
 	if(house->isGuild())
 		ret += "hall";
