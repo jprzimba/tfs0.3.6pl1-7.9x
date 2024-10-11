@@ -98,6 +98,7 @@
 		* Add new lua functions from TFS 0.4 doSteerCreature(cid, position[, maxNodes]). (Tryller)
 		* Add old quest system based on unique id (quests.lua). (Tryller)
 		* Clean actions, movements and weapons scripts to work only with 7.9 items (Tryller)
+		* Auto stack items. (Elf)
 		* Only mysql and sqlite support. (Tryller)
 		* Only console support. (Tryller)
 		* Fix isItemStackable and isItemFluidContainer based on hard coded instead of lua. (Tryller)

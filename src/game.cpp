@@ -1525,14 +1525,31 @@ ReturnValue Game::internalMoveItem(Creature* actor, Cylinder* fromCylinder, Cyli
 	return ret;
 }
 
+
 ReturnValue Game::internalAddItem(Creature* actor, Cylinder* toCylinder, Item* item, int32_t index /*= INDEX_WHEREEVER*/,
-	uint32_t flags /*= 0*/, bool test /*= false*/)
+	uint32_t flags/* = 0*/, bool test/* = false*/)
 {
+	uint32_t remainderCount = 0;
+	return internalAddItem(actor, toCylinder, item, index, flags, test, remainderCount);
+}
+
+ReturnValue Game::internalAddItem(Creature* actor, Cylinder* toCylinder, Item* item, int32_t index,
+	uint32_t flags, bool test, uint32_t& remainderCount)
+{
+	Item* stackItem = NULL;
+	return internalAddItem(actor, toCylinder, item, index, flags, test, remainderCount, &stackItem);
+}
+
+ReturnValue Game::internalAddItem(Creature* actor, Cylinder* toCylinder, Item* item, int32_t index,
+	uint32_t flags, bool test, uint32_t& remainderCount, Item** stackItem)
+{
+	*stackItem = NULL;
+	remainderCount = 0;
 	if(!toCylinder || !item)
 		return RET_NOTPOSSIBLE;
 
-	Item* toItem = NULL;
-	toCylinder = toCylinder->__queryDestination(index, item, &toItem, flags);
+	Cylinder* destCylinder = toCylinder;
+	toCylinder = toCylinder->__queryDestination(index, item, stackItem, flags);
 
 	ReturnValue ret = toCylinder->__queryAdd(index, item, item->getItemCount(), flags);
 	if(ret != RET_NOERROR)
@@ -1543,47 +1560,57 @@ ReturnValue Game::internalAddItem(Creature* actor, Cylinder* toCylinder, Item* i
 	if(ret != RET_NOERROR)
 		return ret;
 
-	if(!test)
-	{
-		uint32_t m = maxQueryCount;
-		if(item->isStackable())
-			m = std::min((uint32_t)item->getItemCount(), maxQueryCount);
+	if(test)
+		return RET_NOERROR;
 
-		Item* moveItem = item;
-		if(item->isStackable() && toItem && toItem->getID() == item->getID())
+	Item* toItem = *stackItem;
+	if(item->isStackable() && toItem)
+	{
+		uint32_t m = std::min((uint32_t)item->getItemCount(), maxQueryCount), n = 0;
+		if(toItem->getID() == item->getID())
 		{
-			uint32_t n = std::min((uint32_t)100 - toItem->getItemCount(), m);
+			n = std::min((uint32_t)100 - toItem->getItemCount(), m);
 			toCylinder->__updateThing(toItem, toItem->getID(), toItem->getItemCount() + n);
-			if(m - n > 0)
-			{
-				if(m - n != item->getItemCount())
-					moveItem = Item::CreateItem(item->getID(), m - n);
-			}
-			else
-			{
-				moveItem = NULL;
-				if(item->getParent() != VirtualCylinder::virtualCylinder)
-				{
-					item->onRemoved();
-					freeThing(item);
-				}
-			}
 		}
 
-		if(moveItem)
+		uint32_t count = m - n;
+		if(count > 0)
 		{
-			toCylinder->__addThing(actor, index, moveItem);
-			int32_t moveItemIndex = toCylinder->__getIndexOfThing(moveItem);
-			if(moveItemIndex != -1)
-				toCylinder->postAddNotification(actor, moveItem, NULL, moveItemIndex);
+			if(item->getItemCount() != count)
+			{
+				Item* remainderItem = Item::CreateItem(item->getID(), count);
+				if((ret = internalAddItem(NULL, toCylinder, remainderItem, INDEX_WHEREEVER, flags, false)) == RET_NOERROR)
+				{
+					if(item->getParent() != VirtualCylinder::virtualCylinder)
+					{
+						item->onRemoved();
+						freeThing(item);
+					}
+
+					return RET_NOERROR;
+				}
+
+				delete remainderItem;
+				remainderCount = count;
+				return ret;
+			}
 		}
 		else
 		{
-			int32_t itemIndex = toCylinder->__getIndexOfThing(item);
-			if(itemIndex != -1)
-				toCylinder->postAddNotification(actor, item, NULL, itemIndex);
+			if(item->getParent() != VirtualCylinder::virtualCylinder)
+			{
+				item->onRemoved();
+				freeThing(item);
+			}
+
+			return RET_NOERROR;
 		}
 	}
+
+	toCylinder->__addThing(NULL, index, item);
+	int32_t itemIndex = toCylinder->__getIndexOfThing(item);
+	if(itemIndex != -1)
+		toCylinder->postAddNotification(actor, item, NULL, itemIndex);
 
 	return RET_NOERROR;
 }
@@ -2922,8 +2949,8 @@ bool Game::playerAcceptTrade(uint32_t playerId)
 		tradeItems.erase(it);
 	}
 
-	ReturnValue ret1 = internalAddItem(player, tradePartner, tradeItem1, INDEX_WHEREEVER, 0, true);
-	ReturnValue ret2 = internalAddItem(tradePartner, player, tradeItem2, INDEX_WHEREEVER, 0, true);
+	ReturnValue ret1 = internalAddItem(player, tradePartner, tradeItem1, INDEX_WHEREEVER, FLAG_IGNOREAUTOSTACK, true);
+	ReturnValue ret2 = internalAddItem(tradePartner, player, tradeItem2, INDEX_WHEREEVER, FLAG_IGNOREAUTOSTACK, true);
 
 	bool isSuccess = false;
 	if(ret1 == RET_NOERROR && ret2 == RET_NOERROR)
