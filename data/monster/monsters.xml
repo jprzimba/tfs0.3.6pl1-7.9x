@@ -179,6 +179,7 @@
 	<monster name="Goblin Leader" file="Goblins/goblin leader.xml"/>
 	<monster name="Goblin Scavenger" file="Goblins/goblin scavenger.xml"/>
 	<monster name="Grynch Clan Goblin" file="Goblins/grynch clan goblin.xml"/>
+	<monster name="Demon (Goblin)" file="goblins/demon (goblin).xml"/>
 
 	<!-- Hydro-Elementals -->
 	<monster name="Water Elemental" file="Hydro-Elementals/water elemental.xml"/>
@@ -190,10 +191,12 @@
 	<monster name="Centipede" file="Insects/centipede.xml"/>
 	<monster name="Larva" file="Insects/larva.xml"/>
 	<monster name="Pink Butterfly" file="Insects/pink butterfly.xml"/>
+	<monster name="Purple Butterfly" file="Insects/pink butterfly.xml"/>
 	<monster name="Red Butterfly" file="Insects/red butterfly.xml"/>
 	<monster name="Scarab" file="Insects/scarab.xml"/>
 	<monster name="Wasp" file="Insects/wasp.xml"/>
 	<monster name="Yellow Butterfly" file="Insects/yellow butterfly.xml"/>
+	<monster name="Butterfly" file="insects/butterfly.xml"/>
 
 	<!-- Lizards -->
 	<monster name="Lizard Sentinel" file="Lizards/lizard sentinel.xml"/>
