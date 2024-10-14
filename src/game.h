@@ -341,7 +341,8 @@ class Game
 		void clearSpectatorCache() {if(map) map->clearSpectatorCache();}
 
 		ReturnValue internalMoveCreature(Creature* creature, Direction direction, uint32_t flags = 0);
-		ReturnValue internalMoveCreature(Creature* actor, Creature* creature, Cylinder* fromCylinder, Cylinder* toCylinder, uint32_t flags = 0);
+		ReturnValue internalMoveCreature(Creature* actor, Creature* creature, Cylinder* fromCylinder,
+			Cylinder* toCylinder, uint32_t flags = 0, bool forceTeleport = false);
 
 		ReturnValue internalMoveItem(Creature* actor, Cylinder* fromCylinder, Cylinder* toCylinder, int32_t index,
 			Item* item, uint32_t count, Item** _moveItem, uint32_t flags = 0);
@@ -418,7 +419,7 @@ class Game
 		  * \param flags optional flags to modify default behavior
 		  * \returns true if the teleportation was successful
 		  */
-		ReturnValue internalTeleport(Thing* thing, const Position& newPos, bool pushMove, uint32_t flags = 0);
+		ReturnValue internalTeleport(Thing* thing, const Position& newPos, bool forceTeleport, uint32_t flags = FLAG_NOLIMIT, bool fullTeleport = true);
 
 		/**
 			* Turn a creature to a different direction.

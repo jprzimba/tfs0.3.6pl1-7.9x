@@ -1176,14 +1176,15 @@ ReturnValue Game::internalMoveCreature(Creature* creature, Direction direction, 
 	return ret;
 }
 
-ReturnValue Game::internalMoveCreature(Creature* actor, Creature* creature, Cylinder* fromCylinder, Cylinder* toCylinder, uint32_t flags/* = 0*/)
+ReturnValue Game::internalMoveCreature(Creature* actor, Creature* creature, Cylinder* fromCylinder,
+	Cylinder* toCylinder, uint32_t flags/* = 0*/, bool forceTeleport/* = false*/)
 {
 	//check if we can move the creature to the destination
-	ReturnValue ret = toCylinder->__queryAdd(0, creature, 1, flags);
+	ReturnValue ret = toCylinder->__queryAdd(0, creature, 1, flags, actor);
 	if(ret != RET_NOERROR)
 		return ret;
 
-	fromCylinder->getTile()->moveCreature(actor, creature, toCylinder);
+	fromCylinder->getTile()->moveCreature(actor, creature, toCylinder, forceTeleport);
 	if(creature->getParent() != toCylinder)
 		return RET_NOERROR;
 
@@ -1195,7 +1196,7 @@ ReturnValue Game::internalMoveCreature(Creature* actor, Creature* creature, Cyli
 	{
 		toCylinder->getTile()->moveCreature(actor, creature, subCylinder);
 		if(creature->getParent() != subCylinder) //could happen if a script move the creature
-			 break;
+			break;
 
 		toCylinder = subCylinder;
 		flags = 0;
@@ -1211,7 +1212,7 @@ bool Game::playerMoveItem(uint32_t playerId, const Position& fromPos,
 {
 	Player* player = getPlayerByID(playerId);
 	if(!player || player->isRemoved() || player->hasFlag(PlayerFlag_CannotMoveItems))
-		return false;
+    		return false;
 
 	if(!player->canDoAction())
 	{
@@ -2059,7 +2060,7 @@ Item* Game::transformItem(Item* item, uint16_t newId, int32_t newCount /*= -1*/)
 	return newItem;
 }
 
-ReturnValue Game::internalTeleport(Thing* thing, const Position& newPos, bool pushMove, uint32_t flags /*= 0*/)
+ReturnValue Game::internalTeleport(Thing* thing, const Position& newPos, bool forceTeleport, uint32_t flags/* = 0*/, bool fullTeleport/* = true*/)
 {
 	if(newPos == thing->getPosition())
 		return RET_NOERROR;
@@ -2071,11 +2072,10 @@ ReturnValue Game::internalTeleport(Thing* thing, const Position& newPos, bool pu
 	{
 		if(Creature* creature = thing->getCreature())
 		{
-			if(Position::areInRange<1,1,0>(creature->getPosition(), newPos) && pushMove)
-				creature->getTile()->moveCreature(NULL, creature, toTile, false);
-			else
-				creature->getTile()->moveCreature(NULL, creature, toTile, true);
+			if(fullTeleport)
+				return internalMoveCreature(NULL, creature, creature->getParent(), toTile, flags, forceTeleport);
 
+			creature->getTile()->moveCreature(NULL, creature, toTile, forceTeleport);
 			return RET_NOERROR;
 		}
 
@@ -3437,9 +3437,8 @@ bool Game::playerTurn(uint32_t playerId, Direction dir)
 
 	player->setIdleTime(0);
 	ReturnValue ret = tile->__queryAdd(0, player, 1, FLAG_IGNOREBLOCKITEM);
-	if(ret != RET_NOTENOUGHROOM && (ret != RET_NOTPOSSIBLE || player->hasCustomFlag(PlayerCustomFlag_CanMoveAnywhere))
-		&& (ret != RET_PLAYERISNOTINVITED || player->hasFlag(PlayerFlag_CanEditHouses)))
-		return internalTeleport(player, pos, true);
+	if(ret != RET_NOTENOUGHROOM && (ret != RET_NOTPOSSIBLE || player->hasCustomFlag(PlayerCustomFlag_CanMoveAnywhere)))
+		return (internalTeleport(player, pos, false, FLAG_NOLIMIT, false) != RET_NOERROR);
 
 	player->sendCancelMessage(ret);
 	return false;

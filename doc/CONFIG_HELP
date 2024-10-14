@@ -669,7 +669,7 @@
 			Maximum items which can be placed on 1 protection zone tile.
 			Default: 0 (means no limit!)
 
-		maxItemsPerHouseTile
+		houseTileLimit
 			Maximum items which can be placed on 1 house tile.
 			Default: 0 (means no limit!)
 
