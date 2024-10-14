@@ -340,18 +340,18 @@ void Creature::internalCreatureDisappear(const Creature* creature, bool isLogout
 
 void Creature::updateMapCache()
 {
-	const Position& myPos = getPosition();
-	Position pos(0, 0, myPos.z);
+	const Position& pos = getPosition();
+	Position dest(0, 0, pos.z);
 
 	Tile* tile = NULL;
 	for(int32_t y = -((mapWalkHeight - 1) / 2); y <= ((mapWalkHeight - 1) / 2); ++y)
 	{
 		for(int32_t x = -((mapWalkWidth - 1) / 2); x <= ((mapWalkWidth - 1) / 2); ++x)
 		{
-			pos.x = myPos.x + x;
-			pos.y = myPos.y + y;
-			if((tile = g_game.getTile(pos.x, pos.y, myPos.z)))
-				updateTileCache(tile, pos);
+			dest.x = pos.x + x;
+			dest.y = pos.y + y;
+			if((tile = g_game.getTile(dest)))
+				updateTileCache(tile, dest);
 		}
 	}
 }
@@ -494,19 +494,21 @@ void Creature::onCreatureMove(const Creature* creature, const Tile* newTile, con
 {
 	if(creature == this)
 	{
+		if(!oldTile->floorChange() && !oldTile->positionChange())
+			setLastPosition(oldPos);
+
 		lastStep = OTSYS_TIME();
 		lastStepCost = 1;
-
-		setLastPosition(oldPos);
 		if(!teleport)
 		{
-			if(oldPos.z != newPos.z || (std::abs(newPos.x - oldPos.x) >= 1 && std::abs(newPos.y - oldPos.y) >= 1))
-				lastStepCost = 2;
+			if(std::abs(newPos.x - oldPos.x) >= 1 && std::abs(newPos.y - oldPos.y) >= 1)
+				lastStepCost = 3;
 		}
 		else
 			stopEventWalk();
 
-		if(!summons.empty())
+		if(!summons.empty() && (!g_config.getBool(ConfigManager::TELEPORT_SUMMONS) ||
+			(g_config.getBool(ConfigManager::TELEPORT_PLAYER_SUMMONS) && !getPlayer())))
 		{
 			std::list<Creature*>::iterator cit;
 			std::list<Creature*> despawnList;
@@ -515,7 +517,7 @@ void Creature::onCreatureMove(const Creature* creature, const Tile* newTile, con
 				const Position pos = (*cit)->getPosition();
 				if((std::abs(pos.z - newPos.z) > 2) || (std::max(std::abs((
 					newPos.x) - pos.x), std::abs((newPos.y - 1) - pos.y)) > 30))
-					despawnList.push_back((*cit));
+					despawnList.push_back(*cit);
 			}
 
 			for(cit = despawnList.begin(); cit != despawnList.end(); ++cit)
