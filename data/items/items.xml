@@ -10978,7 +10978,6 @@
 	<item id="6579" article="a" name="tibia doll">
 		<attribute key="weight" value="750" />
 	</item>
-
 	<item id="20001" name="water" />
 	<item id="20002" name="blood" />
 	<item id="20003" name="beer" />

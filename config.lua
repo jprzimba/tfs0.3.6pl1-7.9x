@@ -151,7 +151,7 @@
 	-- NOTE: do not enable randomizeTiles for now, it need to be fixed.
 	mapName = "world"
 	mapAuthor = "Unknow"
-	randomizeTiles = false
+	randomizeTiles = true
 	storeTrash = true
 	cleanProtectedZones = true
 
