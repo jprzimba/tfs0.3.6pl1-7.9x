@@ -3421,26 +3421,18 @@ bool Game::playerTurn(uint32_t playerId, Direction dir)
 	if(!player || player->isRemoved())
 		return false;
 
-	if(internalCreatureTurn(player, dir))
-	{
-		player->setIdleTime(0);
-		return true;
-	}
-
-	if(player->getDirection() != dir || !player->hasCustomFlag(PlayerCustomFlag_CanTurnhop))
-		return false;
+	player->setIdleTime(0);
+	if(dir != player->getDirection() || !player->hasCustomFlag(PlayerCustomFlag_CanTurnhop))
+		return internalCreatureTurn(player, dir);
 
 	Position pos = getNextPosition(dir, player->getPosition());
-	Tile* tile = map->getTile(pos);
-	if(!tile || !tile->ground)
+	if(!map->getTile(pos))
 		return false;
 
-	player->setIdleTime(0);
-	ReturnValue ret = tile->__queryAdd(0, player, 1, FLAG_IGNOREBLOCKITEM);
-	if(ret != RET_NOTENOUGHROOM && (ret != RET_NOTPOSSIBLE || player->hasCustomFlag(PlayerCustomFlag_CanMoveAnywhere)))
-		return (internalTeleport(player, pos, false, FLAG_NOLIMIT, false) != RET_NOERROR);
+	pos = getClosestFreeTile(player, pos, true);
+	if(pos.x != 0 && pos.y != 0)
+		return internalTeleport(player, pos, true);
 
-	player->sendCancelMessage(ret);
 	return false;
 }
 
