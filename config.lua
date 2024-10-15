@@ -252,7 +252,7 @@
 	rateExperienceFromPlayers = 0
 	rateSkill = 3.0
 	rateMagic = 3.0
-	rateLoot = 100.0
+	rateLoot = 2.0
 	rateSpawn = 1
 
 	-- Monster rates
