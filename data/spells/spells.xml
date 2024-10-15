@@ -42,13 +42,13 @@
 	</rune>
 
 	<!-- Attack Spells -->
-	<instant name="Flame Strike" words="exori flam" lvl="12" mana="20" prem="1" range="3" direction="1" exhaustion="2000" needlearn="0" event="script" value="attack/flame strike.lua">
+	<instant name="Flame Strike" words="exori flam" lvl="12" mana="20" prem="1" direction="1" exhaustion="2000" needlearn="0" event="script" value="attack/flame strike.lua">
 		<vocation id="1"/>
 		<vocation id="2"/>
 		<vocation id="5"/>
 		<vocation id="6"/>
 	</instant>
-	<instant name="Energy Strike" words="exori vis" lvl="12" mana="20" prem="1" range="3" direction="1" exhaustion="2000" needlearn="0" event="script" value="attack/energy strike.lua">
+	<instant name="Energy Strike" words="exori vis" lvl="12" mana="20" prem="1" direction="1" exhaustion="2000" needlearn="0" event="script" value="attack/energy strike.lua">
 		<vocation id="1"/>
 		<vocation id="2"/>
 		<vocation id="5"/>

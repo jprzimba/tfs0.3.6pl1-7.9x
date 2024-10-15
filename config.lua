@@ -280,7 +280,7 @@
 	rateStaminaLoss = 1
 	rateStaminaGain = 3
 	rateStaminaThresholdGain = 12
-	staminaRatingLimitTop = 42 * 60
+	staminaRatingLimitTop = 55 * 60
 	staminaRatingLimitBottom = 14 * 60
 	rateStaminaAboveNormal = 1.5
 	rateStaminaUnderNormal = 0.5
