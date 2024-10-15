@@ -789,17 +789,10 @@ bool Houses::loadFromXml(std::string filename)
 			rent = intValue;
 
 		uint32_t price = house->getTilesCount() * g_config.getNumber(ConfigManager::HOUSE_PRICE);
-		if(g_config.getBool(ConfigManager::HOUSE_RENTASPRICE))
-		{
-			uint32_t tmp = rent;
-			if(!tmp)
-				tmp = price;
+		if(g_config.getBool(ConfigManager::HOUSE_RENTASPRICE) && rent)
+			price = rent;
 
-			house->setPrice(tmp);
-		}
-		else
-			house->setPrice(price);
-
+		house->setPrice(price);
 		if(g_config.getBool(ConfigManager::HOUSE_PRICEASRENT))
 			house->setRent(price);
 		else

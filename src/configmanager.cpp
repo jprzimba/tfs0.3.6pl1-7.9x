@@ -18,6 +18,7 @@
 #include <iostream>
 
 #include "configmanager.h"
+#include "house.h"
 #include "tools.h"
 
 ConfigManager::ConfigManager()
@@ -298,7 +299,33 @@ bool ConfigManager::reload()
 	if(!m_loaded)
 		return false;
 
-	return load();
+	uint32_t tmp = m_confNumber[HOUSE_PRICE];
+	if(!load())
+		return false;
+
+	if((uint32_t)m_confNumber[HOUSE_PRICE] == tmp)
+		return true;
+
+	for(HouseMap::iterator it = Houses::getInstance()->getHouseBegin();
+		it != Houses::getInstance()->getHouseEnd(); ++it)
+	{
+		uint32_t price = it->second->getTilesCount() * m_confNumber[HOUSE_PRICE];
+		if(m_confBool[HOUSE_RENTASPRICE])
+		{
+			uint32_t rent = it->second->getRent();
+			if(!m_confBool[HOUSE_PRICEASRENT] && it->second->getPrice() != rent)
+				price = rent;
+		}
+
+		it->second->setPrice(price);
+		if(m_confBool[HOUSE_PRICEASRENT])
+			it->second->setRent(price);
+
+		if(!it->second->getOwner())
+			it->second->updateDoorDescription();
+	}
+
+	return true;
 }
 
 const std::string& ConfigManager::getString(uint32_t _what) const
