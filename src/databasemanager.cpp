@@ -543,14 +543,14 @@ uint32_t DatabaseManager::updateDatabase()
 		case 11:
 		{
 			std::clog << "Updating database to version: 12..." << std::endl;
-			db->executeQuery("UPDATE `players` SET `stamina` = 201600000 WHERE `stamina` > 201600000;");
+			db->executeQuery("UPDATE `players` SET `stamina` = 151200000 WHERE `stamina` > 151200000;");
 			db->executeQuery("UPDATE `players` SET `loss_experience` = `loss_experience` * 10, `loss_mana` = `loss_mana` * 10, `loss_skills` = `loss_skills` * 10, `loss_items` = `loss_items` * 10;");
 			switch(db->getDatabaseEngine())
 			{
 				case DATABASE_ENGINE_MYSQL:
 				{
 					std::string queryList[] = {
-						"ALTER TABLE `players` CHANGE `stamina` `stamina` INT NOT NULL DEFAULT 201600000;",
+						"ALTER TABLE `players` CHANGE `stamina` `stamina` INT NOT NULL DEFAULT 151200000;",
 						"ALTER TABLE `players` CHANGE `loss_experience` `loss_experience` INT NOT NULL DEFAULT 100;",
 						"ALTER TABLE `players` CHANGE `loss_mana` `loss_mana` INT NOT NULL DEFAULT 100;",
 						"ALTER TABLE `players` CHANGE `loss_skills` `loss_skills` INT NOT NULL DEFAULT 100;",
@@ -1023,6 +1023,14 @@ uint32_t DatabaseManager::updateDatabase()
 			registerDatabaseConfig("encryption", g_config.getNumber(ConfigManager::ENCRYPTION));
 			registerDatabaseConfig("db_version", 23);
 			return 23;
+		}
+
+		case 23:
+		{
+			std::clog << "Updating database to version: 24..." << std::endl;
+			db->executeQuery("UPDATE `players` SET `stamina` = 201600000;");
+			registerDatabaseConfig("db_version", 24);
+			return 24;
 		}
 
 		default:

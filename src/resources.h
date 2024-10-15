@@ -28,5 +28,5 @@
 #define STATUS_SERVER_CODENAME "Crying Damson"
 #define STATUS_SERVER_PROTOCOL "7.9x"
 
-#define VERSION_DATABASE 23
+#define VERSION_DATABASE 24
 #endif

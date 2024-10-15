@@ -1,5 +1,20 @@
 -- The Forgotten Server Config
 
+	-- Database
+	-- NOTE: sqlFile is used only by sqlite database, and sqlKeepAlive by mysql database.
+	-- To disable sqlKeepAlive such as mysqlReadTimeout use 0 value.
+	sqlType = "sqlite"
+	sqlHost = "localhost"
+	sqlPort = 3306
+	sqlUser = "root"
+	sqlPass = "root"
+	sqlDatabase = "theforgottenserver"
+	sqlFile = "forgottenserver.s3db"
+	sqlKeepAlive = 0
+	mysqlReadTimeout = 10
+	mysqlWriteTimeout = 10
+	encryptionType = "plain"
+
 	-- Account manager
 	accountManager = true
 	namelockManager = true
@@ -93,21 +108,6 @@
 	forceSlowConnectionsToDisconnect = false
 	loginOnlyWithLoginServer = false
 	premiumPlayerSkipWaitList = false
-
-	-- Database
-	-- NOTE: sqlFile is used only by sqlite database, and sqlKeepAlive by mysql database.
-	-- To disable sqlKeepAlive such as mysqlReadTimeout use 0 value.
-	sqlType = "sqlite"
-	sqlHost = "localhost"
-	sqlPort = 3306
-	sqlUser = "root"
-	sqlPass = ""
-	sqlDatabase = "theforgottenserver"
-	sqlFile = "forgottenserver.s3db"
-	sqlKeepAlive = 0
-	mysqlReadTimeout = 10
-	mysqlWriteTimeout = 10
-	encryptionType = "plain"
 
 	-- Deathlist
 	deathListEnabled = true
