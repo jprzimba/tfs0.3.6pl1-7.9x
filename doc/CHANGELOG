@@ -47,12 +47,15 @@
 			data/items
 					items.xml
 					items.otb
+					randomization.xml
 			data/npc/
 			data/monster/
 			data/movements/
 					movements.xml
 			data/spells/
 			data/weapons/
+					scripts/
+						burst_arrow.lua
 					weapons.xml
 			data/XML/
 					outfits.xml
@@ -97,8 +100,9 @@
 			houseProtection, houseSkipInitialRent, houseTileLimit, tileLimit, protectionTileLimit. (Tryller)
 		* Add new lua functions from TFS 0.4 doSteerCreature(cid, position[, maxNodes]). (Tryller)
 		* Add old quest system based on unique id (quests.lua). (Tryller)
-		* Clean actions, movements and weapons scripts to work only with 7.9 items (Tryller)
+		* Clean actions, movements and weapons scripts to work only with 7.9 items. (Tryller)
 		* Auto stack items. (Elf)
+		* Burst arrows using old formula based on magic level. (Tryller)
 		* Only mysql and sqlite support. (Tryller)
 		* Only console support. (Tryller)
 		* Fix isItemStackable and isItemFluidContainer based on hard coded instead of lua. (Tryller)
@@ -112,8 +116,7 @@
 		* Updated Account Manager to work with account number instead of account name. (Tryller)
 		* Updated characters death corpse ITEM_MALE_CORPSE = 3058, ITEM_FEMALE_CORPSE = 3065 to work with 7.9 protocol. (Tryller)
 		* Updated npc system. (Tryller)
-		* Remove shared experience. (Tryller)
-		* Remove gamePort, adminPort and statusPort from config.lua. (Tryller)
+		* Remove  from config.lua. (Tryller)
 		* Remove account name lua functions getAccountByName(name) and getAccountByAccountId(accId). (Tryller)
 		* Remove swimming pool from 7.9 protocol. (Tryller)
 		* Remove non 7.9 icons 	ICON_CURSED, ICON_BUFF, ICON_PZ and ICON_PROTECTIONZONE. (Tryller)
@@ -122,7 +125,7 @@
 		* Remove not supported 7.9 monsters. (Tryller)
 		* Remove not supported 7.9 spells. (Tryller)
 		* Remove bag from monsters. (Tryller)
-		* Removed from config.lua maxItemsPerPZTile and maxItemsPerHouseTile, replaced with new one. (Tryller)
+		* Removed from config.lua gamePort, adminPort and statusPort, maxItemsPerPZTile and maxItemsPerHouseTile. (Tryller)
 		* Remove lua function getItemInfo and move functions to new lua functions, getItemPluralNameById(itemid), getItemArticleById(itemid), 
 			getItemRWInfo(uid), getItemWeaponType(uid), isCorpse(uid), getFluidSourceType(type), getItemDescriptionsById(itemid),
 			getItemDescriptions(uid) and getItemWeightById(itemid, count[, precise = TRUE]). (Tryller)
