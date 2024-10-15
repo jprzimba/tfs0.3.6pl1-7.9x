@@ -17,9 +17,6 @@
 *.gch
 *.pch
 
-# Ignore all .txt files
-*.txt
-
 # Ignore CMake generated files
 CMakeCache.txt
 CMakeFiles/
