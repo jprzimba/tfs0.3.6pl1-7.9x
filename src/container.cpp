@@ -75,7 +75,7 @@ Attr_ReadValue Container::readAttr(AttrTypes_t attr, PropStream& propStream)
 		case ATTR_CONTAINER_ITEMS:
 		{
 			uint32_t count;
-			if(!propStream.getLong(count))
+			if(!propStream.GET_ULONG(count))
 				return ATTR_READ_ERROR;
 
 			serializationCount = count;

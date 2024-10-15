@@ -27,7 +27,7 @@ Attr_ReadValue Teleport::readAttr(AttrTypes_t attr, PropStream& propStream)
 		return Item::readAttr(attr, propStream);
 
 	TeleportDest* dest;
-	if(!propStream.getStruct(dest))
+	if(!propStream.GET_STRUCT(dest))
 		return ATTR_READ_ERROR;
 
 	setDestination(Position(dest->_x, dest->_y, dest->_z));
@@ -37,14 +37,14 @@ Attr_ReadValue Teleport::readAttr(AttrTypes_t attr, PropStream& propStream)
 bool Teleport::serializeAttr(PropWriteStream& propWriteStream) const
 {
 	bool ret = Item::serializeAttr(propWriteStream);
-	propWriteStream.addByte(ATTR_TELE_DEST);
+	propWriteStream.ADD_UCHAR(ATTR_TELE_DEST);
 
 	TeleportDest dest;
 	dest._x = destination.x;
 	dest._y = destination.y;
 	dest._z = destination.z;
 
-	propWriteStream.addType(dest);
+	propWriteStream.ADD_VALUE(dest);
 	return ret;
 }
 

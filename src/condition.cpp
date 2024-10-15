@@ -57,7 +57,7 @@ bool Condition::setParam(ConditionParam_t param, int32_t value)
 bool Condition::unserialize(PropStream& propStream)
 {
 	uint8_t attrType;
-	while(propStream.getByte(attrType) && attrType != CONDITIONATTR_END)
+	while(propStream.GET_UCHAR(attrType) && attrType != CONDITIONATTR_END)
 	{
 		if(!unserializeProp((ConditionAttr_t)attrType, propStream))
 			return false;
@@ -73,7 +73,7 @@ bool Condition::unserializeProp(ConditionAttr_t attr, PropStream& propStream)
 		case CONDITIONATTR_TYPE:
 		{
 			int32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			conditionType = (ConditionType_t)value;
@@ -83,7 +83,7 @@ bool Condition::unserializeProp(ConditionAttr_t attr, PropStream& propStream)
 		case CONDITIONATTR_ID:
 		{
 			int32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			id = (ConditionId_t)value;
@@ -93,7 +93,7 @@ bool Condition::unserializeProp(ConditionAttr_t attr, PropStream& propStream)
 		case CONDITIONATTR_TICKS:
 		{
 			int32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			ticks = value;
@@ -103,7 +103,7 @@ bool Condition::unserializeProp(ConditionAttr_t attr, PropStream& propStream)
 		case CONDITIONATTR_BUFF:
 		{
 			int32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			buff = value != 0;
@@ -113,7 +113,7 @@ bool Condition::unserializeProp(ConditionAttr_t attr, PropStream& propStream)
 		case CONDITIONATTR_SUBID:
 		{
 			int32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			subId = value;
@@ -132,20 +132,20 @@ bool Condition::unserializeProp(ConditionAttr_t attr, PropStream& propStream)
 
 bool Condition::serialize(PropWriteStream& propWriteStream)
 {
-	propWriteStream.addByte(CONDITIONATTR_TYPE);
-	propWriteStream.addType((int32_t)conditionType);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_TYPE);
+	propWriteStream.ADD_VALUE((int32_t)conditionType);
 
-	propWriteStream.addByte(CONDITIONATTR_ID);
-	propWriteStream.addType((int32_t)id);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_ID);
+	propWriteStream.ADD_VALUE((int32_t)id);
 
-	propWriteStream.addByte(CONDITIONATTR_TICKS);
-	propWriteStream.addType((int32_t)ticks);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_TICKS);
+	propWriteStream.ADD_VALUE((int32_t)ticks);
 
-	propWriteStream.addByte(CONDITIONATTR_BUFF);
-	propWriteStream.addType((int32_t)buff ? 1 : 0);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_BUFF);
+	propWriteStream.ADD_VALUE((int32_t)buff ? 1 : 0);
 
-	propWriteStream.addByte(CONDITIONATTR_SUBID);
-	propWriteStream.addType((int32_t)subId);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_SUBID);
+	propWriteStream.ADD_VALUE((int32_t)subId);
 	return true;
 }
 
@@ -231,39 +231,39 @@ Condition* Condition::createCondition(ConditionId_t _id, ConditionType_t _type, 
 Condition* Condition::createCondition(PropStream& propStream)
 {
 	uint8_t attr = 0;
-	if(!propStream.getByte(attr) || attr != CONDITIONATTR_TYPE)
+	if(!propStream.GET_UCHAR(attr) || attr != CONDITIONATTR_TYPE)
 		return NULL;
 
 	uint32_t _type = 0;
-	if(!propStream.getLong(_type))
+	if(!propStream.GET_ULONG(_type))
 		return NULL;
 
-	if(!propStream.getByte(attr) || attr != CONDITIONATTR_ID)
+	if(!propStream.GET_UCHAR(attr) || attr != CONDITIONATTR_ID)
 		return NULL;
 
 	uint32_t _id = 0;
-	if(!propStream.getLong(_id))
+	if(!propStream.GET_ULONG(_id))
 		return NULL;
 
-	if(!propStream.getByte(attr) || attr != CONDITIONATTR_TICKS)
+	if(!propStream.GET_UCHAR(attr) || attr != CONDITIONATTR_TICKS)
 		return NULL;
 
 	uint32_t _ticks = 0;
-	if(!propStream.getLong(_ticks))
+	if(!propStream.GET_ULONG(_ticks))
 		return NULL;
 
-	if(!propStream.getByte(attr) || attr != CONDITIONATTR_BUFF)
+	if(!propStream.GET_UCHAR(attr) || attr != CONDITIONATTR_BUFF)
 		return NULL;
 
 	uint32_t _buff = 0;
-	if(!propStream.getLong(_buff))
+	if(!propStream.GET_ULONG(_buff))
 		return NULL;
 
-	if(!propStream.getByte(attr) || attr != CONDITIONATTR_SUBID)
+	if(!propStream.GET_UCHAR(attr) || attr != CONDITIONATTR_SUBID)
 		return NULL;
 
 	uint32_t _subId = 0;
-	if(!propStream.getLong(_subId))
+	if(!propStream.GET_ULONG(_subId))
 		return NULL;
 
 	return createCondition((ConditionId_t)_id, (ConditionType_t)_type, _ticks, 0, _buff != 0, _subId);
@@ -368,7 +368,7 @@ bool ConditionAttributes::unserializeProp(ConditionAttr_t attr, PropStream& prop
 		case CONDITIONATTR_SKILLS:
 		{
 			int32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			skills[currentSkill++] = value;
@@ -378,7 +378,7 @@ bool ConditionAttributes::unserializeProp(ConditionAttr_t attr, PropStream& prop
 		case CONDITIONATTR_STATS:
 		{
 			int32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			stats[currentStat++] = value;
@@ -399,14 +399,14 @@ bool ConditionAttributes::serialize(PropWriteStream& propWriteStream)
 
 	for(int32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i)
 	{
-		propWriteStream.addByte(CONDITIONATTR_SKILLS);
-		propWriteStream.addType(skills[i]);
+		propWriteStream.ADD_UCHAR(CONDITIONATTR_SKILLS);
+		propWriteStream.ADD_VALUE(skills[i]);
 	}
 
 	for(int32_t i = STAT_FIRST; i <= STAT_LAST; ++i)
 	{
-		propWriteStream.addByte(CONDITIONATTR_STATS);
-		propWriteStream.addType(stats[i]);
+		propWriteStream.ADD_UCHAR(CONDITIONATTR_STATS);
+		propWriteStream.ADD_VALUE(stats[i]);
 	}
 
 	return true;
@@ -652,7 +652,7 @@ bool ConditionRegeneration::unserializeProp(ConditionAttr_t attr, PropStream& pr
 		case CONDITIONATTR_HEALTHTICKS:
 		{
 			uint32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			healthTicks = value;
@@ -662,7 +662,7 @@ bool ConditionRegeneration::unserializeProp(ConditionAttr_t attr, PropStream& pr
 		case CONDITIONATTR_HEALTHGAIN:
 		{
 			uint32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			healthGain = value;
@@ -672,7 +672,7 @@ bool ConditionRegeneration::unserializeProp(ConditionAttr_t attr, PropStream& pr
 		case CONDITIONATTR_MANATICKS:
 		{
 			uint32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			manaTicks = value;
@@ -682,7 +682,7 @@ bool ConditionRegeneration::unserializeProp(ConditionAttr_t attr, PropStream& pr
 		case CONDITIONATTR_MANAGAIN:
 		{
 			uint32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			manaGain = value;
@@ -701,17 +701,17 @@ bool ConditionRegeneration::serialize(PropWriteStream& propWriteStream)
 	if(!ConditionGeneric::serialize(propWriteStream))
 		return false;
 
-	propWriteStream.addByte(CONDITIONATTR_HEALTHTICKS);
-	propWriteStream.addType(healthTicks);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_HEALTHTICKS);
+	propWriteStream.ADD_VALUE(healthTicks);
 
-	propWriteStream.addByte(CONDITIONATTR_HEALTHGAIN);
-	propWriteStream.addType(healthGain);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_HEALTHGAIN);
+	propWriteStream.ADD_VALUE(healthGain);
 
-	propWriteStream.addByte(CONDITIONATTR_MANATICKS);
-	propWriteStream.addType(manaTicks);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_MANATICKS);
+	propWriteStream.ADD_VALUE(manaTicks);
 
-	propWriteStream.addByte(CONDITIONATTR_MANAGAIN);
-	propWriteStream.addType(manaGain);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_MANAGAIN);
+	propWriteStream.ADD_VALUE(manaGain);
 	return true;
 }
 
@@ -790,7 +790,7 @@ bool ConditionSoul::unserializeProp(ConditionAttr_t attr, PropStream& propStream
 		case CONDITIONATTR_SOULGAIN:
 		{
 			uint32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			soulGain = value;
@@ -800,7 +800,7 @@ bool ConditionSoul::unserializeProp(ConditionAttr_t attr, PropStream& propStream
 		case CONDITIONATTR_SOULTICKS:
 		{
 			uint32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			soulTicks = value;
@@ -819,11 +819,11 @@ bool ConditionSoul::serialize(PropWriteStream& propWriteStream)
 	if(!ConditionGeneric::serialize(propWriteStream))
 		return false;
 
-	propWriteStream.addByte(CONDITIONATTR_SOULGAIN);
-	propWriteStream.addType(soulGain);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_SOULGAIN);
+	propWriteStream.ADD_VALUE(soulGain);
 
-	propWriteStream.addByte(CONDITIONATTR_SOULTICKS);
-	propWriteStream.addType(soulTicks);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_SOULTICKS);
+	propWriteStream.ADD_VALUE(soulTicks);
 
 	return true;
 }
@@ -922,7 +922,7 @@ bool ConditionDamage::unserializeProp(ConditionAttr_t attr, PropStream& propStre
 		case CONDITIONATTR_DELAYED:
 		{
 			bool value = false;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			delayed = value;
@@ -932,7 +932,7 @@ bool ConditionDamage::unserializeProp(ConditionAttr_t attr, PropStream& propStre
 		case CONDITIONATTR_PERIODDAMAGE:
 		{
 			int32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			periodDamage = value;
@@ -942,7 +942,7 @@ bool ConditionDamage::unserializeProp(ConditionAttr_t attr, PropStream& propStre
 		case CONDITIONATTR_OWNER:
 		{
 			uint32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			owner = value;
@@ -952,7 +952,7 @@ bool ConditionDamage::unserializeProp(ConditionAttr_t attr, PropStream& propStre
 		case CONDITIONATTR_INTERVALDATA:
 		{
 			IntervalInfo damageInfo;
-			if(!propStream.getType(damageInfo))
+			if(!propStream.GET_VALUE(damageInfo))
 				return false;
 
 			damageList.push_back(damageInfo);
@@ -974,19 +974,19 @@ bool ConditionDamage::serialize(PropWriteStream& propWriteStream)
 	if(!Condition::serialize(propWriteStream))
 		return false;
 
-	propWriteStream.addByte(CONDITIONATTR_DELAYED);
-	propWriteStream.addType(delayed);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_DELAYED);
+	propWriteStream.ADD_VALUE(delayed);
 
-	propWriteStream.addByte(CONDITIONATTR_PERIODDAMAGE);
-	propWriteStream.addType(periodDamage);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_PERIODDAMAGE);
+	propWriteStream.ADD_VALUE(periodDamage);
 
-	propWriteStream.addByte(CONDITIONATTR_OWNER);
-	propWriteStream.addType(owner);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_OWNER);
+	propWriteStream.ADD_VALUE(owner);
 
 	for(DamageList::const_iterator it = damageList.begin(); it != damageList.end(); ++it)
 	{
-		propWriteStream.addByte(CONDITIONATTR_INTERVALDATA);
-		propWriteStream.addType(*it);
+		propWriteStream.ADD_UCHAR(CONDITIONATTR_INTERVALDATA);
+		propWriteStream.ADD_VALUE(*it);
 	}
 
 	return true;
@@ -1309,7 +1309,7 @@ bool ConditionSpeed::unserializeProp(ConditionAttr_t attr, PropStream& propStrea
 		case CONDITIONATTR_SPEEDDELTA:
 		{
 			int32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			speedDelta = value;
@@ -1319,7 +1319,7 @@ bool ConditionSpeed::unserializeProp(ConditionAttr_t attr, PropStream& propStrea
 		case CONDITIONATTR_FORMULA_MINA:
 		{
 			float value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			mina = value;
@@ -1329,7 +1329,7 @@ bool ConditionSpeed::unserializeProp(ConditionAttr_t attr, PropStream& propStrea
 		case CONDITIONATTR_FORMULA_MINB:
 		{
 			float value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			minb = value;
@@ -1339,7 +1339,7 @@ bool ConditionSpeed::unserializeProp(ConditionAttr_t attr, PropStream& propStrea
 		case CONDITIONATTR_FORMULA_MAXA:
 		{
 			float value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			maxa = value;
@@ -1349,7 +1349,7 @@ bool ConditionSpeed::unserializeProp(ConditionAttr_t attr, PropStream& propStrea
 		case CONDITIONATTR_FORMULA_MAXB:
 		{
 			float value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			maxb = value;
@@ -1368,20 +1368,20 @@ bool ConditionSpeed::serialize(PropWriteStream& propWriteStream)
 	if(!ConditionOutfit::serialize(propWriteStream))
 		return false;
 
-	propWriteStream.addByte(CONDITIONATTR_SPEEDDELTA);
-	propWriteStream.addType(speedDelta);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_SPEEDDELTA);
+	propWriteStream.ADD_VALUE(speedDelta);
 
-	propWriteStream.addByte(CONDITIONATTR_FORMULA_MINA);
-	propWriteStream.addType(mina);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_FORMULA_MINA);
+	propWriteStream.ADD_VALUE(mina);
 
-	propWriteStream.addByte(CONDITIONATTR_FORMULA_MINB);
-	propWriteStream.addType(minb);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_FORMULA_MINB);
+	propWriteStream.ADD_VALUE(minb);
 
-	propWriteStream.addByte(CONDITIONATTR_FORMULA_MAXA);
-	propWriteStream.addType(maxa);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_FORMULA_MAXA);
+	propWriteStream.ADD_VALUE(maxa);
 
-	propWriteStream.addByte(CONDITIONATTR_FORMULA_MAXB);
-	propWriteStream.addType(maxb);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_FORMULA_MAXB);
+	propWriteStream.ADD_VALUE(maxb);
 	return true;
 }
 
@@ -1468,7 +1468,7 @@ bool ConditionOutfit::unserializeProp(ConditionAttr_t attr, PropStream& propStre
 	{
 		case CONDITIONATTR_OUTFIT:
 		{
-			if(!propStream.getType(outfit))
+			if(!propStream.GET_VALUE(outfit))
 				return false;
 
 			outfits.push_back(outfit);
@@ -1489,8 +1489,8 @@ bool ConditionOutfit::serialize(PropWriteStream& propWriteStream)
 
 	for(std::vector<Outfit_t>::const_iterator it = outfits.begin(); it != outfits.end(); ++it)
 	{
-		propWriteStream.addByte(CONDITIONATTR_OUTFIT);
-		propWriteStream.addType(*it);
+		propWriteStream.ADD_UCHAR(CONDITIONATTR_OUTFIT);
+		propWriteStream.ADD_VALUE(*it);
 	}
 
 	return true;
@@ -1620,7 +1620,7 @@ bool ConditionLight::unserializeProp(ConditionAttr_t attr, PropStream& propStrea
 		case CONDITIONATTR_LIGHTCOLOR:
 		{
 			uint32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			lightInfo.color = value;
@@ -1630,7 +1630,7 @@ bool ConditionLight::unserializeProp(ConditionAttr_t attr, PropStream& propStrea
 		case CONDITIONATTR_LIGHTLEVEL:
 		{
 			uint32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			lightInfo.level = value;
@@ -1640,7 +1640,7 @@ bool ConditionLight::unserializeProp(ConditionAttr_t attr, PropStream& propStrea
 		case CONDITIONATTR_LIGHTTICKS:
 		{
 			uint32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			internalLightTicks = value;
@@ -1650,7 +1650,7 @@ bool ConditionLight::unserializeProp(ConditionAttr_t attr, PropStream& propStrea
 		case CONDITIONATTR_LIGHTINTERVAL:
 		{
 			uint32_t value = 0;
-			if(!propStream.getType(value))
+			if(!propStream.GET_VALUE(value))
 				return false;
 
 			lightChangeInterval = value;
@@ -1669,17 +1669,17 @@ bool ConditionLight::serialize(PropWriteStream& propWriteStream)
 	if(!Condition::serialize(propWriteStream))
 		return false;
 
-	propWriteStream.addByte(CONDITIONATTR_LIGHTCOLOR);
-	propWriteStream.addType(lightInfo.color);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_LIGHTCOLOR);
+	propWriteStream.ADD_VALUE(lightInfo.color);
 
-	propWriteStream.addByte(CONDITIONATTR_LIGHTLEVEL);
-	propWriteStream.addType(lightInfo.level);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_LIGHTLEVEL);
+	propWriteStream.ADD_VALUE(lightInfo.level);
 
-	propWriteStream.addByte(CONDITIONATTR_LIGHTTICKS);
-	propWriteStream.addType(internalLightTicks);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_LIGHTTICKS);
+	propWriteStream.ADD_VALUE(internalLightTicks);
 
-	propWriteStream.addByte(CONDITIONATTR_LIGHTINTERVAL);
-	propWriteStream.addType(lightChangeInterval);
+	propWriteStream.ADD_UCHAR(CONDITIONATTR_LIGHTINTERVAL);
+	propWriteStream.ADD_VALUE(lightChangeInterval);
 
 	return true;
 }

@@ -31,7 +31,7 @@ Attr_ReadValue Depot::readAttr(AttrTypes_t attr, PropStream& propStream)
 		return Item::readAttr(attr, propStream);
 
 	uint16_t depotId;
-	if(!propStream.getShort(depotId))
+	if(!propStream.GET_USHORT(depotId))
 		return ATTR_READ_ERROR;
 
 	setAttribute("depotid", depotId);

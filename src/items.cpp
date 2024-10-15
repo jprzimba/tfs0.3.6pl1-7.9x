@@ -143,24 +143,24 @@ int32_t Items::loadFromOtb(std::string file)
 		//attributes
 		//0x01 = version data
 		uint32_t flags;
-		if(!props.getLong(flags))
+		if(!props.GET_ULONG(flags))
 			return ERROR_INVALID_FORMAT;
 
 		attribute_t attr;
-		if(!props.getType(attr))
+		if(!props.GET_VALUE(attr))
 			return ERROR_INVALID_FORMAT;
 
 		if(attr == ROOT_ATTR_VERSION)
 		{
 			datasize_t length = 0;
-			if(!props.getType(length))
+			if(!props.GET_VALUE(length))
 				return ERROR_INVALID_FORMAT;
 
 			if(length != sizeof(VERSIONINFO))
 				return ERROR_INVALID_FORMAT;
 
 			VERSIONINFO *vi;
-			if(!props.getStruct(vi))
+			if(!props.GET_STRUCT(vi))
 				return ERROR_INVALID_FORMAT;
 
 			Items::dwMajorVersion = vi->dwMajorVersion; //items otb format file version
@@ -222,7 +222,7 @@ int32_t Items::loadFromOtb(std::string file)
 		}
 
 		//read 4 byte flags
-		if(!props.getType(flags))
+		if(!props.GET_VALUE(flags))
 			return ERROR_INVALID_FORMAT;
 
 		iType->blockSolid = hasBitSet(FLAG_BLOCK_SOLID, flags);
@@ -249,11 +249,11 @@ int32_t Items::loadFromOtb(std::string file)
 		iType->canReadText = hasBitSet(FLAG_READABLE, flags);
 
 		attribute_t attr;
-		while(props.getType(attr))
+		while(props.GET_VALUE(attr))
 		{
 			//size of data
 			datasize_t length = 0;
-			if(!props.getType(length))
+			if(!props.GET_VALUE(length))
 			{
 				delete iType;
 				return ERROR_INVALID_FORMAT;
@@ -267,7 +267,7 @@ int32_t Items::loadFromOtb(std::string file)
 						return ERROR_INVALID_FORMAT;
 
 					uint16_t serverId;
-					if(!props.getShort(serverId))
+					if(!props.GET_USHORT(serverId))
 						return ERROR_INVALID_FORMAT;
 
 					if(serverId > 20000 && serverId < 20100)
@@ -292,7 +292,7 @@ int32_t Items::loadFromOtb(std::string file)
 						return ERROR_INVALID_FORMAT;
 
 					uint16_t clientId;
-					if(!props.getShort(clientId))
+					if(!props.GET_USHORT(clientId))
 						return ERROR_INVALID_FORMAT;
 
 					iType->clientId = clientId;
@@ -304,7 +304,7 @@ int32_t Items::loadFromOtb(std::string file)
 						return ERROR_INVALID_FORMAT;
 
 					uint16_t speed;
-					if(!props.getShort(speed))
+					if(!props.GET_USHORT(speed))
 						return ERROR_INVALID_FORMAT;
 
 					iType->speed = speed;
@@ -316,7 +316,7 @@ int32_t Items::loadFromOtb(std::string file)
 						return ERROR_INVALID_FORMAT;
 
 					lightBlock2* block;
-					if(!props.getStruct(block))
+					if(!props.GET_STRUCT(block))
 						return ERROR_INVALID_FORMAT;
 
 					iType->lightLevel = block->lightLevel;
@@ -329,7 +329,7 @@ int32_t Items::loadFromOtb(std::string file)
 						return ERROR_INVALID_FORMAT;
 
 					uint8_t topOrder;
-					if(!props.getByte(topOrder))
+					if(!props.GET_UCHAR(topOrder))
 						return ERROR_INVALID_FORMAT;
 
 					iType->alwaysOnTopOrder = topOrder;
@@ -338,7 +338,7 @@ int32_t Items::loadFromOtb(std::string file)
 				default:
 				{
 					//skip unknown attributes
-					if(!props.skip(length))
+					if(!props.SKIP_N(length))
 						return ERROR_INVALID_FORMAT;
 
 					break;
