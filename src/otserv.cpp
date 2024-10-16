@@ -386,7 +386,7 @@ void otserv(StringVec args)
 	IntegerVec cores = vectorAtoi(explodeString(g_config.getString(ConfigManager::CORES_USED), ","));
 	if(cores[0] != -1)
 	{
-	#ifdef WINDOWS
+#ifdef WINDOWS
 		int32_t mask = 0;
 		for(IntegerVec::iterator it = cores.begin(); it != cores.end(); ++it)
 			mask += 1 << (*it);
@@ -409,13 +409,15 @@ void otserv(StringVec args)
 	else if(defaultPriority == "higher")
 		SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
 
-	#else
+#else
+#if !defined(MACOS) && !defined(__APPLE__)
 		cpu_set_t mask;
 		CPU_ZERO(&mask);
 		for(IntegerVec::iterator it = cores.begin(); it != cores.end(); ++it)
 			CPU_SET((*it), &mask);
 
 		sched_setaffinity(getpid(), (int32_t)sizeof(mask), &mask);
+#endif
 	}
 
 	std::string runPath = g_config.getString(ConfigManager::RUNFILE);
