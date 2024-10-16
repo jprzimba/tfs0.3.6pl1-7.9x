@@ -40,6 +40,10 @@
 					scripts/
 						tools/
 							fishing.lua
+			data/
+				creaturescripts/
+					scripts/
+						advancesave.lua
 			data/lib/
 					000-constant.lua
 					050-function.lua
@@ -95,10 +99,12 @@
 		* Add new lua functions isItemRune(itemid). (Tryller)
 		* Add SadSoul Map with Evolutions map. (Tryller)
 		* Add GOD account to forgottenserver.s3db 2/2. (Tryller)
+		* Add Rook system (Elf)
 		* Add new shop module to npc system StdModule.allBlessings. (Tryller)
 		* Add new configs from TFS 0.4 useCapacity, monsterSpawnWalkback, defaultDepotSizePremium, defaultDepotSize.
 			vipListDefaultLimit and vipListDefaultPremiumLimit, mailMaxAttempts, mailBlockPeriod and mailAttemptsFadeTime,
-			houseProtection, houseSkipInitialRent, houseTileLimit, tileLimit, protectionTileLimit. (Tryller)
+			houseProtection, houseSkipInitialRent, houseTileLimit, tileLimit, protectionTileLimit, useRookSystem, rookTownId,
+			rookLevelToGetRooked, rookLevelToLeaveRook. (Tryller)
 		* Add new lua functions from TFS 0.4 doSteerCreature(cid, position[, maxNodes]). (Tryller)
 		* Add old quest system based on unique id (quests.lua). (Tryller)
 		* Clean actions, movements and weapons scripts to work only with 7.9 items. (Tryller)
@@ -126,7 +132,8 @@
 		* Remove not supported 7.9 monsters. (Tryller)
 		* Remove not supported 7.9 spells. (Tryller)
 		* Remove bag from monsters. (Tryller)
-		* Removed from config.lua gamePort, adminPort and statusPort, maxItemsPerPZTile and maxItemsPerHouseTile. (Tryller)
+		* Removed from config.lua gamePort, adminPort and statusPort, maxItemsPerPZTile and maxItemsPerHouseTile,
+			displaySkillLevelOnAdvance. (Tryller)
 		* Remove lua function getItemInfo and move functions to new lua functions, getItemPluralNameById(itemid), getItemArticleById(itemid), 
 			getItemRWInfo(uid), getItemWeaponType(uid), isCorpse(uid), getFluidSourceType(type), getItemDescriptionsById(itemid),
 			getItemDescriptions(uid) and getItemWeightById(itemid, count[, precise = TRUE]). (Tryller)

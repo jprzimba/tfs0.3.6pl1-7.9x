@@ -994,15 +994,16 @@ SkillIdNames skillIdNames[] =
 	{"club",		SKILL_CLUB},
 	{"sword",		SKILL_SWORD},
 	{"axe",			SKILL_AXE},
-	{"distance",		SKILL_DIST},
+	{"distance",	SKILL_DIST},
 	{"dist",		SKILL_DIST},
-	{"shielding",		SKILL_SHIELD},
+	{"shielding",	SKILL_SHIELD},
 	{"shield",		SKILL_SHIELD},
 	{"fishing",		SKILL_FISH},
 	{"fish",		SKILL_FISH},
 	{"level",		SKILL__LEVEL},
-	{"magiclevel",		SKILL__MAGLEVEL},
-	{"magic level",		SKILL__MAGLEVEL}
+	{"magiclevel",	SKILL__MAGLEVEL},
+	{"magic level",	SKILL__MAGLEVEL},
+	{"experience",	SKILL__EXPERIENCE}
 };
 
 MagicEffect_t getMagicEffect(const std::string& strValue)

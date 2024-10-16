@@ -605,9 +605,6 @@
 			Global storages are stored in `global_storage` table.
 			Default: yes
 
-		displaySkillLevelOnAdvance
-			Default: no
-
 		spellNameInsteadOfWords
 			E.g if you use 'exura', it will show 'Light Healing'.
 			Default: no

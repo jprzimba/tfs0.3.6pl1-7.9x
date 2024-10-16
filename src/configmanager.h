@@ -152,6 +152,9 @@ class ConfigManager
 			MAIL_ATTEMPTS_FADE,
 			MAIL_ATTEMPTS,
 			MAIL_BLOCK,
+			ROOK_TOWN,
+			ROOK_LEVELTO,
+			ROOK_TOLEVEL,
 			LAST_NUMBER_CONFIG /* this must be the last one */
 		};
 
@@ -199,7 +202,6 @@ class ConfigManager
 			TELEPORT_PLAYER_SUMMONS,
 			PVP_TILE_IGNORE_PROTECTION,
 			DISPLAY_CRITICAL_HIT,
-			ADVANCING_SKILL_LEVEL,
 			CLEAN_PROTECTED_ZONES,
 			SPELL_NAME_INSTEAD_WORDS,
 			EMOTE_SPELLS,
@@ -254,6 +256,7 @@ class ConfigManager
 			USE_CAPACITY,
 			HOUSE_PROTECTION,
 			HOUSE_SKIP_INIT_RENT,
+			ROOK_SYSTEM,
 			LAST_BOOL_CONFIG /* this must be the last one */
 		};
 

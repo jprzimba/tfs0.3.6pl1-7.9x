@@ -44,13 +44,14 @@ function oracle(cid, message, keywords, parameters, node)
 end
 
 function greetCallback(cid)
-	if(getPlayerLevel(cid) < 8) then
-		npcHandler:say('COME BACK WHEN YOU GROW UP, CHILD!')
-		return false
-	else
+	if(getPlayerLevel(cid) >= getConfigValue('rookLevelToLeaveRook')) then
 		return true
 	end
+
+	npcHandler:say('COME BACK WHEN YOU GROW UP, CHILD!')
+	return false
 end
+
 npcHandler:setCallback(CALLBACK_GREET, greetCallback)
 npcHandler:setMessage(MESSAGE_GREET, 'Hello |PLAYERNAME|. Are you prepared to face your destiny?')
 

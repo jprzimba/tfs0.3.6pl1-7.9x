@@ -27,6 +27,12 @@
 	newPlayerMagicLevel = 0
 	generateAccountNumber = false
 
+	-- Rook system
+	useRookSystem = false
+	rookTownId = 10
+	rookLevelToGetRooked = 5
+	rookLevelToLeaveRook = 8
+
 	-- Unjustified kills
 	-- NOTE: *Banishment variables are >summed up<
 	-- (dailyFragsToRedSkull + dailyFragsToBanishment) with their
@@ -192,7 +198,6 @@
 	-- called "exception tracer" (__EXCEPTION_TRACER__ flag).
 	dataDirectory = "data/"
 	bankSystem = true
-	displaySkillLevelOnAdvance = false
 	promptExceptionTracerErrorBox = true
 	maximumDoorLevel = 500
 	maxMessageBuffer = 4
@@ -248,7 +253,7 @@
 	-- NOTE: experienceStages configuration is located in data/XML/stages.xml.
 	-- rateExperienceFromPlayers 0 to disable.
 	experienceStages = false
-	rateExperience = 5.0
+	rateExperience = 50.0
 	rateExperienceFromPlayers = 0
 	rateSkill = 3.0
 	rateMagic = 3.0
