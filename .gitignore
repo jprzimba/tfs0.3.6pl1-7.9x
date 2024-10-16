@@ -72,3 +72,6 @@ compile_commands.json
 
 # Ignore Windows Makefile
 Makefile.win
+src/dev-cpp/obj/TheForgottenServer_private.res
+/src/dev-cpp/obj
+*.s3db

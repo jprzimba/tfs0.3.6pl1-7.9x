@@ -16,6 +16,9 @@ function onLogin(cid)
 			doPlayerSendTextMessage(cid, MESSAGE_STATUS_DEFAULT, str)
 			str = "Your last visit was on " .. os.date("%a %b %d %X %Y", lastLogin) .. "."
 		else
+			-- Fix stamina below 56 hours
+			doPlayerSetStamina(cid, 3360)
+
 			str = str .. " Please choose your outfit."
 			doPlayerSendOutfitWindow(cid)
 		end
