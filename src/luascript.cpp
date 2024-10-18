@@ -711,13 +711,24 @@ bool LuaScriptInterface::loadFile(const std::string& file, Npc* npc/* = NULL*/)
 	return true;
 }
 
-bool LuaScriptInterface::loadDirectory(const std::string& dir, Npc* npc/* = NULL*/)
+bool LuaScriptInterface::loadDirectory(std::string dir, bool recursively, bool loadSystems, Npc* npc/* = NULL*/)
 {
+	if(dir[dir.size() - 1] != '/')
+		dir += '/';
+
 	StringVec files;
 	for(boost::filesystem::directory_iterator it(dir), end; it != end; ++it)
 	{
 		std::string s = it->leaf();
-		if(!boost::filesystem::is_directory(it->status()) && (s.size() > 4 ? s.substr(s.size() - 4) : "") == ".lua")
+		if(!loadSystems && s[0] == '_')
+			continue;
+
+		if(boost::filesystem::is_directory(it->status()))
+		{
+			if(recursively && !loadDirectory(dir + s, recursively, loadSystems, npc))
+				return false;
+		}
+		else if((s.size() > 4 ? s.substr(s.size() - 4) : "") == ".lua")
 			files.push_back(s);
 	}
 
@@ -832,13 +843,13 @@ bool LuaScriptInterface::initState()
 		return false;
 
 	luaL_openlibs(m_luaState);
+
 	registerFunctions();
-	if(!loadDirectory(getFilePath(FILE_TYPE_OTHER, "lib/"), NULL))
-		std::clog << "[Warning - LuaScriptInterface::initState] Cannot load " << getFilePath(FILE_TYPE_OTHER, "lib/") << std::endl;
+	if(!loadDirectory(getFilePath(FILE_TYPE_OTHER, "lib/"), false, true))
+		std::clog << "[Warning - LuaInterface::initState] Cannot load " << getFilePath(FILE_TYPE_OTHER, "lib/") << std::endl;
 
 	lua_newtable(m_luaState);
 	lua_setfield(m_luaState, LUA_REGISTRYINDEX, "EVENTS");
-
 	m_runningEventId = EVENT_ID_USER;
 	return true;
 }
@@ -9893,9 +9904,9 @@ int32_t LuaScriptInterface::luaGetConfigValue(lua_State* L)
 int32_t LuaScriptInterface::luaGetModList(lua_State* L)
 {
 	//getModList()
-	ModMap::iterator it = ScriptingManager::getInstance()->getFirstMod();
+	ModMap::iterator it = ScriptManager::getInstance()->getFirstMod();
 	lua_newtable(L);
-	for(uint32_t i = 1; it != ScriptingManager::getInstance()->getLastMod(); ++it, ++i)
+	for(uint32_t i = 1; it != ScriptManager::getInstance()->getLastMod(); ++it, ++i)
 	{
 		createTable(L, i);
 		setField(L, "name", it->first);
@@ -9917,8 +9928,8 @@ int32_t LuaScriptInterface::luaL_loadmodlib(lua_State* L)
 {
 	//loadmodlib(lib)
 	std::string name = asLowerCaseString(popString(L));
-	for(LibMap::iterator it = ScriptingManager::getInstance()->getFirstLib();
-		it != ScriptingManager::getInstance()->getLastLib(); ++it)
+	for(LibMap::iterator it = ScriptManager::getInstance()->getFirstLib();
+		it != ScriptManager::getInstance()->getLastLib(); ++it)
 	{
 		if(asLowerCaseString(it->first) != name)
 			continue;
@@ -9935,8 +9946,8 @@ int32_t LuaScriptInterface::luaL_domodlib(lua_State* L)
 {
 	//domodlib(lib)
 	std::string name = asLowerCaseString(popString(L));
-	for(LibMap::iterator it = ScriptingManager::getInstance()->getFirstLib();
-		it != ScriptingManager::getInstance()->getLastLib(); ++it)
+	for(LibMap::iterator it = ScriptManager::getInstance()->getFirstLib();
+		it != ScriptManager::getInstance()->getLastLib(); ++it)
 	{
 		if(asLowerCaseString(it->first) != name)
 			continue;
@@ -9954,16 +9965,25 @@ int32_t LuaScriptInterface::luaL_domodlib(lua_State* L)
 
 int32_t LuaScriptInterface::luaL_dodirectory(lua_State* L)
 {
+	//dodirectory(dir[, recursively = false[, loadSystems = true]])
+	bool recursively = false, loadSystems = true;
+	int32_t params = lua_gettop(L);
+	if(params > 2)
+		loadSystems = popBoolean(L);
+
+	if(params > 1)
+		recursively = popBoolean(L);
+
 	std::string dir = popString(L);
-	if(!getEnv()->getInterface()->loadDirectory(dir, NULL))
+	if(!getEnv()->getInterface()->loadDirectory(dir, recursively, loadSystems, NULL))
 	{
-		errorEx("Failed to load directory " + dir + ".");
+		errorEx("Failed to load directory " + dir);
 		lua_pushboolean(L, false);
 	}
 	else
 		lua_pushboolean(L, true);
 
-	return 1;
+	return 1;;
 }
 
 #define EXPOSE_LOG(Name, Stream)\

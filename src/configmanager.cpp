@@ -32,6 +32,7 @@ ConfigManager::ConfigManager()
 
 	m_confNumber[LOGIN_PORT] = 0;
 	m_confString[DATA_DIRECTORY] =  m_confString[LOGS_DIRECTORY] = m_confString[IP] = m_confString[RUNFILE] = m_confString[OUTPUT_LOG] = "";
+	m_confBool[SCRIPT_SYSTEM] = true;
 }
 
 bool ConfigManager::load()
@@ -39,10 +40,11 @@ bool ConfigManager::load()
 	if(L)
 		lua_close(L);
 
-	L = lua_open();
+	L = luaL_newstate();
 	if(!L)
 		return false;
 
+	luaL_openlibs(L);
 	if(luaL_dofile(L, m_confString[CONFIG_FILE].c_str()))
 	{
 		lua_close(L);
@@ -341,7 +343,7 @@ bool ConfigManager::getBool(uint32_t _what) const
 	return false;
 }
 
-int32_t ConfigManager::getNumber(uint32_t _what) const
+int64_t ConfigManager::getNumber(uint32_t _what) const
 {
 	if(m_loaded && _what < LAST_NUMBER_CONFIG)
 		return m_confNumber[_what];
@@ -375,7 +377,7 @@ bool ConfigManager::setString(uint32_t _what, const std::string& _value)
 	return false;
 }
 
-bool ConfigManager::setNumber(uint32_t _what, int32_t _value)
+bool ConfigManager::setNumber(uint32_t _what, int64_t _value)
 {
 	if(_what < LAST_NUMBER_CONFIG)
 	{
@@ -384,5 +386,17 @@ bool ConfigManager::setNumber(uint32_t _what, int32_t _value)
 	}
 
 	std::clog << "[Warning - ConfigManager::setNumber] " << _what << std::endl;
+	return false;
+}
+
+bool ConfigManager::setBool(uint32_t _what, bool _value)
+{
+	if(_what < LAST_BOOL_CONFIG)
+	{
+		m_confBool[_what] = _value;
+		return true;
+	}
+
+	std::clog << "[Warning - ConfigManager::setBool] " << _what << std::endl;
 	return false;
 }

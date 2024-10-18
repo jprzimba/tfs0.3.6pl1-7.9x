@@ -146,6 +146,8 @@ bool argumentsHandler(StringVec args)
 #endif
 		else if(tmp[0] == "--log")
 			g_config.setString(ConfigManager::OUTPUT_LOG, tmp[1]);
+		else if(tmp[0] == "--no-script" || tmp[0] == "--noscript")
+			g_config.setBool(ConfigManager::SCRIPT_SYSTEM, false);
 	}
 
 	return true;
@@ -502,9 +504,14 @@ void otserv(StringVec args)
 	if(!Vocations::getInstance()->loadFromXml())
 		startupErrorMessage("Unable to load vocations!");
 
-	std::clog << "Loading script systems" << std::endl;
-	if(!ScriptingManager::getInstance()->load())
-		startupErrorMessage();
+	if(g_config.getBool(ConfigManager::SCRIPT_SYSTEM))
+	{
+		std::clog << "Loading script systems" << std::endl;
+		if(!ScriptManager::getInstance()->loadSystem())
+			startupErrorMessage();
+	}
+	else
+		ScriptManager::getInstance();
 
 	std::clog << "Loading chat channels" << std::endl;
 	if(!g_chat.loadFromXml())
@@ -528,7 +535,7 @@ void otserv(StringVec args)
 	}
 
 	std::clog << "Loading mods..." << std::endl;
-	if(!ScriptingManager::getInstance()->loadMods())
+	if(!ScriptManager::getInstance()->loadMods())
 		startupErrorMessage();
 
 	std::clog << "Loading map and spawns..." << std::endl;

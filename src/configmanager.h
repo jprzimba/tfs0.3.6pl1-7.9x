@@ -184,6 +184,7 @@ class ConfigManager
 		enum bool_config_t
 		{
 			GLOBALSAVE_ENABLED = 0,
+			SCRIPT_SYSTEM,
 			START_CHOOSEVOC,
 			ON_OR_OFF_CHARLIST,
 			ONE_PLAYER_ON_ACCOUNT,
@@ -264,17 +265,22 @@ class ConfigManager
 		bool reload();
 		void startup() {m_startup = false;}
 
+		bool isLoaded() const {return m_loaded;}
+
 		const std::string& getString(uint32_t _what) const;
 		bool getBool(uint32_t _what) const;
-		int32_t getNumber(uint32_t _what) const;
+		int64_t getNumber(uint32_t _what) const;
 		double getDouble(uint32_t _what) const;
 
 		bool setString(uint32_t _what, const std::string& _value);
-		bool setNumber(uint32_t _what, int32_t _value);
+		bool setNumber(uint32_t _what, int64_t _value);
+		bool setBool(uint32_t _what, bool _value);
 
 		void getValue(const std::string& key, lua_State* _L) {LuaScriptInterface::getValue(key, L, _L);}
 
 	private:
+		static void moveValue(lua_State* fromL, lua_State* toL);
+
 		std::string getGlobalString(const std::string& _identifier, const std::string& _default = "")
 		{
 			return LuaScriptInterface::getGlobalString(L, _identifier, _default);
@@ -283,7 +289,7 @@ class ConfigManager
 		{
 			return LuaScriptInterface::getGlobalBool(L, _identifier, _default);
 		}
-		int32_t getGlobalNumber(const std::string& _identifier, const int32_t _default = 0)
+		int64_t getGlobalNumber(const std::string& _identifier, const int64_t _default = 0)
 		{
 			return LuaScriptInterface::getGlobalNumber(L, _identifier, _default);
 		}
@@ -294,11 +300,10 @@ class ConfigManager
 
 		bool m_loaded, m_startup;
 		lua_State* L;
-		static void moveValue(lua_State* fromL, lua_State* toL);
 
 		std::string m_confString[LAST_STRING_CONFIG];
 		bool m_confBool[LAST_BOOL_CONFIG];
-		int32_t m_confNumber[LAST_NUMBER_CONFIG];
+		int64_t m_confNumber[LAST_NUMBER_CONFIG];
 		double m_confDouble[LAST_DOUBLE_CONFIG];
 };
 #endif
