@@ -58,5 +58,5 @@ elseif(Website::getServerConfig()->getValue(SERVERCONFIG_SQL_TYPE) == 'sqlite')
 }
 else
 	new Error_Critic('#E-6', 'Database error. Unknown database type in <b>server config</b> . Must be equal to: "<b>mysql</b>" or "<b>sqlite</b>". Now is: "<b>' . Website::getServerConfig()->getValue(SERVERCONFIG_SQL_TYPE) . '</b>"');
-Website::setPasswordsEncryption(Website::getServerConfig()->getValue('passwordType'));
+Website::setPasswordsEncryption(Website::getServerConfig()->getValue('encryptionType'));
 $SQL = Website::getDBHandle();

@@ -24,10 +24,15 @@ class Vocations implements Iterator, Countable
 				$vocationData = array();
 				$vocationData['id'] = $vocation->getAttribute('id');
 				$vocationData['name'] = $vocation->getAttribute('name');
+				if($vocation->hasAttribute('fromvoc'))
+					$vocationData['fromvoc'] = $vocation->getAttribute('fromvoc');
+				else
+					$vocationData['fromvoc'] = $vocationData['id'];
 				if($vocation->hasAttribute('manamultiplier'))
 					$vocationData['manamultiplier'] = $vocation->getAttribute('manamultiplier');
 				else
 					$vocationData['manamultiplier'] = 1;
+
 				if($vocation->hasAttribute('gainhp'))
 					$vocationData['gainhp'] = $vocation->getAttribute('gainhp');
 				else
@@ -74,58 +79,69 @@ class Vocations implements Iterator, Countable
 			else
 				new Error_Critic('#C', 'Cannot load vocation. <b>id</b> or/and <b>name</b> parameter is missing');
 		}
+		/*
+		 * Set promotion level and base vocation id
+		*/
 		foreach($_tmp_vocations as $_tmp_vocation)
 		{
+			$_tmp_vocation['promotion'] = 0;
+			$_tmp_vocation['base_id'] = $_tmp_vocation['id'];
+			$promotion_voc = $_tmp_vocation;
+			while($promotion_voc['fromvoc'] != $promotion_voc['id'])
+			{
+				$promotion_voc = $_tmp_vocations[$promotion_voc['fromvoc']];
+				$_tmp_vocation['base_id'] = $promotion_voc['id'];
+				$_tmp_vocation['promotion']++;
+			}
 			$this->vocations[$_tmp_vocation['id']] = new Vocation($_tmp_vocation);
 		}
 	}
 	/*
 	 * Get vocation
 	*/
-	public function getVocation($id)
+	public function getVocation($base_id, $promotion = 0)
 	{
-		if(isset($this->vocations[$id]))
-			return $this->vocations[$id];
+		foreach($this->vocations as $vocation)
+			if($vocation->getBaseId() == $base_id && $vocation->getPromotion() == $promotion)
+				return $vocation;
 		return false;
 	}
 	/*
 	 * Get vocation name without getting vocation
 	*/
-	public function getVocationName($id)
+	public function getVocationName($base_id, $promotion = 0)
 	{
-		if($vocs = self::getVocation($id))
+		if($vocs = self::getVocation($base_id, $promotion))
 			return $vocs->getName();
 		return false;
 	}
+	public function current(): mixed
+	{
+		return $this->vocations[$this->iterator];
+	}
+	
+	public function rewind(): void
+	{
+		$this->iterator = 0;
+	}	
 
-    public function current()
-    {
-        return $this->vocations[$this->iterator];
-    }
+	public function next(): void
+	{
+		++$this->iterator;
+	}	
 
-    public function rewind()
-    {
-        $this->iterator = 0;
-    }
-
-    public function next()
-    {
-        ++$this->iterator;
-    }
-
-    public function key()
-    {
-        return $this->iterator;
-    }
-
-    public function valid()
-    {
-        return isset($this->vocations[$this->iterator]);
-    }
-
-    public function count()
-    {
-        return count($this->vocations);
-    }
-
+	public function key(): mixed
+	{
+		return $this->iterator;
+	}
+	
+	public function valid(): bool
+	{
+		return isset($this->vocations[$this->iterator]);
+	}
+	
+	public function count(): int
+	{
+		return count($this->vocations);
+	}	
 }

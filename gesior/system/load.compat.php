@@ -48,7 +48,7 @@ $title = ucwords($subtopic) . ' - ' . Website::getServerConfig()->getValue('serv
 
 $topic = $subtopic;
 
-$passwordency = Website::getServerConfig()->getValue('passwordType');
+$passwordency = Website::getServerConfig()->getValue('encryptionType');
 if($passwordency == 'plain')
 	$passwordency = '';
 
@@ -56,7 +56,7 @@ $news_content = '';
 $vocation_name = array();
 foreach(Website::getVocations() as $vocation)
 {
-	$vocation_name[$vocation->getId()] = $vocation->getName();
+	$vocation_name[$vocation->getPromotion()][$vocation->getBaseId()] = $vocation->getName();
 }
 
 $layout_ini = parse_ini_file($layout_name.'/layout_config.ini');
@@ -246,7 +246,7 @@ if(!ONLY_PAGE)
 	{
 		$config['status']['serverStatus_checkInterval'] = $statustimeout+3;
 		$config['status']['serverStatus_lastCheck'] = time();
-		$statusInfo = new ServerStatus($config['server']['ip'], $config['server']['statusPort'], 1);
+		$statusInfo = new ServerStatus($config['server']['ip'], $config['server']['loginPort'], 1);
 		if($statusInfo->isOnline())
 		{
 			$config['status']['serverStatus_online'] = 1;

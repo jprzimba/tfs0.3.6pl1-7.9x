@@ -96,10 +96,11 @@ if($config['site']['send_emails'])
 					{
 						$acceptedChars = '123456789zxcvbnmasdfghjklqwertyuiop';
 						$newcode = NULL;
-						for($i=0; $i < 30; $i++) {
-							$cnum[$i] = $acceptedChars{mt_rand(0, 33)};
+						for ($i = 0; $i < 30; $i++) {
+							$cnum[$i] = $acceptedChars[mt_rand(0, strlen($acceptedChars) - 1)];
 							$newcode .= $cnum[$i];
 						}
+						
 						$mailBody = '<html>
 						<body>
 						<h3>Your account name and password!</h3>

@@ -25,6 +25,9 @@ else
 {
 	if($action == "")
 	{
+		$account_email_change = ''; // Initialize the variable
+		$player_number_counter = 0; // Initialize the counter
+
 		$account_reckey = $account_logged->getCustomField("key");
 		if($account_logged->getPremDays() > 0)
 			$account_status = '<b><font color="green">Premium Account, '. $account_logged->getPremDays() .' days left</font></b>';
@@ -75,7 +78,7 @@ else
 			$main_content .= ';" ><td><NOBR>'.$player_number_counter.'.&#160;'.htmlspecialchars($account_player->getName());
 			if($account_player->isDeleted())
 				$main_content .= '<font color="red"><b> [ DELETED ] </b> <a href="?subtopic=accountmanagement&action=undelete&name='.urlencode($account_player->getName()).'">>> UNDELETE <<</a></font>';
-			$main_content .= '</NOBR></td><td><NOBR>'.$account_player->getLevel().' '.htmlspecialchars($vocation_name[$account_player->getVocation()]).'</NOBR></td>';
+			$main_content .= '</NOBR></td><td><NOBR>'.$account_player->getLevel().' '.htmlspecialchars($vocation_name[$account_player->getPromotion()][$account_player->getVocation()]).'</NOBR></td>';
 			if(!$account_player->isOnline())
 				$main_content .= '<td><font color="red"><b>Offline</b></font></td>';
 			else
@@ -86,9 +89,10 @@ else
 	}
 //########### CHANGE PASSWORD ##########
 	if($action == "changepassword") {
-		$new_password = trim($_POST['newpassword']);
-		$new_password2 = trim($_POST['newpassword2']);
-		$old_password = trim($_POST['oldpassword']);
+		$new_password = trim($_POST['newpassword'] ?? '');
+		$new_password2 = trim($_POST['newpassword2'] ?? '');
+		$old_password = trim($_POST['oldpassword'] ?? '');
+
 		if(empty($new_password) && empty($new_password2) && empty($old_password))
 		{
 			$main_content .= 'Please enter your current password and a new password. For your security, please enter the new password twice.<br/><br/><form action="?subtopic=accountmanagement&action=changepassword" method="post" ><div class="TableContainer" ><table class="Table1" cellpadding="0" cellspacing="0" >    <div class="CaptionContainer" ><div class="CaptionInnerContainer" ><span class="CaptionEdgeLeftTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionEdgeRightTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionBorderTop" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span><span class="CaptionVerticalLeft" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span><div class="Text" >Change Password</div><span class="CaptionVerticalRight" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span><span class="CaptionBorderBottom" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span><span class="CaptionEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span></div>    </div>    <tr>      <td>        <div class="InnerTableContainer" >          <table style="width:100%;" ><tr><td class="LabelV" ><span >New Password:</span></td><td style="width:90%;" ><input type="password" name="newpassword" size="30" maxlength="29" ></td></tr><tr><td class="LabelV" ><span >New Password Again:</span></td><td><input type="password" name="newpassword2" size="30" maxlength="29" ></td></tr><tr><td class="LabelV" ><span >Current Password:</span></td><td><input type="password" name="oldpassword" size="30" maxlength="29" ></td></tr></table>        </div>  </table></div></td></tr><br/><table style="width:100%;" ><tr align="center"><td><table border="0" cellspacing="0" cellpadding="0" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Submit" alt="Submit" src="'.$layout_name.'/images/buttons/_sbutton_submit.gif" ></div></div></td><tr></form></table></td><td><table border="0" cellspacing="0" cellpadding="0" ><form action="?subtopic=accountmanagement" method="post" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Back" alt="Back" src="'.$layout_name.'/images/buttons/_sbutton_back.gif" ></div></div></td></tr></form></table></td></tr></table>';
@@ -175,8 +179,8 @@ else
 		if($account_email_new_time > 10) {$account_email_new = $account_logged->getCustomField("email_new"); }
 		if($account_email_new_time < 10)
 		{
-			if($_POST['changeemailsave'] == 1)
-			{
+				if(isset($_POST['changeemailsave']) && $_POST['changeemailsave'] == 1) 
+				{
 				$account_email_new = trim($_POST['new_email']);
 				$post_password = trim($_POST['password']);
 				if(empty($account_email_new))
@@ -224,8 +228,8 @@ else
 			}
 			else
 			{
-				$main_content .= 'Please enter your password and the new email address. Make sure that you enter a valid email address which you have access to. <b>For security reasons, the actual change will be finalised after a waiting period of '.$config['site']['email_days_to_change'].' days.</b><br/><br/><form action="?subtopic=accountmanagement&action=changeemail" method="post" ><div class="TableContainer" >  <table class="Table1" cellpadding="0" cellspacing="0" >    <div class="CaptionContainer" >      <div class="CaptionInnerContainer" >        <span class="CaptionEdgeLeftTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionBorderTop" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span>        <span class="CaptionVerticalLeft" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span>        <div class="Text" >Change Email Address</div>        <span class="CaptionVerticalRight" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span>        <span class="CaptionBorderBottom" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span>        <span class="CaptionEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>      </div>    </div>    <tr>      <td>        <div class="InnerTableContainer" >          <table style="width:100%;" ></tr><td class="LabelV" ><span >New Email Address:</span></td>  <td style="width:90%;" ><input name="new_email" value="'.htmlspecialchars($_POST['new_email']).'" size="30" maxlength="50" ></td><tr></tr><td class="LabelV" ><span >Password:</span></td>  <td><input type="password" name="password" size="30" maxlength="29" ></td></tr>          </table>        </div>  </table></div></td></tr><br/><table style="width:100%;" ><tr align="center"><td><table border="0" cellspacing="0" cellpadding="0" ><tr><td style="border:0px;" ><input type="hidden" name=changeemailsave value=1 ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Submit" alt="Submit" src="'.$layout_name.'/images/buttons/_sbutton_submit.gif" ></div></div></td><tr></form></table></td><td><table border="0" cellspacing="0" cellpadding="0" ><form action="?subtopic=accountmanagement" method="post" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Back" alt="Back" src="'.$layout_name.'/images/buttons/_sbutton_back.gif" ></div></div></td></tr></form></table></td></tr></table>';
-			}
+				$new_email_value = isset($_POST['new_email']) ? htmlspecialchars($_POST['new_email']) : '';
+				$main_content .= 'Please enter your password and the new email address. Make sure that you enter a valid email address which you have access to. <b>For security reasons, the actual change will be finalised after a waiting period of '.$config['site']['email_days_to_change'].' days.</b><br/><br/><form action="?subtopic=accountmanagement&action=changeemail" method="post" ><div class="TableContainer" >  <table class="Table1" cellpadding="0" cellspacing="0" >    <div class="CaptionContainer" >      <div class="CaptionInnerContainer" >        <span class="CaptionEdgeLeftTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionBorderTop" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span>        <span class="CaptionVerticalLeft" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span>        <div class="Text" >Change Email Address</div>        <span class="CaptionVerticalRight" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span>        <span class="CaptionBorderBottom" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span>        <span class="CaptionEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>      </div>    </div>    <tr>      <td>        <div class="InnerTableContainer" >          <table style="width:100%;" ></tr><td class="LabelV" ><span >New Email Address:</span></td>  <td style="width:90%;" ><input name="new_email" value="'.$new_email_value.'" size="30" maxlength="50" ></td><tr></tr><td class="LabelV" ><span >Password:</span></td>  <td><input type="password" name="password" size="30" maxlength="29" ></td></tr>          </table>        </div>  </table></div></td></tr><br/><table style="width:100%;" ><tr align="center"><td><table border="0" cellspacing="0" cellpadding="0" ><tr><td style="border:0px;" ><input type="hidden" name="changeemailsave" value="1" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Submit" alt="Submit" src="'.$layout_name.'/images/buttons/_sbutton_submit.gif" ></div></div></td><tr></form></table></td><td><table border="0" cellspacing="0" cellpadding="0" ><form action="?subtopic=accountmanagement" method="post" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Back" alt="Back" src="'.$layout_name.'/images/buttons/_sbutton_back.gif" ></div></div></td></tr></form></table></td></tr></table>';							}
 		}
 		else
 		{
@@ -249,7 +253,7 @@ else
 				$main_content .= '<div class="TableContainer" >  <table class="Table1" cellpadding="0" cellspacing="0" >    <div class="CaptionContainer" >      <div class="CaptionInnerContainer" >        <span class="CaptionEdgeLeftTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionBorderTop" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span>        <span class="CaptionVerticalLeft" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span>        <div class="Text" >Change of Email Address</div>        <span class="CaptionVerticalRight" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span>        <span class="CaptionBorderBottom" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span>        <span class="CaptionEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>      </div>    </div>    <tr>      <td>        <div class="InnerTableContainer" >          <table style="width:100%;" ><tr><td>A request has been submitted to change the email address of this account to <b>'.htmlspecialchars($account_email_new).'</b>.<br/>The actual change will take place on <b>'.date("j F Y, G:i:s", $account_email_new_time).'</b>.<br>If you do not want to change your email address, please click on "Cancel".</td></tr>          </table>        </div>  </table></div></td></tr><br/><table style="width:100%;" ><tr align="center"><td><table border="0" cellspacing="0" cellpadding="0" ><form action="?subtopic=accountmanagement&action=changeemail" method="post" ><tr><td style="border:0px;" ><input type="hidden" name="emailchangecancel" value=1 ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Cancel" alt="Cancel" src="'.$layout_name.'/images/buttons/_sbutton_cancel.gif" ></div></div></td></tr></form></table></td><td><table border="0" cellspacing="0" cellpadding="0" ><form action="?subtopic=accountmanagement" method="post" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Back" alt="Back" src="'.$layout_name.'/images/buttons/_sbutton_back.gif" ></div></div></td></tr></form></table></td></tr></table>';
 			}
 		}
-		if($_POST['emailchangecancel'] == 1)
+		if (isset($_POST['emailchangecancel']) && $_POST['emailchangecancel'] == 1)
 		{
 			$account_logged->set("email_new", "");
 			$account_logged->set("email_new_time", 0);
@@ -260,9 +264,10 @@ else
 	
 //########### CHANGE PUBLIC INFORMATION (about account owner) ######################
 	if($action == "changeinfo") {
-		$new_rlname = htmlspecialchars(trim($_POST['info_rlname']));
-		$new_location = htmlspecialchars(trim($_POST['info_location']));
-		if($_POST['changeinfosave'] == 1) {
+		$new_rlname = isset($_POST['info_rlname']) ? htmlspecialchars(trim($_POST['info_rlname'])) : '';
+		$new_location = isset($_POST['info_location']) ? htmlspecialchars(trim($_POST['info_location'])) : '';
+	
+		if (isset($_POST['changeinfosave']) && $_POST['changeinfosave'] == 1) {
 		//save data from form
 			$account_logged->set("rlname", $new_rlname);
 			$account_logged->set("location", $new_location);
@@ -281,9 +286,10 @@ else
 //############## GENERATE RECOVERY KEY ###########
 	if($action == "registeraccount")
 	{
-		$reg_password = trim($_POST['reg_password']);
+		$dontshowtableagain = 0;
+		$reg_password = isset($_POST['reg_password']) ? trim($_POST['reg_password']) : ''; 
 		$old_key = $account_logged->getCustomField("key");
-		if($_POST['registeraccountsave'] == "1")
+		if (isset($_POST['registeraccountsave']) && $_POST['registeraccountsave'] == "1")
 		{
 			if($account_logged->isValidPassword($reg_password))
 			{
@@ -291,15 +297,16 @@ else
 				{
 					$dontshowtableagain = 1;
 					$acceptedChars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
-					$max = strlen($acceptedChars)-1;
-					$new_rec_key = NULL;
+					$max = strlen($acceptedChars) - 1;
+					$new_rec_key = null;
 					// 10 = number of chars in generated key
-					for($i=0; $i < 10; $i++) {
-						$cnum[$i] = $acceptedChars{mt_rand(0, $max)};
+					for ($i = 0; $i < 10; $i++) {
+						$cnum[$i] = $acceptedChars[mt_rand(0, $max)];
 						$new_rec_key .= $cnum[$i];
 					}
 					$account_logged->set("key", $new_rec_key);
 					$account_logged->save();
+					
 					$main_content .= '<div class="TableContainer" >  <table class="Table1" cellpadding="0" cellspacing="0" >    <div class="CaptionContainer" >      <div class="CaptionInnerContainer" >        <span class="CaptionEdgeLeftTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionBorderTop" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span>        <span class="CaptionVerticalLeft" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span>        <div class="Text" >Account Registered</div>        <span class="CaptionVerticalRight" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span>        <span class="CaptionBorderBottom" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span>        <span class="CaptionEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>      </div>    </div>    <tr>      <td>        <div class="InnerTableContainer" >          <table style="width:100%;" >Thank you for registering your account! You can now recover your account if you have lost access to the assigned email address by using the following<br/><br/><font size="5">&nbsp;&nbsp;&nbsp;<b>Recovery Key: '.htmlspecialchars($new_rec_key).'</b></font><br/><br/><br/><b>Important:</b><ul><li>Write down this recovery key carefully.</li><li>Store it at a safe place!</li>';
 					if($config['site']['send_emails'] && $config['site']['send_mail_when_generate_reckey'])
 					{
@@ -340,6 +347,7 @@ else
 			else
 				$reg_errors[] = 'Wrong password to account.';
 		}
+
 		if($dontshowtableagain != 1)
 		{
 			//show errors if not empty
@@ -369,53 +377,51 @@ else
 			{
 				if($account_logged->isValidPassword($reg_password))
 				{
-					if($points >= $config['site']['generate_new_reckey_price'])
-					{
-							$dontshowtableagain = 1;
-							$acceptedChars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
-							$max = strlen($acceptedChars)-1;
-							$new_rec_key = NULL;
-							// 10 = number of chars in generated key
-							for($i=0; $i < 10; $i++) {
-								$cnum[$i] = $acceptedChars{mt_rand(0, $max)};
-								$new_rec_key .= $cnum[$i];
-							}
-							$main_content .= '<div class="TableContainer" >  <table class="Table1" cellpadding="0" cellspacing="0" >    <div class="CaptionContainer" >      <div class="CaptionInnerContainer" >        <span class="CaptionEdgeLeftTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionBorderTop" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span>        <span class="CaptionVerticalLeft" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span>        <div class="Text" >Account Registered</div>        <span class="CaptionVerticalRight" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span>        <span class="CaptionBorderBottom" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span>        <span class="CaptionEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span>      </div>    </div>    <tr>      <td>        <div class="InnerTableContainer" >          <table style="width:100%;" ><ul>';
-								$mailBody = '<html>
-								<body>
-								<h3>New recovery key!</h3>
-								<p>You or someone else generated recovery key to your account on server <a href="'.$config['server']['url'].'"><b>'.htmlspecialchars($config['server']['serverName']).'</b></a>.</p>
-								<p>Recovery key: <b>'.htmlspecialchars($new_rec_key).'</b></p>
-								</body>
-								</html>';
-								$mail = new PHPMailer();
-								if ($config['site']['smtp_enabled'])
-								{
-									$mail->IsSMTP();
-									$mail->Host = $config['site']['smtp_host'];
-									$mail->Port = (int)$config['site']['smtp_port'];
-									$mail->SMTPAuth = $config['site']['smtp_auth'];
-									$mail->Username = $config['site']['smtp_user'];
-									$mail->Password = $config['site']['smtp_pass'];
-								}
-								else
-									$mail->IsMail();
-								$mail->IsHTML(true);
-								$mail->From = $config['site']['mail_address'];
-								$mail->AddAddress($account_logged->getEMail());
-								$mail->Subject = $config['server']['serverName']." - new recovery key";
-								$mail->Body = $mailBody;
-								if($mail->Send())
-								{
-									$account_logged->set("key", $new_rec_key);
-									$account_logged->set("premium_points", $account_logged->get("premium_points")-$config['site']['generate_new_reckey_price']);
-									$account_logged->save();
-									$main_content .= '<br />Your recovery key were send on email address <b>'.htmlspecialchars($account_logged->getEMail()).'</b> for '.$config['site']['generate_new_reckey_price'].' premium points.';
-								}
-								else
-									$main_content .= '<br />An error occorred while sending email ( <b>'.htmlspecialchars($account_logged->getEMail()).'</b> ) with recovery key! Recovery key not changed. Try again.';
-							$main_content .= '</ul>          </table>        </div>  </table></div></td></tr><br/><center><table border="0" cellspacing="0" cellpadding="0" ><form action="?subtopic=accountmanagement" method="post" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Back" alt="Back" src="'.$layout_name.'/images/buttons/_sbutton_back.gif" ></div></div></td></tr></form></table></center>';
+					if ($points >= $config['site']['generate_new_reckey_price']) {
+						$dontshowtableagain = 1;
+						$acceptedChars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
+						$max = strlen($acceptedChars) - 1;
+						$new_rec_key = null;
+						// 10 = number of chars in generated key
+						for ($i = 0; $i < 10; $i++) {
+							$cnum[$i] = $acceptedChars[mt_rand(0, $max)];
+							$new_rec_key .= $cnum[$i];
+						}
+						$main_content .= '<div class="TableContainer" >  <table class="Table1" cellpadding="0" cellspacing="0" >    <div class="CaptionContainer" >      <div class="CaptionInnerContainer" >        <span class="CaptionEdgeLeftTop" style="background-image:url(' . $layout_name . '/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightTop" style="background-image:url(' . $layout_name . '/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionBorderTop" style="background-image:url(' . $layout_name . '/images/content/table-headline-border.gif);" ></span>        <span class="CaptionVerticalLeft" style="background-image:url(' . $layout_name . '/images/content/box-frame-vertical.gif);" /></span>        <div class="Text" >Account Registered</div>        <span class="CaptionVerticalRight" style="background-image:url(' . $layout_name . '/images/content/box-frame-vertical.gif);" /></span>        <span class="CaptionBorderBottom" style="background-image:url(' . $layout_name . '/images/content/table-headline-border.gif);" ></span>        <span class="CaptionEdgeLeftBottom" style="background-image:url(' . $layout_name . '/images/content/box-frame-edge.gif);" /></span>        <span class="CaptionEdgeRightBottom" style="background-image:url(' . $layout_name . '/images/content/box-frame-edge.gif);" /></span>      </div>    </div>    <tr>      <td>        <div class="InnerTableContainer" >          <table style="width:100%;" ><ul>';
+						$mailBody = '<html>
+						<body>
+						<h3>New recovery key!</h3>
+						<p>You or someone else generated recovery key to your account on server <a href="' . $config['server']['url'] . '"><b>' . htmlspecialchars($config['server']['serverName']) . '</b></a>.</p>
+						<p>Recovery key: <b>' . htmlspecialchars($new_rec_key) . '</b></p>
+						</body>
+						</html>';
+						$mail = new PHPMailer();
+						if ($config['site']['smtp_enabled']) {
+							$mail->IsSMTP();
+							$mail->Host = $config['site']['smtp_host'];
+							$mail->Port = (int)$config['site']['smtp_port'];
+							$mail->SMTPAuth = $config['site']['smtp_auth'];
+							$mail->Username = $config['site']['smtp_user'];
+							$mail->Password = $config['site']['smtp_pass'];
+						} else {
+							$mail->IsMail();
+						}
+						$mail->IsHTML(true);
+						$mail->From = $config['site']['mail_address'];
+						$mail->AddAddress($account_logged->getEMail());
+						$mail->Subject = $config['server']['serverName'] . " - new recovery key";
+						$mail->Body = $mailBody;
+						if ($mail->Send()) {
+							$account_logged->set("key", $new_rec_key);
+							$account_logged->set("premium_points", $account_logged->get("premium_points") - $config['site']['generate_new_reckey_price']);
+							$account_logged->save();
+							$main_content .= '<br />Your recovery key were send on email address <b>' . htmlspecialchars($account_logged->getEMail()) . '</b> for ' . $config['site']['generate_new_reckey_price'] . ' premium points.';
+						} else {
+							$main_content .= '<br />An error occurred while sending email ( <b>' . htmlspecialchars($account_logged->getEMail()) . '</b> ) with recovery key! Recovery key not changed. Try again.';
+						}
+						$main_content .= '</ul>          </table>        </div>  </table></div></td></tr><br/><center><table border="0" cellspacing="0" cellpadding="0" ><form action="?subtopic=accountmanagement" method="post" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url(' . $layout_name . '/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url(' . $layout_name . '/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Back" alt="Back" src="' . $layout_name . '/images/buttons/_sbutton_back.gif" ></div></div></td></tr></form></table></center>';
 					}
+					
 					else
 						$reg_errors[] = 'You need '.$config['site']['generate_new_reckey_price'].' premium points to generate new recovery key. You have <b>'.$points.'<b> premium points.';
 				}
@@ -444,8 +450,18 @@ else
 	if($action == "changecomment")
 	{
 		$player_name = $_REQUEST['name'];
-		$new_comment = htmlspecialchars(substr(trim($_POST['comment']),0,2000));
-		$new_hideacc = (int) $_POST['accountvisible'];
+		if (isset($_POST['comment'])) {
+			$new_comment = htmlspecialchars(substr(trim($_POST['comment']), 0, 2000));
+		} else {
+			$new_comment = '';
+		}
+		
+		if (isset($_POST['accountvisible'])) {
+			$new_hideacc = (int) $_POST['accountvisible'];
+		} else {
+			$new_hideacc = 0;
+		}
+
 		if(check_name($player_name))
 		{
 			$player = new Player();
@@ -455,7 +471,7 @@ else
 				$player_account = $player->getAccount();
 				if($account_logged->getId() == $player_account->getId())
 				{
-					if($_POST['changecommentsave'] == 1)
+					if (isset($_POST['changecommentsave']) && $_POST['changecommentsave'] == 1) 
 					{
 						$player->set("hide_char", $new_hideacc);
 						$player->set("comment", $new_comment);

@@ -15,13 +15,32 @@ if(!empty($name))
 		$number_of_rows = 0;
 		$account = $player->getAccount();
 		$skull = '';
-		if ($player->getRedSkull() != 0)
+		if ($player->getSkull() == 4)
 			$skull = "<img style='border: 0;' src='./images/skulls/redskull.gif'/>";
+		else if ($player->getSkull() == 5)
+			$skull = "<img style='border: 0;' src='./images/skulls/blackskull.gif'/>";
 		$main_content .= '<table border="0" cellspacing="1" cellpadding="4" width="100%"><tr bgcolor="'.$config['site']['vdarkborder'].'"><td colspan="2" style="font-weight:bold;color:white">Character Information</td></tr>';
 		$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
 		$main_content .= '<tr bgcolor="' . $bgcolor . '"><td width="20%">Name:</td><td style="font-weight:bold;color:' . (($player->isOnline()) ? 'green' : 'red') . '">' . htmlspecialchars($player->getName()) . ' ' . $skull . ' <img src="' . $config['site']['flag_images_url'] . $account->getFlag() . $config['site']['flag_images_extension'] . '" title="Country: ' . $account->getFlag() . '" alt="' . $account->getFlag() . '" />';
+		if($player->isBanned() || $account->isBanned())
+			$main_content .= '<span style="color:red">[BANNED]</span>';
+		if($player->isNamelocked())
+			$main_content .= '<span style="color:red">[NAMELOCKED]</span>';
 		$main_content .= '<br /><img src="' . $config['site']['outfit_images_url'] . '?id=' . $player->getLookType() . '&addons=' . $player->getLookAddons() . '&head=' . $player->getLookHead() . '&body=' . $player->getLookBody() . '&legs=' . $player->getLookLegs() . '&feet=' . $player->getLookFeet() . '" alt="" /></td></tr>';
 
+		$playerNamelocks = new DatabaseList('PlayerNamelocks');
+		$filter = new SQL_Filter(new SQL_Field('player_id'), SQL_Filter::EQUAL, $player->getID());
+		$playerNamelocks->setFilter($filter);
+		if(count($playerNamelocks) > 0)
+		{
+			$old_names_text = array();
+			foreach($playerNamelocks as $oldName)
+			{
+				$old_names_text[] = 'until ' . date("j F Y, g:i a", $oldName->getDate()) . ' known as <b>' . htmlspecialchars($oldName->getName()) . '</b>';
+			}
+			$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
+			$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>Old Names:</td><td>' . implode('<br />', $old_names_text) . '</td></tr>';
+		}
 		if(in_array($player->getGroup(), $config['site']['groups_support']))
 		{
 			$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
@@ -30,17 +49,31 @@ if(!empty($name))
 		$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
 		$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>Sex:</td><td>' . htmlspecialchars((($player->getSex() == 0) ? 'female' : 'male')) . '</td></tr>';
 		$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
-		$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>Profession:</td><td>' . htmlspecialchars(Website::getVocationName($player->getVocation())) . '</td></tr>';
+		$meritalStatus = 'single';
+		if($player->getMarriage() > 0)
+		{
+			$marriage = new Player();
+			$marriage->load($player->getMarriage());
+			if($marriage->isLoaded())
+				$meritalStatus = 'married to <a href="?subtopic=characters&name='.urlencode($marriage->getName()).'"><b>'.htmlspecialchars($marriage->getName()).'</b></a>';
+		}
+		$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>Marital status:</td><td>' . $meritalStatus . '</td></tr>';
+		$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
+		$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>Profession:</td><td>' . htmlspecialchars(Website::getVocationName($player->getVocation(), $player->getPromotion())) . '</td></tr>';
 		$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
 		$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>Level:</td><td>' . htmlspecialchars($player->getLevel()) . '</td></tr>';
 		$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
-		$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>Residence:</td><td>' . htmlspecialchars($towns_list[$player->getTownID()]) . '</td></tr>';
+		$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>World:</td><td>' . htmlspecialchars($config['site']['worlds'][$player->getWorldID()]) . '</td></tr>';
+		$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
+		$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>Residence:</td><td>' . htmlspecialchars($towns_list[$player->getWorldID()][$player->getTownID()]) . '</td></tr>';
 		$rank_of_player = $player->getRank();
 		if(!empty($rank_of_player))
 		{
 			$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
 			$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>Guild Membership:</td><td>' . htmlspecialchars($rank_of_player->getName()) . ' of the <a href="?subtopic=guilds&action=show&guild='. $rank_of_player->getGuild()->getID() .'">' . htmlspecialchars($rank_of_player->getGuild()->getName()) . '</a></td></tr>';
 		}
+		$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
+		$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>Balance:</td><td>' . htmlspecialchars($player->getBalance()) . ' gold coins</td></tr>';
 		$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
 		$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>Last login:</td><td>' . (($player->getLastLogin() > 0) ? date("j F Y, g:i a", $player->getLastLogin()) : 'Never logged in.') . '</td></tr>';
 		if($player->getCreateDate() > 0)
@@ -50,8 +83,9 @@ if(!empty($name))
 		}
 		if($config['site']['show_vip_storage'] > 0)
 		{
+			$storageValue = $player->getStorage($config['site']['show_vip_storage']);
 			$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
-			$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>VIP:</td><td>' . (($player->getStorage($config['site']['show_vip_storage']) === null) ? '<span style="font-weight:bold;color:red">NOT VIP</span>' : '<span style="font-weight:bold;color:green">VIP</span>') . '</td></tr>';
+			$main_content .= '<tr bgcolor="' . $bgcolor . '"><td>VIP:</td><td>' . (($storageValue === null || $storageValue < 0) ? '<span style="font-weight:bold;color:red">NOT VIP</span>' : '<span style="font-weight:bold;color:green">VIP</span>') . '</td></tr>';
 		}
 		$comment = $player->getComment();
 		$newlines = array("\r\n", "\n", "\r");
@@ -116,15 +150,15 @@ if(!empty($name))
 				
 				<tbody>
 					<tr>
-						<td style="text-align: center;"><a href="?subtopic=highscores&list=experience"><img src="images/skills/level.gif" alt="" style="border-style: none"/></td>
-						<td style="text-align: center;"><a href="?subtopic=highscores&list=magic"><img src="images/skills/ml.gif" alt="" style="border-style: none"/></td>
-						<td style="text-align: center;"><a href="?subtopic=highscores&list=fist"><img src="images/skills/fist.gif" alt="" style="border-style: none"/></td>
-						<td style="text-align: center;"><a href="?subtopic=highscores&list=club"><img src="images/skills/club.gif" alt="" style="border-style: none"/></td>
-						<td style="text-align: center;"><a href="?subtopic=highscores&list=sword"><img src="images/skills/sword.gif" alt="" style="border-style: none"/></td>
-						<td style="text-align: center;"><a href="?subtopic=highscores&list=axe"><img src="images/skills/axe.gif" alt="" style="border-style: none"/></td>
-						<td style="text-align: center;"><a href="?subtopic=highscores&list=distance"><img src="images/skills/dist.gif" alt="" style="border-style: none"/></td>
-						<td style="text-align: center;"><a href="?subtopic=highscores&list=shield"><img src="images/skills/def.gif" alt="" style="border-style: none"/></td>
-						<td style="text-align: center;"><a href="?subtopic=highscores&list=fishing"><img src="images/skills/fish.gif" alt="" style="border-style: none"/></td>
+						<td style="text-align: center;"><a href="?subtopic=highscores&list=experience&world=' . $player->getWorldID() . '"><img src="images/skills/level.gif" alt="" style="border-style: none"/></td>
+						<td style="text-align: center;"><a href="?subtopic=highscores&list=magic&world=' . $player->getWorldID() . '"><img src="images/skills/ml.gif" alt="" style="border-style: none"/></td>
+						<td style="text-align: center;"><a href="?subtopic=highscores&list=fist&world=' . $player->getWorldID() . '"><img src="images/skills/fist.gif" alt="" style="border-style: none"/></td>
+						<td style="text-align: center;"><a href="?subtopic=highscores&list=club&world=' . $player->getWorldID() . '"><img src="images/skills/club.gif" alt="" style="border-style: none"/></td>
+						<td style="text-align: center;"><a href="?subtopic=highscores&list=sword&world=' . $player->getWorldID() . '"><img src="images/skills/sword.gif" alt="" style="border-style: none"/></td>
+						<td style="text-align: center;"><a href="?subtopic=highscores&list=axe&world=' . $player->getWorldID() . '"><img src="images/skills/axe.gif" alt="" style="border-style: none"/></td>
+						<td style="text-align: center;"><a href="?subtopic=highscores&list=distance&world=' . $player->getWorldID() . '"><img src="images/skills/dist.gif" alt="" style="border-style: none"/></td>
+						<td style="text-align: center;"><a href="?subtopic=highscores&list=shield&world=' . $player->getWorldID() . '"><img src="images/skills/def.gif" alt="" style="border-style: none"/></td>
+						<td style="text-align: center;"><a href="?subtopic=highscores&list=fishing&world=' . $player->getWorldID() . '"><img src="images/skills/fish.gif" alt="" style="border-style: none"/></td>
 					</tr>
 					<tr>
 						<tr bgcolor="' . $config['site']['darkborder'] . '"><td style="text-align: center;"><strong>Level</strong></td>
@@ -189,21 +223,53 @@ if(!empty($name))
 		$deads = 0;
 
 		//deaths list
-		$player_deaths = $SQL->query('SELECT ' . $SQL->fieldName('player_id') . ', ' . $SQL->fieldName('time') . ', ' . $SQL->fieldName('level') . ', ' . $SQL->fieldName('killed_by') . ', ' . $SQL->fieldName('is_player') . ' FROM ' . $SQL->tableName('player_deaths') . ' WHERE ' . $SQL->fieldName('player_id') . ' = '.$player->getId().' ORDER BY ' . $SQL->fieldName('time') . ' DESC LIMIT 15');
+		$player_deaths = $SQL->query('SELECT ' . $SQL->fieldName('id') . ', ' . $SQL->fieldName('date') . ', ' . $SQL->fieldName('level') . ' FROM ' . $SQL->tableName('player_deaths') . ' WHERE ' . $SQL->fieldName('player_id') . ' = '.$player->getId().' ORDER BY ' . $SQL->fieldName('date') . ' DESC LIMIT 10');
 		foreach($player_deaths as $death)
 		{
 			$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
 			$deads++;
-			$dead_add_content .= "<tr bgcolor=\"".$bgcolor."\"><td width=\"20%\" align=\"center\">".date("j M Y, H:i", $death['time'])."</td><td>";
-			$dead_add_content .= "<td>killed at level " . $death['level'] . " by ";
-			if($death['is_player'] == 0)
+			$dead_add_content .= "<tr bgcolor=\"".$bgcolor."\"><td width=\"20%\" align=\"center\">".date("j M Y, H:i", $death['date'])."</td><td>";
+			$killers = $SQL->query('SELECT ' . $SQL->tableName('environment_killers') . '.' . $SQL->fieldName('name') . ' AS monster_name, ' . $SQL->tableName('players') . '.' . $SQL->fieldName('name') . ' AS player_name, ' . $SQL->tableName('players') . '.' . $SQL->fieldName('deleted') . ' AS player_exists FROM ' . $SQL->tableName('killers') . ' LEFT JOIN ' . $SQL->tableName('environment_killers') . ' ON ' . $SQL->tableName('killers') . '.' . $SQL->fieldName('id') . ' = ' . $SQL->tableName('environment_killers') . '.' . $SQL->fieldName('kill_id') . ' LEFT JOIN ' . $SQL->tableName('player_killers') . ' ON ' . $SQL->tableName('killers') . '.' . $SQL->fieldName('id') . ' = ' . $SQL->tableName('player_killers') . '.' . $SQL->fieldName('kill_id') . ' LEFT JOIN ' . $SQL->tableName('players') . ' ON ' . $SQL->tableName('players') . '.' . $SQL->fieldName('id') . ' = ' . $SQL->tableName('player_killers') . '.' . $SQL->fieldName('player_id') . '  WHERE ' . $SQL->tableName('killers') . '.' . $SQL->fieldName('death_id') . ' = ' . $SQL->quote($death['id']) . ' ORDER BY ' . $SQL->tableName('killers') . '.' . $SQL->fieldName('final_hit') . ' DESC, ' . $SQL->tableName('killers') . '.' . $SQL->fieldName('id') . ' ASC')->fetchAll();
+
+			$i = 0;
+			$count = count($killers);
+			foreach($killers as $killer)
 			{
-				$dead_add_content .= htmlspecialchars($death['killed_by']);
+				$i++;
+				if($i == 1)
+				{
+					if($count <= 4)
+						$dead_add_content .= "killed at level <b>".$death['level']."</b> by ";
+					elseif($count > 4 and $count < 10)
+						$dead_add_content .= "slain at level <b>".$death['level']."</b> by ";
+					elseif($count > 9 and $count < 15)
+						$dead_add_content .= "crushed at level <b>".$death['level']."</b> by ";
+					elseif($count > 14 and $count < 20)
+						$dead_add_content .= "eliminated at level <b>".$death['level']."</b> by ";
+					elseif($count > 19)
+						$dead_add_content .= "annihilated at level <b>".$death['level']."</b> by ";
+				}
+				elseif($i == $count)
+					$dead_add_content .= " and ";
+				else
+					$dead_add_content .= ", ";
+
+				if($killer['player_name'] != "")
+				{
+					if($killer['monster_name'] != "")
+						$dead_add_content .= htmlspecialchars($killer['monster_name'])." summoned by ";
+
+					if($killer['player_exists'] == 0)
+						$dead_add_content .= "<a href=\"index.php?subtopic=characters&name=".urlencode($killer['player_name'])."\">";
+
+					$dead_add_content .= htmlspecialchars($killer['player_name']);
+					if($killer['player_exists'] == 0)
+						$dead_add_content .= "</a>";
+				}
+				else
+					$dead_add_content .= htmlspecialchars($killer['monster_name']);
 			}
-			else
-			{
-				$dead_add_content .= '<a href="?subtopic=characters&name=' . urlencode($death['killed_by']) . '">' . htmlspecialchars($death['killed_by']) . '</a>';
-			}
+
 			$dead_add_content .= "</td></tr>";
 		}
 
@@ -236,9 +302,16 @@ if(!empty($name))
 			$bgcolor = (($number_of_rows++ % 2 == 1) ?  $config['site']['darkborder'] : $config['site']['lightborder']);
 			$main_content .= '<TR BGCOLOR="' . $bgcolor . '"><TD>Account&#160;Status:</TD><TD>';
 			$main_content .= ($account->isPremium() > 0) ? '<b><font color="green">Premium Account</font></b>' : '<b><font color="red">Free Account</font></b>';
+			if($account->isBanned())
+			{
+				if($account->getBanTime() > 0)
+					$main_content .= '<font color="red"> [Banished until '.date("j F Y, G:i", $account->getBanTime()).']</font>';
+				else
+					$main_content .= '<font color="red"> [Banished FOREVER]</font>';
+			}
 			$main_content .= '</TD></TR></TABLE>';
 			$main_content .= '<br><TABLE BORDER=0><TR><TD></TD></TR></TABLE><TABLE BORDER=0 CELLSPACING=1 CELLPADDING=4 WIDTH=100%><TR BGCOLOR="'.$config['site']['vdarkborder'].'"><TD COLSPAN=5 CLASS=white><B>Characters</B></TD></TR>
-			<TR BGCOLOR="' . $bgcolor . '"><TD><B>Name</B></TD><TD><B>Level</B></TD><TD><b>Status</b></TD><TD><B>&#160;</B></TD></TR>';
+			<TR BGCOLOR="' . $bgcolor . '"><TD><B>Name</B></TD><TD><B>World</B></TD><TD><B>Level</B></TD><TD><b>Status</b></TD><TD><B>&#160;</B></TD></TR>';
 			$account_players = $account->getPlayersList();
 			$player_number = 0;
 			foreach($account_players as $player_list)
@@ -253,7 +326,7 @@ if(!empty($name))
 						$player_list_status = '<font color="green">Online</font>';
 					$main_content .= '<TR BGCOLOR="' . $bgcolor . '"><TD WIDTH=52%><NOBR>'.$player_number.'.&#160;'.htmlspecialchars($player_list->getName());
 					$main_content .= ($player_list->isDeleted()) ? '<font color="red"> [DELETED]</font>' : '';
-					$main_content .= '</NOBR></TD><TD WIDTH=25%>'.$player_list->getLevel().' '.htmlspecialchars($vocation_name[$player_list->getVocation()]).'</TD><TD WIDTH="8%"><b>'.$player_list_status.'</b></TD><TD><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><FORM ACTION="?subtopic=characters" METHOD=post><TR><TD><INPUT TYPE="hidden" NAME="name" VALUE="'.htmlspecialchars($player_list->getName()).'"><INPUT TYPE=image NAME="View '.htmlspecialchars($player_list->getName()).'" ALT="View '.htmlspecialchars($player_list->getName()).'" SRC="'.$layout_name.'/images/buttons/sbutton_view.gif" BORDER=0 WIDTH=120 HEIGHT=18></TD></TR></FORM></TABLE></TD></TR>';
+					$main_content .= '</NOBR></TD><TD WIDTH=15%>'.$config['site']['worlds'][$player_list->getWorld()].'</TD><TD WIDTH=25%>'.$player_list->getLevel().' '.htmlspecialchars($vocation_name[$player_list->getPromotion()][$player_list->getVocation()]).'</TD><TD WIDTH="8%"><b>'.$player_list_status.'</b></TD><TD><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><FORM ACTION="?subtopic=characters" METHOD=post><TR><TD><INPUT TYPE="hidden" NAME="name" VALUE="'.htmlspecialchars($player_list->getName()).'"><INPUT TYPE=image NAME="View '.htmlspecialchars($player_list->getName()).'" ALT="View '.htmlspecialchars($player_list->getName()).'" SRC="'.$layout_name.'/images/buttons/sbutton_view.gif" BORDER=0 WIDTH=120 HEIGHT=18></TD></TR></FORM></TABLE></TD></TR>';
 				}
 			}
 			$main_content .= '</TABLE></TD><TD><IMG SRC="'.$layout_name.'/images/blank.gif" WIDTH=10 HEIGHT=1 BORDER=0></TD></TR></TABLE>';

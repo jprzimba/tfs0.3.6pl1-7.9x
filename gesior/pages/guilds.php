@@ -30,11 +30,45 @@ if($action == 'login')
 //show list of guilds
 if($action == '')
 {
+	if(count($config['site']['worlds']) > 1)
+	{
+		foreach($config['site']['worlds'] as $idd => $world_n)
+		{
+			if($idd == (int) $_REQUEST['world'])
+			{
+				$world_id = $idd;
+				$world_name = $world_n;
+			}
+		}
+	}
+	if(!isset($world_id))
+	{
+		$world_id = 0;
+		$world_name = $config['server']['serverName'];
+	}
+	if(count($config['site']['worlds']) > 1)
+	{
+		$main_content .= '<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=100%><TR><TD></TD><TD>
+		<FORM ACTION="" METHOD=get><INPUT TYPE="hidden" NAME="subtopic" VALUE="guilds"><TABLE WIDTH=100% BORDER=0 CELLSPACING=1 CELLPADDING=4><TR><TD BGCOLOR="'.$config['site']['vdarkborder'].'" CLASS=white><B>World Selection</B></TD></TR><TR><TD BGCOLOR="'.$config['site']['darkborder'].'">
+		<TABLE BORDER=0 CELLPADDING=1><TR><TD>Guilds on world:</TD><TD><SELECT SIZE="1" NAME="world">';
+		foreach($config['site']['worlds'] as $id => $world_n)
+		{
+			if($id == $world_id)
+				$main_content .= '<OPTION VALUE="'.$id.'" selected="selected">'.htmlspecialchars($world_n).'</OPTION>';
+			else
+				$main_content .= '<OPTION VALUE="'.$id.'">'.htmlspecialchars($world_n).'</OPTION>';
+		}
+		$main_content .= '</SELECT> </TD><TD><INPUT TYPE="image" NAME="Submit" ALT="Submit" SRC="'.$layout_name.'/images/buttons/sbutton_submit.gif">
+			</TD></TR></TABLE></TABLE></FORM></TABLE>';
+	}
+	
 	$guilds_list = new DatabaseList('Guild');
+	$filterWorld = new SQL_Filter(new SQL_Field('world_id', 'guilds'), SQL_Filter::EQUAL, $world_id);
+	$guilds_list->setFilter($filterWorld);
 	$guilds_list->addOrder(new SQL_Order(new SQL_Field('name'), SQL_Order::ASC));
 	
-	$main_content .= '<h2><center>Guilds on '.htmlspecialchars(Website::getServerConfig()->getValue('serverName')).'</center></h2><TABLE BORDER=0 CELLSPACING=1 CELLPADDING=4 WIDTH=100%>
-	<TR BGCOLOR='.$config['site']['vdarkborder'].'><TD COLSPAN=3 CLASS=white><B>Guilds on '.htmlspecialchars(Website::getServerConfig()->getValue('serverName')).'</B></TD></TR>
+	$main_content .= '<h2><center>Guilds on '.htmlspecialchars($world_name).'</center></h2><TABLE BORDER=0 CELLSPACING=1 CELLPADDING=4 WIDTH=100%>
+	<TR BGCOLOR='.$config['site']['vdarkborder'].'><TD COLSPAN=3 CLASS=white><B>Guilds on '.htmlspecialchars($world_name).'</B></TD></TR>
 	<TR BGCOLOR='.$config['site']['darkborder'].'><TD WIDTH=64><B>Logo</B></TD>
 	<TD WIDTH=100%><B>Description</B></TD>
 	<TD WIDTH=56><B>&#160;</B></TD></TR>';
@@ -233,7 +267,7 @@ if($action == 'show')
 				<INPUT TYPE=image NAME="Leave Guild" ALT="Leave Guild" SRC="'.$layout_name.'/images/buttons/sbutton_leaveguild.png" BORDER=0 WIDTH=120 HEIGHT=18>
 				</TD></TR></FORM></TABLE></TD>';
 		}
-		$main_content .= '<TD ALIGN=center><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><FORM ACTION="?subtopic=guilds" METHOD=post><TR><TD>
+		$main_content .= '<TD ALIGN=center><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><FORM ACTION="?subtopic=guilds&world='.$guild->getWorld().'" METHOD=post><TR><TD>
 		<INPUT TYPE=image NAME="Back" ALT="Back" SRC="'.$layout_name.'/images/buttons/sbutton_back.gif" BORDER=0 WIDTH=120 HEIGHT=18>
 		</TD></TR></FORM></TABLE>
 		</TD><TD ALIGN=center><IMG SRC="'.$layout_name.'/images/blank.gif" WIDTH=80 HEIGHT=1 BORDER=0<BR></TD></TR></TABLE>
@@ -574,6 +608,8 @@ if($action == 'invite')
 					$guild_errors[] = 'Player with name <b>'.htmlspecialchars($name).'</b> is already in guild. He must leave guild before you can invite him.';
 			}
 		}
+		if(empty($guild_errors) && $guild->getWorld() != $player->getWorld())
+			$guild_errors[] = '<b>'.htmlspecialchars($player->getName()).'</b> is from other world then your guild.';
 		if(empty($guild_errors))
 		{
 			$invited_list = $guild->listInvites();
@@ -1021,6 +1057,7 @@ if($action == 'createguild')
 		$new_guild->setName($new_guild_name);
 		$new_guild->setOwner($player);
 		$new_guild->setDescription('New guild. Leader must edit this text :)');
+		$new_guild->setWorldID($player->getWorld());
 		$new_guild->setGuildLogo('image/gif', Website::getFileContents('./images/default_guild_logo.gif'));
 		
 		$new_guild->save();

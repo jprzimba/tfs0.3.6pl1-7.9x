@@ -8,8 +8,8 @@ class Player extends ObjectData
 	const LOADTYPE_NAME = 'name';
 	const LOADTYPE_ACCOUNT_ID = 'account_id';
 	public static $table = 'players';
-	public $data = array('name' => null, 'group_id' => null, 'account_id' => null, 'level' => null, 'vocation' => null, 'health' => null, 'healthmax' => null, 'experience' => null, 'lookbody' => null, 'lookfeet' => null, 'lookhead' => null, 'looklegs' => null, 'looktype' => null, 'lookaddons' => null, 'maglevel' => null, 'mana' => null, 'manamax' => null, 'manaspent' => null, 'soul' => null, 'town_id' => null, 'posx' => null, 'posy' => null, 'posz' => null, 'conditions' => null, 'cap' => null, 'sex' => null, 'lastlogin' => null, 'lastip' => null, 'save' => null, 'redskull' => null, 'redskulltime' => null, 'rank_id' => null, 'guildnick' => null, 'lastlogout' => null, 'blessings' => null, 'direction' => null, 'loss_experience' => null, 'loss_mana' => null, 'loss_skills' => null, 'premend' => null, 'online' => null, 'deleted' => null, 'description' => null, 'create_ip' => null, 'create_date' => null, 'comment' => null, 'hide_char' => null);
-	public static $fields = array('id', 'name', 'group_id', 'account_id', 'level', 'vocation', 'health', 'healthmax', 'experience', 'lookbody', 'lookfeet', 'lookhead', 'looklegs', 'looktype', 'lookaddons', 'maglevel', 'mana', 'manamax', 'manaspent', 'soul', 'town_id', 'posx', 'posy', 'posz', 'conditions', 'cap', 'sex', 'lastlogin', 'lastip', 'save', 'redskull', 'redskulltime', 'rank_id', 'guildnick', 'lastlogout', 'blessings', 'direction', 'loss_experience', 'loss_mana', 'loss_skills', 'premend', 'online', 'deleted', 'description', 'create_ip', 'create_date', 'comment', 'hide_char');
+	public $data = array('name' => null, 'world_id' => null, 'group_id' => null, 'account_id' => null, 'level' => null, 'vocation' => null, 'health' => null, 'healthmax' => null, 'experience' => null, 'lookbody' => null, 'lookfeet' => null, 'lookhead' => null, 'looklegs' => null, 'looktype' => null, 'lookaddons' => null, 'maglevel' => null, 'mana' => null, 'manamax' => null, 'manaspent' => null, 'soul' => null, 'town_id' => null, 'posx' => null, 'posy' => null, 'posz' => null, 'conditions' => null, 'cap' => null, 'sex' => null, 'lastlogin' => null, 'lastip' => null, 'save' => null, 'skull' => null, 'skulltime' => null, 'rank_id' => null, 'guildnick' => null, 'lastlogout' => null, 'blessings' => null, 'balance' => null, 'stamina' => null, 'direction' => null, 'loss_experience' => null, 'loss_mana' => null, 'loss_skills' => null, 'loss_containers' => null, 'loss_items' => null, 'premend' => null, 'online' => null, 'marriage' => null, 'promotion' => null, 'deleted' => null, 'description' => null, 'create_ip' => null, 'create_date' => null, 'comment' => null, 'hide_char' => null);
+	public static $fields = array('id', 'name', 'world_id', 'group_id', 'account_id', 'level', 'vocation', 'health', 'healthmax', 'experience', 'lookbody', 'lookfeet', 'lookhead', 'looklegs', 'looktype', 'lookaddons', 'maglevel', 'mana', 'manamax', 'manaspent', 'soul', 'town_id', 'posx', 'posy', 'posz', 'conditions', 'cap', 'sex', 'lastlogin', 'lastip', 'save', 'skull', 'skulltime', 'rank_id', 'guildnick', 'lastlogout', 'blessings', 'balance', 'stamina', 'direction', 'loss_experience', 'loss_mana', 'loss_skills', 'loss_containers', 'loss_items', 'premend', 'online', 'marriage', 'promotion', 'deleted', 'description', 'create_ip', 'create_date', 'comment', 'hide_char');
 	public static $skillFields = array('player_id', 'skillid', 'value',	'count');
 	public $items;
 	public $storages;
@@ -302,6 +302,56 @@ class Player extends ObjectData
 		$this->getDatabaseHandler()->query('DELETE FROM ' . $this->getDatabaseHandler()->tableName('guild_invites') . ' WHERE ' . $this->getDatabaseHandler()->fieldName('player_id') . ' = ' . $this->getDatabaseHandler()->quote($this->getID()));
 	}
 
+	public function unban()
+	{
+		$bans = new DatabaseList('Ban');
+		$filterType = new SQL_Filter(new SQL_Field('type'), SQL_Filter::EQUAL, Ban::TYPE_PLAYER);
+		$filterValue = new SQL_Filter(new SQL_Field('value'), SQL_Filter::EQUAL, $this->data['id']);
+		$filterActive = new SQL_Filter(new SQL_Field('active'), SQL_Filter::EQUAL, 1);
+		$filter = new SQL_Filter($filterType, SQL_Filter::CRITERIUM_AND, $filterValue);
+		$filter = new SQL_Filter($filter, SQL_Filter::CRITERIUM_AND, $filterActive);
+		$bans->setFilter($filter);
+		foreach($bans as $ban)
+		{
+			$ban->setActive(0);
+			$ban->save();
+		}
+	}
+
+	public function isBanned()
+	{
+		$bans = new DatabaseList('Ban');
+		$filterType = new SQL_Filter(new SQL_Field('type'), SQL_Filter::EQUAL, Ban::TYPE_PLAYER);
+		$filterParam = new SQL_Filter(new SQL_Field('param'), SQL_Filter::EQUAL, Ban::PLAYERBAN_BANISHMENT);
+		$filterValue = new SQL_Filter(new SQL_Field('value'), SQL_Filter::EQUAL, $this->data['id']);
+		$filterActive = new SQL_Filter(new SQL_Field('active'), SQL_Filter::EQUAL, 1);
+		$filter = new SQL_Filter($filterType, SQL_Filter::CRITERIUM_AND, $filterValue);
+		$filter = new SQL_Filter($filter, SQL_Filter::CRITERIUM_AND, $filterActive);
+		$filter = new SQL_Filter($filter, SQL_Filter::CRITERIUM_AND, $filterParam);
+		$bans->setFilter($filter);
+		$isBanned = false;
+		foreach($bans as $ban)
+		{
+			if($ban->getExpires() <= 0 || $ban->isExpires() > time())
+				$isBanned = true;
+		}
+		return $isBanned;
+	}
+
+	public function isNamelocked()
+	{
+		$bans = new DatabaseList('Ban');
+		$filterType = new SQL_Filter(new SQL_Field('type'), SQL_Filter::EQUAL, Ban::TYPE_PLAYER);
+		$filterParam = new SQL_Filter(new SQL_Field('param'), SQL_Filter::EQUAL, Ban::PLAYERBAN_LOCK);
+		$filterValue = new SQL_Filter(new SQL_Field('value'), SQL_Filter::EQUAL, $this->data['id']);
+		$filterActive = new SQL_Filter(new SQL_Field('active'), SQL_Filter::EQUAL, 1);
+		$filter = new SQL_Filter($filterType, SQL_Filter::CRITERIUM_AND, $filterValue);
+		$filter = new SQL_Filter($filter, SQL_Filter::CRITERIUM_AND, $filterActive);
+		$filter = new SQL_Filter($filter, SQL_Filter::CRITERIUM_AND, $filterParam);
+		$bans->setFilter($filter);
+		return (count($bans) > 0);
+	}
+
 	public function delete()
 	{
         $this->db->query('UPDATE ' . $this->getDatabaseHandler()->tableName(self::$table) . ' SET ' . $this->getDatabaseHandler()->fieldName('deleted') . ' = 1 WHERE ' . $this->getDatabaseHandler()->fieldName('id') . ' = ' . $this->getDatabaseHandler()->quote($this->data['id']));
@@ -315,12 +365,16 @@ class Player extends ObjectData
 	public function getID(){return $this->data['id'];}
 	public function setAccountID($value){$this->data['account_id'] = $value;}
 	public function getAccountID(){return $this->data['account_id'];}
+	public function setWorldID($value){$this->data['world_id'] = $value;}
+	public function getWorldID(){return $this->data['world_id'];}
 	public function setName($value){$this->data['name'] = $value;}
 	public function getName(){return $this->data['name'];}
 	public function setGroupID($value){$this->data['group_id'] = $value;}
 	public function getGroupID(){return $this->data['group_id'];}
 	public function setVocation($value){$this->data['vocation'] = $value;}
 	public function getVocation(){return $this->data['vocation'];}
+	public function setPromotion($value){$this->data['promotion'] = $value;}
+	public function getPromotion(){return $this->data['promotion'];}
 	public function setLevel($value){$this->data['level'] = $value;}
 	public function getLevel(){return $this->data['level'];}
 	public function setExperience($value){$this->data['experience'] = $value;}
@@ -359,10 +413,10 @@ class Player extends ObjectData
 	public function getLastLogin(){return $this->data['lastlogin'];}
 	public function setLastLogout($value){$this->data['lastlogout'] = $value;}
 	public function getLastLogout(){return $this->data['lastlogout'];}
-	public function setRedSkull($value){$this->data['redskull'] = $value;}
-	public function getRedSkull(){return $this->data['redskull'];}
-	public function setRedSkullTime($value){$this->data['redskulltime'] = $value;}
-	public function getRedSkullTime(){return $this->data['redskulltime'];}
+	public function setSkull($value){$this->data['skull'] = $value;}
+	public function getSkull(){return $this->data['skull'];}
+	public function setSkullTime($value){$this->data['skulltime'] = $value;}
+	public function getSkullTime(){return $this->data['skulltime'];}
 	public function setRankID($value){$this->data['rank_id'] = $value;}
 	public function getRankID(){return $this->data['rank_id'];}
 	public function setGuildNick($value){$this->data['guildnick'] = $value;}
@@ -371,6 +425,10 @@ class Player extends ObjectData
 	public function getSave(){return $this->data['save'];}
 	public function setBlessings($value){$this->data['blessings'] = $value;}
 	public function getBlessings(){return $this->data['blessings'];}
+	public function setBalance($value){$this->data['balance'] = $value;}
+	public function getBalance(){return $this->data['balance'];}
+	public function setStamina($value){$this->data['stamina'] = $value;}
+	public function getStamina(){return $this->data['stamina'];}
 	public function setDirection($value){$this->data['direction'] = $value;}
 	public function getDirection(){return $this->data['direction'];}
 	public function setLossExperience($value){$this->data['loss_experience'] = $value;}
@@ -379,8 +437,14 @@ class Player extends ObjectData
 	public function getLossMana(){return $this->data['loss_mana'];}
 	public function setLossSkills($value){$this->data['loss_skills'] = $value;}
 	public function getLossSkills(){return $this->data['loss_skills'];}
+	public function setLossContainers($value){$this->data['loss_containers'] = $value;}
+	public function getLossContainers(){return $this->data['loss_containers'];}
+	public function setLossItems($value){$this->data['loss_items'] = $value;}
+	public function getLossItems(){return $this->data['loss_items'];}
 	public function setOnline($value){$this->data['online'] = (int) $value;}
 	public function getOnline(){return (bool) $this->data['online'];}
+	public function setMarriage($value){$this->data['marriage'] = $value;}
+	public function getMarriage(){return $this->data['marriage'];}
 	public function setDeleted($value){$this->data['deleted'] = (int) $value;}
 	public function isDeleted(){return (bool) $this->data['deleted'];}
 	public function setDescription($value){$this->data['description'] = $value;}
@@ -417,6 +481,8 @@ class Player extends ObjectData
 */
 	public function setGroup($value){$this->setGroupID($value);}
 	public function getGroup(){return $this->getGroupID();}
+	public function setWorld($value){$this->setWorldID($value);}
+	public function getWorld(){return $this->getWorldID();}
 	public function isOnline(){return $this->getOnline() == 1;}
 	public function getCreated(){return $this->getCreateDate();}
 	public function setCreated($value){$this->setCreateDate($value);}

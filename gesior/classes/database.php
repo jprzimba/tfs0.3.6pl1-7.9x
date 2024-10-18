@@ -110,94 +110,117 @@ class Database extends PDO
 		$this->db_file = $value;
 	}
 
-	public function beginTransaction()
+	public function beginTransaction(): bool
 	{
-		if($this->isConnected() || $this->connect())
+		if ($this->isConnected() || $this->connect()) {
 			return parent::beginTransaction();
-		else
+		} else {
 			new Error_Critic('', 'Website is not connected to database. Cannot execute "beginTransaction()"');
-	}
+			return false;
+		}
+	}	
 
-	public function commit()
+	public function commit(): bool
 	{
-		if($this->isConnected() || $this->connect())
+		if ($this->isConnected() || $this->connect()) {
 			return parent::commit();
-		else
+		} else {
 			new Error_Critic('', 'Website is not connected to database. Cannot execute "commit()"');
+			return false;
+		}
 	}
-
-	public function errorCode()
+	
+	public function errorCode(): ?string
 	{
-		if($this->isConnected() || $this->connect())
+		if ($this->isConnected() || $this->connect()) {
 			return parent::errorCode();
-		else
+		} else {
 			new Error_Critic('', 'Website is not connected to database. Cannot execute "errorCode()"');
-	}
+			return null;
+		}
+	}	
 
-	public function errorInfo()
+	public function errorInfo(): array
 	{
-		if($this->isConnected() || $this->connect())
+		if ($this->isConnected() || $this->connect()) {
 			return parent::errorInfo();
-		else
+		} else {
 			new Error_Critic('', 'Website is not connected to database. Cannot execute errorInfo()');
-	}
+			return [];
+		}
+	}	
 
-	public function exec($statement)
+	public function exec(string $statement): int|false
 	{
-		if($this->isConnected() || $this->connect())
+		if ($this->isConnected() || $this->connect()) {
 			return parent::exec($statement);
-		else
+		} else {
 			new Error_Critic('', 'Website is not connected to database. Cannot execute exec($statement)');
+			return false;
+		}
 	}
-
-	public function getAttribute($attribute)
+	
+	public function getAttribute(int $attribute): mixed
 	{
-		if($this->isConnected() || $this->connect())
+		if ($this->isConnected() || $this->connect()) {
 			return parent::getAttribute($attribute);
-		else
+		} else {
 			new Error_Critic('', 'Website is not connected to database. Cannot execute getAttribute($attribute)');
-	}
+			return null;
+		}
+	}	
 
-	public static function getAvailableDrivers()
+	public static function getAvailableDrivers(): array
 	{
-		if($this->isConnected() || $this->connect())
+		if (self::isConnected() || self::connect()) {
 			return parent::getAvailableDrivers();
-		else
+		} else {
 			new Error_Critic('', 'Website is not connected to database. Cannot execute getAvailableDrivers()');
+			return [];
+		}
 	}
-
-	public function inTransaction()
+	
+	public function inTransaction(): bool
 	{
-		if($this->isConnected() || $this->connect())
+		if ($this->isConnected() || $this->connect()) {
 			return parent::inTransaction();
-		else
+		} else {
 			new Error_Critic('', 'Website is not connected to database. Cannot execute inTransaction()');
+			return false;
+		}
 	}
 
-	public function lastInsertId($name = NULL)
+	public function lastInsertId($name = null): string
 	{
-		if($this->isConnected() || $this->connect())
+		if ($this->isConnected() || $this->connect()) {
 			return parent::lastInsertId($name);
-		else
-			new Error_Critic('', 'Website is not connected to database. Cannot execute ');
+		} else {
+			new Error_Critic('', 'Website is not connected to database. Cannot execute lastInsertId()');
+			return '';
+		}
 	}
 
-	public function prepare($statement, $driver_options = array())
+	public function prepare(string $statement, array $driver_options = []): PDOStatement|false
 	{
-		if($this->isConnected() || $this->connect())
+		if ($this->isConnected() || $this->connect()) {
 			return parent::prepare($statement, $driver_options);
-		else
-			new Error_Critic('', 'Website is not connected to database. Cannot execute lastInsertId($name)');
-	}
+		} else {
+			new Error_Critic('', 'Website is not connected to database. Cannot execute prepare($statement)');
+			return false;
+		}
+	}	
 
-	public function query($statement)
+	public function query(string $statement, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement|false
 	{
 		$this->queriesCount++;
 		// BETA TESTS - uncomment line below to print all queries on website before execution
 		//echo'<br />' . $statement . '<br />';
+	
 		if($this->isConnected() || $this->connect())
 		{
-			$ret = parent::query($statement);
+			$ret = parent::query($statement, $fetchMode, ...$fetchModeArgs);
+			
+			/*
 			if($this->printQueries)
 			{
 				$_errorInfo = $this->errorInfo();
@@ -207,36 +230,48 @@ class Database extends PDO
 				echo '<tr><td>Driver code: </td><td>' . $_errorInfo[1] . '</td></tr>';
 				echo '<tr><td>Error message: </td><td>' . $_errorInfo[2] . '</td></tr>';
 				echo '</table>';
-			}
+			}*/
 			return $ret;
 		}
 		else
 			new Error_Critic('', 'Website is not connected to database. Cannot execute query($statement)');
 	}
+	
 
-	public function quote($string, $parameter_type = PDO::PARAM_STR)
+	public function quote(?string $string, int $parameter_type = PDO::PARAM_STR): string|false
 	{
-		if($this->isConnected() || $this->connect())
+		if (is_null($string)) {
+			return 'NULL'; 
+		}
+	
+		if ($this->isConnected() || $this->connect()) {
 			return parent::quote($string, $parameter_type);
-		else
+		} else {
 			new Error_Critic('', 'Website is not connected to database. Cannot execute quote($string, $parameter_type)');
+			return false;
+		}
 	}
+	
 
-	public function rollBack()
+	public function rollBack(): bool
 	{
-		if($this->isConnected() || $this->connect())
+		if ($this->isConnected() || $this->connect()) {
 			return parent::rollBack();
-		else
+		} else {
 			new Error_Critic('', 'Website is not connected to database. Cannot execute rollBack()');
+			return false;
+		}
 	}
-
-	public function setAttribute($attribute, $value)
+	
+	public function setAttribute(int $attribute, mixed $value): bool
 	{
-		if($this->isConnected() || $this->connect())
+		if ($this->isConnected() || $this->connect()) {
 			return parent::setAttribute($attribute, $value);
-		else
+		} else {
 			new Error_Critic('', 'Website is not connected to database. Cannot execute setAttribute($attribute, $value)');
-	}
+			return false;
+		}
+	}	
 
 	public function setConnectionError($string)
 	{

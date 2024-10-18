@@ -197,9 +197,9 @@ function EmailStateChanged()
 //CREATE ACCOUNT PAGE (save account in database)
 if($action == "saveaccount")
 {
-	$reg_email = trim($_POST['reg_email']);
-	$reg_password = trim($_POST['reg_password']);
-	$reg_code = trim($_POST['reg_code']);
+	$reg_email = isset($_POST['reg_email']) ? trim($_POST['reg_email']) : '';
+	$reg_password = isset($_POST['reg_password']) ? trim($_POST['reg_password']) : ''; 
+	$reg_code = isset($_POST['reg_code']) ? trim($_POST['reg_code']) : '';
 
 	if(empty($reg_email))
 		$reg_form_errors[] = "Please enter your email address.";
@@ -211,7 +211,7 @@ if($action == "saveaccount")
 	if($config['site']['verify_code'])
 	{
 		//check verification code
-		$string = strtoupper($_SESSION['string']);
+		$string = isset($_SESSION['RandomText']) ? strtoupper($_SESSION['RandomText']) : '';
 		$userstring = strtoupper($reg_code);
 		session_destroy();
 		if(empty($string))
@@ -226,6 +226,7 @@ if($action == "saveaccount")
 					$reg_form_errors[] = "Verification code is incorrect.";
 			}
 		}
+		$_SESSION['RandomText'] = null;
 	}
 	if(empty($reg_password) && !$config['site']['create_account_verify_mail'])
 		$reg_form_errors[] = "Please enter password to your new account.";
@@ -264,18 +265,40 @@ if($action == "saveaccount")
 		}
 		$reg_account = new Account();
 		// saves account information in database
+
+		$reg_id = (int) $reg_id;
 		$reg_account->setID($reg_id);
+
+		$reg_name = (string) $reg_id;
+		$reg_account->setName($reg_name);
 		$reg_account->setPassword($reg_password);
 		$reg_account->setEMail($reg_email);
+		$reg_account->setKey(0);
 		$reg_account->setGroupID(1);
 		$reg_account->setCreateDate(time());
 		$reg_account->setCreateIP(Visitor::getIP());
 		$reg_account->setFlag(Website::getCountryCode(long2ip(Visitor::getIP())));
-		if(isset($config['site']['newaccount_premdays']) && $config['site']['newaccount_premdays'] > 0)
+		if (isset($config['site']['newaccount_premdays']) && $config['site']['newaccount_premdays'] > 0)
 		{
+			
 			$reg_account->set("premdays", $config['site']['newaccount_premdays']);
 			$reg_account->set("lastday", time());
 		}
+		else{
+			$reg_account->set("premdays", 0);
+			$reg_account->set("lastday", time());
+		}
+		$reg_account->set("premium_points", 0);
+		$reg_account->set("page_access", 0);
+		$reg_account->set("location", "");
+		$reg_account->set("rlname", "");
+		$reg_account->set("email_new", "");
+		$reg_account->set("email_new_time", 0);
+		$reg_account->set("email_code", "");
+		$reg_account->set("next_email", 0);
+		$reg_account->set("last_post", 0);
+		
+		
 		$reg_account->save(true); // force INSERT new account to database
 		//show information about registration
 		if($config['site']['send_emails'] && $config['site']['create_account_verify_mail'])

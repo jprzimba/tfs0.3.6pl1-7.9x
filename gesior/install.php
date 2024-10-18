@@ -196,7 +196,7 @@ elseif($page == 'step')
 		}
 		else
 			new Error_Critic('#E-6', 'Database error. Unknown database type in <b>server config</b> . Must be equal to: "<b>mysql</b>" or "<b>sqlite</b>". Now is: "<b>' . Website::getServerConfig()->getValue(SERVERCONFIG_SQL_TYPE) . '</b>"');
-		Website::setPasswordsEncryption(Website::getServerConfig()->getValue('passwordType'));
+		Website::setPasswordsEncryption(Website::getServerConfig()->getValue('encryptionType'));
 		$SQL = Website::getDBHandle();
 	Website::getDBHandle()->setPrintQueries(true);
 	}
@@ -256,7 +256,7 @@ elseif($page == 'step')
 		echo 'Installer try to add new tables and columns to database.<br>';
 		$columns = array();
 		//$columns[] = array('table', 'name_of_column', 'type', 'length', 'default');
-		$columns[] = array('accounts', 'key', 'VARCHAR', '20', '0');
+		//$columns[] = array('accounts', 'key', 'VARCHAR', '20', '0');
 		$columns[] = array('accounts', 'email_new', 'VARCHAR', '255', '');
 		$columns[] = array('accounts', 'email_new_time', 'INT', '11', '0');
 		$columns[] = array('accounts', 'rlname', 'VARCHAR', '255', '');
@@ -276,8 +276,8 @@ elseif($page == 'step')
 		$columns[] = array('guilds', 'balance', 'BIGINT UNSIGNED', '', '0');
 		$columns[] = array('killers', 'war', 'INT', '11', '0');
 
-		$columns[] = array('players', 'deleted', 'TINYINT', '1', '0');
-		$columns[] = array('players', 'description', 'VARCHAR', '255', '');
+		//$columns[] = array('players', 'deleted', 'TINYINT', '1', '0');
+		//$columns[] = array('players', 'description', 'VARCHAR', '255', '');
 		$columns[] = array('players', 'comment', 'TEXT', '', '');
 		$columns[] = array('players', 'create_ip', 'INT', '11', '0');
 		$columns[] = array('players', 'create_date', 'INT', '11', '0');

@@ -4,7 +4,7 @@ if(!defined('INITIALIZED'))
 
 if($subtopic == "tibiarules")
 {
-	$main_content .= '<B>'.htmlspecialchars($config['server_name']).' Rules</B><BR><TEXTAREA ROWS="25" WRAP="physical" COLS="80" READONLY="true">';
+	$main_content .= '<B>'.htmlspecialchars($config['server']['serverName']).' Rules</B><BR><TEXTAREA ROWS="25" WRAP="physical" COLS="80" READONLY="true">';
 }
 $main_content .= '1. Names
 a) Names which contain insulting (e.g. "Bastard"), racist (e.g. "Nigger"), extremely right-wing (e.g. "Hitler"), sexist (e.g. "Bitch") or offensive (e.g. "Copkiller") language.
