@@ -18,6 +18,20 @@
 #ifndef __DEFINITIONS__
 #define __DEFINITIONS__
 
+
+#define CLIENT_VERSION_MIN 790
+#define CLIENT_VERSION_MAX 792
+#define CLIENT_VERSION_STRING "Only clients with protocol 7.9x allowed!"
+
+#define STATUS_SERVER_NAME "The Forgotten Server"
+#define STATUS_SERVER_VERSION "0.3.6"
+#define STATUS_SERVER_CODENAME "Crying Damson"
+#define STATUS_SERVER_PROTOCOL "7.9x"
+
+#define VERSION_CHECK "https://raw.githubusercontent.com/jprzimba/tfs0.3.6pl1-7.9x/refs/heads/main/version.xml"
+#define VERSION_PATCH 1
+#define VERSION_DATABASE 24
+
 #undef MULTI_SQL_DRIVERS
 #define SQL_DRIVERS __USE_SQLITE__+__USE_MYSQL__
 

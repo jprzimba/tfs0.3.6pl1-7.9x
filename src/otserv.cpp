@@ -63,8 +63,6 @@
 #include "exception.h"
 #endif
 
-#include "resources.h"
-
 #ifdef __NO_BOOST_EXCEPTIONS__
 #include <exception>
 
@@ -123,7 +121,7 @@ bool argumentsHandler(StringVec args)
 
 		if((*it) == "--version")
 		{
-			std::clog << STATUS_SERVER_NAME << ", version " << STATUS_SERVER_VERSION << " (" << STATUS_SERVER_CODENAME << ")\n"
+			std::clog << STATUS_SERVER_NAME << ", version " << STATUS_SERVER_VERSION << " (" << STATUS_SERVER_CODENAME << "), patch level " << VERSION_PATCH << "\n"
 			"Compiled with " << BOOST_COMPILER << " at " << __DATE__ << ", " << __TIME__ << ".\n"
 			"A server developed by Elf, slawkens, Talaturen, Lithium, KaczooH, Kiper, Kornholijo.\n"
 			"Server modified to version 7.9x by Tryller.\n"
@@ -315,7 +313,7 @@ void otserv(StringVec args)
 	}
 #endif
 
-	std::clog << STATUS_SERVER_NAME << ", version " << STATUS_SERVER_VERSION << " (" << STATUS_SERVER_CODENAME << ")" << std::endl;
+	std::clog << STATUS_SERVER_NAME << ", version " << STATUS_SERVER_VERSION << " (" << STATUS_SERVER_CODENAME << "), patch level " << VERSION_PATCH << std::endl;
 	std::clog << "Compiled with " << BOOST_COMPILER << " at " << __DATE__ << ", " << __TIME__ << "." << std::endl;
 	std::clog << "A server developed by Elf, slawkens, Talaturen, KaczooH, Lithium, Kiper, Kornholijo." << std::endl;
 	std::clog << "Server modified to version 7.9x by Tryller" << std::endl;
@@ -447,6 +445,52 @@ void otserv(StringVec args)
 		g_config.setNumber(ConfigManager::ENCRYPTION, ENCRYPTION_PLAIN);
 		std::clog << "Using plaintext encryption" << std::endl;
 	}
+
+	std::clog << ":: Checking software version... ";
+	if(xmlDocPtr doc = xmlParseFile(VERSION_CHECK))
+	{
+		xmlNodePtr p, root = xmlDocGetRootElement(doc);
+		if(!xmlStrcmp(root->name, (const xmlChar*)"versions"))
+		{
+			p = root->children->next;
+			if(!xmlStrcmp(p->name, (const xmlChar*)"entry"))
+			{
+				std::string version;
+				int32_t patch;
+
+				bool tmp = false;
+				if(readXMLString(p, "version", version) && version != STATUS_SERVER_VERSION)
+					tmp = true;
+
+				if(readXMLInteger(p, "patch", patch) && patch > VERSION_PATCH)
+					tmp = true;
+
+				if(tmp)
+				{
+					std::clog << "outdated, please consider updating!" << std::endl;
+					std::clog << ":: Current version information - version: " << STATUS_SERVER_VERSION << ", patch: " << VERSION_PATCH;
+					std::clog << ":: Latest version information - version: " << version << ", patch: " << patch;
+					if(g_config.getBool(ConfigManager::CONFIM_OUTDATED_VERSION) && version.find("_SVN") == std::string::npos)
+					{
+						std::clog << "Continue? (y/N)" << std::endl;
+                        char buffer = OTSYS_getch();
+						if(buffer == 10 || (buffer != 121 && buffer != 89))
+							startupErrorMessage("Aborted.");
+					}
+				}
+				else
+					std::clog << "up to date!" << std::endl;
+			}
+			else
+				std::clog << "failed checking - malformed entry." << std::endl;
+		}
+		else
+			std::clog << "failed checking - malformed file." << std::endl;
+
+		xmlFreeDoc(doc);
+	}
+	else
+		std::clog << "failed - could not parse remote file (are you connected to the internet?)" << std::endl;
 
 	std::clog << "Loading RSA key" << std::endl;
 	const char* p("14299623962416399520070177382898895550795403345466153217470516082934737582776038882967213386204600674145392845853859217990626450972452084065728686565928113");

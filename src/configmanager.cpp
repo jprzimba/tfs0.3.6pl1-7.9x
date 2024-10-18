@@ -280,6 +280,7 @@ bool ConfigManager::load()
 	m_confNumber[ROOK_TOWN] = getGlobalNumber("rookTownId", 1);
 	m_confNumber[ROOK_LEVELTO] = getGlobalNumber("rookLevelToGetRooked", 5);
 	m_confNumber[ROOK_TOLEVEL] = getGlobalNumber("rookLevelToLeaveRook", 8);
+	m_confBool[CONFIM_OUTDATED_VERSION] = getGlobalBool("confirmOutdatedVersion", true);
 
 	m_loaded = true;
 	return true;
