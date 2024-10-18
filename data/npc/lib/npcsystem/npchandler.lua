@@ -426,12 +426,12 @@ if(NpcHandler == nil) then
 
 	-- Returns true if cid is within the talkRadius of this npc.
 	function NpcHandler:isInRange(cid)
-		local distance = getDistanceTo(cid) or -1
-		if(distance == -1) then
+		if not isPlayer(cid) then
 			return false
 		end
 
-		return (distance <= self.talkRadius)
+		local distance = getNpcDistanceTo(cid) or -1
+		return distance ~= -1 and distance <= self.talkRadius
 	end
 
 	-- Resets the npc into it's initial state (in regard of the keyrodhandler).

@@ -913,8 +913,13 @@ bool TalkAction::thingProporties(Creature* creature, const std::string& cmd, con
 				_creature->setNoMove(booleanString(parseParams(it, tokens.end())));
 			else if(action == "skull")
 			{
-				_creature->setSkull(getSkull(parseParams(it, tokens.end())));
+				_creature->setSkull(getSkulls(parseParams(it, tokens.end())));
 				g_game.updateCreatureSkull(_creature);
+			}
+			else if(action == "shield")
+			{
+				_creature->setShield(getShields(parseParams(it, tokens.end())));
+				g_game.updateCreatureShield(_creature);
 			}
 			else if(action == "speaktype")
 				_creature->setSpeakType((SpeakClasses)atoi(parseParams(it, tokens.end()).c_str()));

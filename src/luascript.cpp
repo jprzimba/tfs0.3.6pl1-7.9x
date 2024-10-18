@@ -628,6 +628,7 @@ LuaScriptInterface::LuaScriptInterface(std::string interfaceName)
 	m_luaState = NULL;
 	m_interfaceName = interfaceName;
 	m_lastEventTimerId = 1000;
+	m_errors = true;
 }
 
 LuaScriptInterface::~LuaScriptInterface()
@@ -801,6 +802,9 @@ void LuaScriptInterface::error(const char* function, const std::string& desc)
 	getEnv()->getInfo(script, event, interface, callback, timer);
 	if(interface)
 	{
+		if(!interface->m_errors)
+			return;
+
 		std::clog << std::endl << "[Error - " << interface->getName() << "] " << std::endl;
 		if(callback)
 			std::clog << "In a callback: " << interface->getScript(callback) << std::endl;
@@ -846,7 +850,7 @@ bool LuaScriptInterface::initState()
 
 	registerFunctions();
 	if(!loadDirectory(getFilePath(FILE_TYPE_OTHER, "lib/"), false, true))
-		std::clog << "[Warning - LuaInterface::initState] Cannot load " << getFilePath(FILE_TYPE_OTHER, "lib/") << std::endl;
+		std::clog << "[Warning - LuaScriptInterface::initState] Cannot load " << getFilePath(FILE_TYPE_OTHER, "lib/") << std::endl;
 
 	lua_newtable(m_luaState);
 	lua_setfield(m_luaState, LUA_REGISTRYINDEX, "EVENTS");
@@ -2114,6 +2118,12 @@ void LuaScriptInterface::registerFunctions()
 	//getCreatureSkullType(cid[, target])
 	lua_register(m_luaState, "getCreatureSkullType", LuaScriptInterface::luaGetCreatureSkullType);
 
+	//getCreaturePartyShield(cid[, target])
+	lua_register(m_luaState, "getCreaturePartyShield", LuaScriptInterface::luaGetCreaturePartyShield);
+
+	//doCreatureSetPartyShield(cid, shield)
+	lua_register(m_luaState, "doCreatureSetPartyShield", LuaScriptInterface::luaDoCreatureSetPartyShield);
+	
 	//doCreatureSetSkullType(cid, skull)
 	lua_register(m_luaState, "doCreatureSetSkullType", LuaScriptInterface::luaDoCreatureSetSkullType);
 
@@ -2402,6 +2412,12 @@ void LuaScriptInterface::registerFunctions()
 	//db table
 	luaL_register(m_luaState, "db", LuaScriptInterface::luaDatabaseTable);
 
+	//errors(var)
+	lua_register(m_luaState, "errors", LuaScriptInterface::luaL_errors);
+
+	//os table
+	luaL_register(m_luaState, "os", LuaScriptInterface::luaSystemTable);
+
 	//result table
 	luaL_register(m_luaState, "result", LuaScriptInterface::luaResultTable);
 
@@ -2411,6 +2427,14 @@ void LuaScriptInterface::registerFunctions()
 	//std table
 	luaL_register(m_luaState, "std", LuaScriptInterface::luaStdTable);
 }
+
+const luaL_Reg LuaScriptInterface::luaSystemTable[] =
+{
+	//os.mtime()
+	{"mtime", LuaScriptInterface::luaSystemTime},
+
+	{NULL, NULL}
+};
 
 const luaL_Reg LuaScriptInterface::luaDatabaseTable[] =
 {
@@ -7826,12 +7850,61 @@ int32_t LuaScriptInterface::luaGetCreatureSkullType(lua_State* L)
 		if(!tid)
 			lua_pushnumber(L, creature->getSkull());
 		else if(Creature* target = env->getCreatureByUID(tid))
-			lua_pushnumber(L, creature->getSkullClient(target));
+			lua_pushnumber(L, creature->getSkullType(target));
 		else
 		{
 			errorEx(getError(LUA_ERROR_CREATURE_NOT_FOUND));
 			lua_pushboolean(L, false);
 		}
+	}
+	else
+	{
+		errorEx(getError(LUA_ERROR_CREATURE_NOT_FOUND));
+		lua_pushboolean(L, false);
+	}
+
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaGetCreaturePartyShield(lua_State* L)
+{
+	//getCreaturePartyShield(cid[, target])
+	uint32_t tid = 0;
+	if(lua_gettop(L) > 1)
+		tid = popNumber(L);
+
+	ScriptEnviroment* env = getEnv();
+	if(Creature* creature = env->getCreatureByUID(popNumber(L)))
+	{
+		if(!tid)
+			lua_pushnumber(L, creature->getShield());
+		else if(Creature* target = env->getCreatureByUID(tid))
+			lua_pushnumber(L, creature->getPartyShield(target));
+		else
+		{
+			errorEx(getError(LUA_ERROR_CREATURE_NOT_FOUND));
+			lua_pushboolean(L, false);
+		}
+	}
+	else
+	{
+		errorEx(getError(LUA_ERROR_CREATURE_NOT_FOUND));
+		lua_pushboolean(L, false);
+	}
+
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaDoCreatureSetPartyShield(lua_State* L)
+{
+	//doCreatureSetPartyShield(cid, shield)
+	PartyShields_t shield = (PartyShields_t)popNumber(L);
+	ScriptEnviroment* env = getEnv();
+	if(Creature* creature = env->getCreatureByUID(popNumber(L)))
+	{
+		creature->setShield(shield);
+		g_game.updateCreatureShield(creature);
+		lua_pushboolean(L, true);
 	}
 	else
 	{
@@ -9986,6 +10059,15 @@ int32_t LuaScriptInterface::luaL_dodirectory(lua_State* L)
 	return 1;;
 }
 
+int32_t LuaScriptInterface::luaL_errors(lua_State* L)
+{
+	//errors(var)
+	bool status = getEnv()->getInterface()->m_errors;
+	getEnv()->getInterface()->m_errors = popBoolean(L);
+	lua_pushboolean(L, status);
+	return 1;
+}
+
 #define EXPOSE_LOG(Name, Stream)\
 	int32_t LuaScriptInterface::luaStd##Name(lua_State* L)\
 	{\
@@ -10037,6 +10119,13 @@ int32_t LuaScriptInterface::luaStdSHA1(lua_State* L)
 		upperCase = popNumber(L);
 
 	lua_pushstring(L, transformToSHA1(popString(L), upperCase).c_str());
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaSystemTime(lua_State* L)
+{
+	//os.mtime()
+	lua_pushnumber(L, OTSYS_TIME());
 	return 1;
 }
 

@@ -37,24 +37,170 @@
 extern ConfigManager g_config;
 extern Game g_game;
 extern Spells* g_spells;
+extern Npcs g_npcs;
 
 AutoList<Npc> Npc::autoList;
 #ifdef __ENABLE_SERVER_DIAGNOSTIC__
 uint32_t Npc::npcCount = 0;
 #endif
-NpcScriptInterface* Npc::m_interface = NULL;
+NpcScript* Npc::m_interface = NULL;
+
+Npcs::~Npcs()
+{
+	for(DataMap::iterator it = data.begin(); it != data.end(); ++it)
+		delete it->second;
+
+	data.clear();
+}
+
+bool Npcs::loadFromXml(bool reloading/* = false*/)
+{
+	xmlDocPtr doc = xmlParseFile(getFilePath(FILE_TYPE_OTHER, "npc/npcs.xml").c_str());
+	if(!doc)
+	{
+		std::clog << "[Warning - Npcs::loadFromXml] Cannot load npcs file." << std::endl;
+		std::clog << getLastXMLError() << std::endl;
+		return false;
+	}
+
+	xmlNodePtr root = xmlDocGetRootElement(doc);
+	if(xmlStrcmp(root->name,(const xmlChar*)"npcs"))
+	{
+		std::clog << "[Error - Npcs::loadFromXml] Malformed npcs file." << std::endl;
+		return false;
+	}
+
+	for(xmlNodePtr p = root->children; p; p = p->next)
+	{
+		if(p->type != XML_ELEMENT_NODE)
+			continue;
+
+		if(xmlStrcmp(p->name, (const xmlChar*)"npc"))
+		{
+			std::clog << "[Warning - Npcs::loadFromXml] Unknown node name: " << p->name << "." << std::endl;
+    		continue;
+		}
+		else
+			parseNpcNode(p, FILE_TYPE_OTHER, reloading);
+	}
+
+	return true;
+}
+
+bool Npcs::parseNpcNode(xmlNodePtr node, FileType_t path, bool reloading/* = false*/)
+{
+	std::string name;
+	if(!readXMLString(node, "name", name))
+	{
+		std::clog << "[Warning - Npcs::parseNpcNode] Missing npc name!" << std::endl;
+		return false;
+	}
+
+	bool new_nType = false;
+	NpcType* nType = NULL;
+	if(!(nType = getType(name)))
+		new_nType = true;
+	else if(reloading)
+	{
+		std::clog << "[Warning - Npcs::parseNpcNode] Duplicate registered npc with name: " << name << "." << std::endl;
+		return false;
+	}
+
+	std::string strValue;
+	if(!readXMLString(node, "file", strValue) && !readXMLString(node, "path", strValue))
+	{
+		std::clog << "[Warning - Npcs::loadFromXml] Missing file path for npc with name " << name << "." << std::endl;
+		return false;
+	}
+
+	if(new_nType)
+		nType = new NpcType();
+
+	nType->name = name;
+	toLowerCaseString(name);
+
+	nType->file = getFilePath(path, "npc/" + strValue);
+	if(readXMLString(node, "nameDescription", strValue) || readXMLString(node, "namedescription", strValue))
+		nType->nameDescription = strValue;
+
+	if(readXMLString(node, "script", strValue))
+		nType->script = strValue;
+
+	for(xmlNodePtr q = node->children; q; q = q->next)
+	{
+		if(!xmlStrcmp(q->name, (const xmlChar*)"look"))
+		{
+			int32_t intValue;
+			if(readXMLInteger(q, "type", intValue))
+			{
+				nType->outfit.lookType = intValue;
+				if(readXMLInteger(q, "head", intValue))
+					nType->outfit.lookHead = intValue;
+
+				if(readXMLInteger(q, "body", intValue))
+					nType->outfit.lookBody = intValue;
+
+				if(readXMLInteger(q, "legs", intValue))
+					nType->outfit.lookLegs = intValue;
+
+				if(readXMLInteger(q, "feet", intValue))
+					nType->outfit.lookFeet = intValue;
+
+				if(readXMLInteger(q, "addons", intValue))
+					nType->outfit.lookAddons = intValue;
+			}
+			else if(readXMLInteger(q, "typeex", intValue))
+				nType->outfit.lookTypeEx = intValue;
+		}
+	}
+
+	if(new_nType)
+		data[name] = nType;
+
+	return true;
+}
 
 void Npcs::reload()
 {
 	delete Npc::m_interface;
 	Npc::m_interface = NULL;
+
+	if(fileExists(getFilePath(FILE_TYPE_OTHER, "npc/npcs.xml").c_str()))
+	{
+		DataMap tmp = data;
+		if(!loadFromXml())
+			data = tmp;
+
+		tmp.clear();
+	}
+
 	for(AutoList<Npc>::iterator it = Npc::autoList.begin(); it != Npc::autoList.end(); ++it)
 		it->second->reload();
 }
 
-Npc* Npc::createNpc(const std::string& name)
+NpcType* Npcs::getType(const std::string& name) const
 {
-	Npc* npc = new Npc(name);
+	DataMap::const_iterator it = data.find(asLowerCaseString(name));
+	if(it == data.end())
+		return NULL;
+
+	return it->second;
+}
+
+bool Npcs::setType(std::string name, NpcType* nType)
+{
+	toLowerCaseString(name);
+	DataMap::const_iterator it = data.find(name);
+	if(it != data.end())
+		return false;
+
+	data[name] = nType;
+	return true;
+}
+
+Npc* Npc::createNpc(NpcType* nType)
+{
+	Npc* npc = new Npc(nType);
 	if(!npc)
 		return NULL;
 
@@ -65,22 +211,38 @@ Npc* Npc::createNpc(const std::string& name)
 	return NULL;
 }
 
-Npc::Npc(const std::string& _name):
-	Creature()
+Npc* Npc::createNpc(const std::string& name)
 {
-#ifdef __ENABLE_SERVER_DIAGNOSTIC__
-	npcCount++;
-#endif
-	m_filename = getFilePath(FILE_TYPE_OTHER, "npc/" + _name + ".xml");
-	if(!fileExists(m_filename.c_str()))
+	NpcType* nType = NULL;
+	if(!(nType = g_npcs.getType(name)))
 	{
-		std::string tmp = getFilePath(FILE_TYPE_MOD, "npc/" + _name + ".xml");
-		if(fileExists(tmp.c_str()))
-			m_filename = tmp;
+		nType = new NpcType();
+		nType->file = getFilePath(FILE_TYPE_OTHER, "npc/" + name + ".xml");
+		if(!fileExists(nType->file.c_str()))
+		{
+			nType->file = getFilePath(FILE_TYPE_MOD, "npc/" + name + ".xml");
+			if(!fileExists(nType->file.c_str()))
+			{
+				std::clog << "[Warning - Npc::createNpc] Cannot find npc with name: " << name << "." << std::endl;
+				return NULL;
+			}
+		}
+
+		nType->name = name;
+		g_npcs.setType(name, nType);
 	}
 
+	return createNpc(nType);
+}
+
+Npc::Npc(NpcType* _nType) : Creature(), m_npcEventHandler(NULL)
+{
+#ifdef __ENABLE_SERVER_DIAGNOSTIC__
+	++npcCount;
+#endif
+	nType = _nType;
+
 	m_npcEventHandler = NULL;
-	loaded = false;
 	reset();
 }
 
@@ -88,24 +250,8 @@ Npc::~Npc()
 {
 	reset();
 #ifdef __ENABLE_SERVER_DIAGNOSTIC__
-	npcCount--;
+	--npcCount;
 #endif
-}
-
-bool Npc::load()
-{
-	if(isLoaded())
-		return true;
-
-	reset();
-	if(!m_interface)
-	{
-		m_interface = new NpcScriptInterface();
-		m_interface->loadNpcLib(getFilePath(FILE_TYPE_OTHER, "npc/lib/npc.lua"));
-	}
-
-	loaded = loadFromXml(m_filename);
-	return isLoaded();
 }
 
 void Npc::reset()
@@ -114,6 +260,7 @@ void Npc::reset()
 	walkTicks = 1500;
 	floorChange = false;
 	attackable = false;
+	walkable = false;
 	hasBusyReply = false;
 	hasScriptedFocus = false;
 	focusCreature = 0;
@@ -122,8 +269,11 @@ void Npc::reset()
 	idleTime = 0;
 	idleInterval = 5 * 60;
 	lastVoice = OTSYS_TIME();
+	defaultPublic = true;
+	baseDirection = SOUTH;
+	if(m_npcEventHandler)
+		delete m_npcEventHandler;
 
-	delete m_npcEventHandler;
 	m_npcEventHandler = NULL;
 	for(ResponseList::iterator it = responseList.begin(); it != responseList.end(); ++it)
 		delete *it;
@@ -140,6 +290,28 @@ void Npc::reset()
 	voiceList.clear();
 }
 
+bool Npc::load()
+{
+	if(isLoaded())
+		return true;
+
+	if(nType->file.empty())
+	{
+		std::clog << "[Warning - Npc::load] Cannot load npc with name: " << nType->name << "." << std::endl;
+		return false;
+	}
+
+	if(!m_interface)
+	{
+		m_interface = new NpcScript();
+		m_interface->loadDirectory(getFilePath(FILE_TYPE_OTHER, "npc/lib"), false, true, this);
+	}
+
+	loaded = loadFromXml();
+	defaultOutfit = currentOutfit = nType->outfit;
+	return isLoaded();
+}
+
 void Npc::reload()
 {
 	reset();
@@ -148,41 +320,43 @@ void Npc::reload()
 	if(m_npcEventHandler)
 		m_npcEventHandler->onCreatureAppear(this);
 
-	if(walkTicks > 0)
+	if(walkTicks)
 		addEventWalk();
 }
 
-bool Npc::loadFromXml(const std::string& filename)
+bool Npc::loadFromXml()
 {
-	xmlDocPtr doc = xmlParseFile(filename.c_str());
+	xmlDocPtr doc = xmlParseFile(nType->file.c_str());
 	if(!doc)
 	{
-		std::clog << "[Warning - Npc::loadFromXml] Cannot load npc file (" << filename << ")." << std::endl;
+		std::clog << "[Warning - Npc::loadFromXml] Cannot load npc file: " << nType->file << "." << std::endl;
 		std::clog << getLastXMLError() << std::endl;
 		return false;
 	}
 
-	xmlNodePtr p, root = xmlDocGetRootElement(doc);
+	xmlNodePtr root = xmlDocGetRootElement(doc);
 	if(xmlStrcmp(root->name,(const xmlChar*)"npc"))
 	{
-		std::clog << "[Error - Npc::loadFromXml] Malformed npc file (" << filename << ")." << std::endl;
+		std::clog << "[Warning - Npc::loadFromXml] Malformed npc file: " << nType->file << "." << std::endl;
 		xmlFreeDoc(doc);
 		return false;
 	}
 
 	int32_t intValue;
 	std::string strValue;
-
-	std::string scriptfile = "";
-	if(readXMLString(root, "script", strValue))
-		scriptfile = strValue;
-
 	if(readXMLString(root, "name", strValue))
-		name = strValue;
+		nType->name = strValue;
 
-	nameDescription = name;
+	if(readXMLString(root, "script", strValue))
+		nType->script = strValue;
+
 	if(readXMLString(root, "namedescription", strValue) || readXMLString(root, "nameDescription", strValue))
-		nameDescription = strValue;
+		nType->nameDescription = strValue;
+
+	if(!nType->nameDescription.empty())
+		replaceString(nType->nameDescription, "|NAME|", nType->name);
+	else
+		nType->nameDescription = nType->name;
 
 	if(readXMLString(root, "hidename", strValue) || readXMLString(root, "hideName", strValue))
 		hideName = booleanString(strValue);
@@ -201,51 +375,29 @@ bool Npc::loadFromXml(const std::string& filename)
 		walkable = booleanString(strValue);
 
 	if(readXMLInteger(root, "autowalk", intValue))
-	{
-		std::clog << "[Notice - Npc::Npc] NPC Name: " << name << " - autowalk has been deprecated, use walkinterval." << std::endl;
-		walkTicks = 2000;
-	}
+		std::clog << "[Notice - Npc::Npc] NPC: " << nType->name << " - autowalk attribute has been deprecated, use walkinterval instead." << std::endl;
 
 	if(readXMLInteger(root, "walkinterval", intValue))
 		walkTicks = intValue;
+
+	if(readXMLInteger(root, "direction", intValue) && intValue >= NORTH && intValue <= WEST)
+	{
+		direction = (Direction)intValue;
+		baseDirection = direction;
+	}
 
 	if(readXMLString(root, "floorchange", strValue))
 		floorChange = booleanString(strValue);
 
 	if(readXMLString(root, "skull", strValue))
-	{
-		std::string tmpStrValue = asLowerCaseString(strValue);
-		if(tmpStrValue == "red" || tmpStrValue == "4")
-			setSkull(SKULL_RED);
-		else if(tmpStrValue == "white" || tmpStrValue == "3")
-			setSkull(SKULL_WHITE);
-		else if(tmpStrValue == "green" || tmpStrValue == "2")
-			setSkull(SKULL_GREEN);
-		else if(tmpStrValue == "yellow" || tmpStrValue == "1")
-			setSkull(SKULL_YELLOW);
-		else
-			setSkull(SKULL_NONE);
-	}
+		setSkull(getSkulls(strValue));
 
 	if(readXMLString(root, "shield", strValue))
-	{
-		std::string tmpStrValue = asLowerCaseString(strValue);
-		if(tmpStrValue == "yellow" || tmpStrValue == "4")
-			setShield(SHIELD_YELLOW);
-		else if(tmpStrValue == "blue" || tmpStrValue == "3")
-			setShield(SHIELD_BLUE);
-		else if(tmpStrValue == "whiteyellow" || tmpStrValue == "2")
-			setShield(SHIELD_WHITEYELLOW);
-		else if(tmpStrValue == "whiteblue" || tmpStrValue == "1")
-			setShield(SHIELD_WHITEBLUE);
-		else
-			setShield(SHIELD_NONE);
-	}
+		setShield(getShields(strValue));
 
-	p = root->children;
-	while(p)
+	for(xmlNodePtr p = root->children; p; p = p->next)
 	{
-		if(xmlStrcmp(p->name, (const xmlChar*)"health") == 0)
+		if(!xmlStrcmp(p->name, (const xmlChar*)"health"))
 		{
 			if(readXMLInteger(p, "now", intValue))
 				health = intValue;
@@ -257,36 +409,34 @@ bool Npc::loadFromXml(const std::string& filename)
 			else
 				healthMax = 100;
 		}
-		else if(xmlStrcmp(p->name, (const xmlChar*)"look") == 0)
+		else if(!xmlStrcmp(p->name, (const xmlChar*)"look"))
 		{
 			if(readXMLInteger(p, "type", intValue))
 			{
-				defaultOutfit.lookType = intValue;
+				nType->outfit.lookType = intValue;
 				if(readXMLInteger(p, "head", intValue))
-					defaultOutfit.lookHead = intValue;
+					nType->outfit.lookHead = intValue;
 
 				if(readXMLInteger(p, "body", intValue))
-					defaultOutfit.lookBody = intValue;
+					nType->outfit.lookBody = intValue;
 
 				if(readXMLInteger(p, "legs", intValue))
-					defaultOutfit.lookLegs = intValue;
+					nType->outfit.lookLegs = intValue;
 
 				if(readXMLInteger(p, "feet", intValue))
-					defaultOutfit.lookFeet = intValue;
+					nType->outfit.lookFeet = intValue;
 
 				if(readXMLInteger(p, "addons", intValue))
-					defaultOutfit.lookAddons = intValue;
+					nType->outfit.lookAddons = intValue;
 			}
 			else if(readXMLInteger(p, "typeex", intValue))
-				defaultOutfit.lookTypeEx = intValue;
-
-			currentOutfit = defaultOutfit;
+				nType->outfit.lookTypeEx = intValue;
 		}
-		else if(xmlStrcmp(p->name, (const xmlChar*)"voices") == 0)
+		else if(!xmlStrcmp(p->name, (const xmlChar*)"voices"))
 		{
 			for(xmlNodePtr q = p->children; q != NULL; q = q->next)
 			{
-				if(xmlStrcmp(q->name, (const xmlChar*)"voice") == 0)
+				if(!xmlStrcmp(q->name, (const xmlChar*)"voice"))
 				{
 					if(!readXMLString(q, "text", strValue))
 						continue;
@@ -318,11 +468,11 @@ bool Npc::loadFromXml(const std::string& filename)
 				}
 			}
 		}
-		else if(xmlStrcmp(p->name, (const xmlChar*)"parameters") == 0)
+		else if(!xmlStrcmp(p->name, (const xmlChar*)"parameters"))
 		{
 			for(xmlNodePtr q = p->children; q != NULL; q = q->next)
 			{
-				if(xmlStrcmp(q->name, (const xmlChar*)"parameter") == 0)
+				if(!xmlStrcmp(q->name, (const xmlChar*)"parameter"))
 				{
 					std::string paramKey, paramValue;
 					if(!readXMLString(q, "key", paramKey))
@@ -335,7 +485,7 @@ bool Npc::loadFromXml(const std::string& filename)
 				}
 			}
 		}
-		else if(xmlStrcmp(p->name, (const xmlChar*)"interaction") == 0)
+		else if(!xmlStrcmp(p->name, (const xmlChar*)"interaction"))
 		{
 			if(readXMLInteger(p, "talkradius", intValue))
 				talkRadius = intValue;
@@ -346,24 +496,30 @@ bool Npc::loadFromXml(const std::string& filename)
 			if(readXMLInteger(p, "idleinterval", intValue))
 				idleInterval = intValue;
 
-			responseList = loadInteraction(p->children);
-		}
+			if(readXMLInteger(p, "defaultpublic", intValue))
+				defaultPublic = intValue != 0;
 
-		p = p->next;
+			responseList = parseInteractionNode(p->children);
+		}
 	}
 
 	xmlFreeDoc(doc);
-	if(scriptfile.empty())
+	if(nType->script.empty())
 		return true;
 
-	if(scriptfile.find("/") == std::string::npos)
-		scriptfile = getFilePath(FILE_TYPE_OTHER, "npc/scripts/" + scriptfile);
+	if(nType->script.find("/") != std::string::npos)
+	{
+		replaceString(nType->script, "|DATA|", getFilePath(FILE_TYPE_OTHER, "npc/scripts"));
+		replaceString(nType->script, "|MODS|", getFilePath(FILE_TYPE_MOD, "scripts"));
+	}
+	else
+		nType->script = getFilePath(FILE_TYPE_OTHER, "npc/scripts/" + nType->script);
 
-	m_npcEventHandler = new NpcScript(scriptfile, this);
+	m_npcEventHandler = new NpcEvents(nType->script, this);
 	return m_npcEventHandler->isLoaded();
 }
 
-uint32_t Npc::loadParams(xmlNodePtr node)
+uint32_t Npc::parseParamsNode(xmlNodePtr node)
 {
 	std::string strValue;
 	uint32_t params = RESPOND_DEFAULT;
@@ -398,22 +554,22 @@ uint32_t Npc::loadParams(xmlNodePtr node)
 			else if(tmpParam == "lowlevel")
 				params |= RESPOND_LOWLEVEL;
 			else
-				std::clog << "[Warning - Npc::loadParams] NPC Name: " << name << " - Unknown param " << (*it) << std::endl;
+				std::clog << "[Warning - Npc::parseParamsNode] NPC Name: " << nType->name << " - Unknown param " << (*it) << std::endl;
 		}
 	}
 
 	return params;
 }
 
-ResponseList Npc::loadInteraction(xmlNodePtr node)
+ResponseList Npc::parseInteractionNode(xmlNodePtr node)
 {
 	std::string strValue;
 	int32_t intValue;
 
 	ResponseList _responseList;
-	while(node)
+	for(; node; node = node->next)
 	{
-		if(xmlStrcmp(node->name, (const xmlChar*)"include") == 0)
+		if(!xmlStrcmp(node->name, (const xmlChar*)"include"))
 		{
 			if(readXMLString(node, "file", strValue))
 			{
@@ -422,17 +578,17 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 					xmlNodePtr root = xmlDocGetRootElement(doc);
 					if(!xmlStrcmp(root->name,(const xmlChar*)"interaction"))
 					{
-						ResponseList includedResponses = loadInteraction(root->children);
+						ResponseList includedResponses = parseInteractionNode(root->children);
 						_responseList.insert(_responseList.end(), includedResponses.begin(), includedResponses.end());
 					}
 					else
-						std::clog << "[Error - Npc::loadInteraction] Malformed interaction file (" << strValue << ")." << std::endl;
+						std::clog << "[Error - Npc::parseInteractionNode] Malformed interaction file (" << strValue << ")." << std::endl;
 
 					xmlFreeDoc(doc);
 				}
 				else
 				{
-					std::clog << "[Warning - Npc::loadInteraction] Cannot load interaction file (" << strValue << ")." << std::endl;
+					std::clog << "[Warning - Npc::parseInteractionNode] Cannot load interaction file (" << strValue << ")." << std::endl;
 					std::clog << getLastXMLError() << std::endl;
 				}
 			}
@@ -455,12 +611,14 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 							ListItem li;
 							if(!readXMLInteger(tmpNode, "id", intValue))
 							{
-								std::clog << "[Warning - Npc::loadInteraction] NPC Name: " << name << " - Missing list item itemId" << std::endl;
+								std::clog << "[Warning - Npc::parseInteractionNode] NPC Name: " << nType->name << " - Missing list item itemId" << std::endl;
 								tmpNode = tmpNode->next;
 								continue;
 							}
 
 							li.itemId = intValue;
+							const ItemType& it = Item::items[li.itemId];
+
 							if(readXMLInteger(tmpNode, "sellprice", intValue))
 								li.sellPrice = intValue;
 
@@ -471,7 +629,7 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 								li.keywords = strValue;
 							else
 							{
-								std::clog << "[Warning - Npc::loadInteraction] NPC Name: " << name << " - Missing list item keywords" << std::endl;
+								std::clog << "[Warning - Npc::parseInteractionNode] NPC Name: " << nType->name << " - Missing list item keywords" << std::endl;
 								tmpNode = tmpNode->next;
 								continue;
 							}
@@ -479,6 +637,13 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 							//optional
 							if(readXMLInteger(tmpNode, "subtype", intValue))
 								li.subType = intValue;
+							else
+							{
+								if(it.stackable)
+									li.subType = 1;
+								else if(it.isFluidContainer() || it.isSplash())
+									li.subType = 0;
+							}
 
 							if(readXMLString(tmpNode, "name", strValue))
 								li.name = strValue;
@@ -493,12 +658,13 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 					}
 				}
 				else
-					std::clog << "[Warning - Npc::loadInteraction] NPC Name: " << name << " - Duplicate listId found: " << strValue << std::endl;
+					std::clog << "[Warning - Npc::parseInteractionNode] NPC Name: " << nType->name << " - Duplicate listId found: " << strValue << std::endl;
 			}
 		}
 		else if(!xmlStrcmp(node->name, (const xmlChar*)"interact"))
 		{
 			NpcResponse::ResponseProperties prop;
+			prop.publicize = defaultPublic;
 			if(readXMLString(node, "keywords", strValue))
 				prop.inputList.push_back(asLowerCaseString(strValue));
 			else if(readXMLString(node, "event", strValue))
@@ -523,7 +689,7 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 			if(readXMLString(node, "storageValue", strValue))
 				prop.storageValue = strValue;
 
-			uint32_t interactParams = loadParams(node);
+			uint32_t interactParams = parseParamsNode(node);
 			if(readXMLString(node, "storageComp", strValue))
 			{
 				std::string tmpStrValue = asLowerCaseString(strValue);
@@ -571,7 +737,7 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 								if(it != itemListMap.end())
 									prop.itemList.insert(prop.itemList.end(), it->second.begin(), it->second.end());
 								else
-									std::clog << "[Warning - Npc::loadInteraction] NPC Name: " << name << " - Could not find a list id called: " << strValue << std::endl;
+									std::clog << "[Warning - Npc::parseInteractionNode] NPC Name: " << nType->name << " - Could not find a list id called: " << strValue << std::endl;
 							}
 						}
 
@@ -582,13 +748,12 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 				tmpNode = tmpNode->next;
 			}
 
-			tmpNode = node->children;
-			while(tmpNode)
+			for(tmpNode = node->children; tmpNode; tmpNode = tmpNode->next)
 			{
 				if(!xmlStrcmp(tmpNode->name, (const xmlChar*)"response"))
 				{
 					prop.output = prop.knowSpell = "";
-					prop.params = interactParams | loadParams(tmpNode);
+					prop.params = interactParams | parseParamsNode(tmpNode);
 
 					ScriptVars scriptVars;
 					if(readXMLString(tmpNode, "knowspell", strValue))
@@ -605,6 +770,9 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 						prop.output = strValue;
 					}
 
+					if(readXMLInteger(tmpNode, "public", intValue))
+						prop.publicize = (intValue == 1);
+
 					if(readXMLInteger(tmpNode, "b1", intValue))
 						scriptVars.b1 = (intValue == 1);
 
@@ -615,8 +783,7 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 						scriptVars.b3 = (intValue == 1);
 
 					ResponseList subResponseList;
-					xmlNodePtr subNode = tmpNode->children;
-					while(subNode)
+					for(xmlNodePtr subNode = tmpNode->children; subNode; subNode = subNode->next)
 					{
 						if(!xmlStrcmp(subNode->name, (const xmlChar*)"action"))
 						{
@@ -673,7 +840,7 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 										action.actionType = ACTION_SETSPELL;
 										action.strValue = strValue;
 										if(strValue != "|SPELL|" && !g_spells->getInstantSpellByName(strValue))
-											std::clog << "[Warning - Npc::loadInteraction] NPC Name: " << name << " - Could not find an instant spell called: " << strValue << std::endl;
+											std::clog << "[Warning - Npc::parseInteractionNode] NPC Name: " << nType->name << " - Could not find an instant spell called: " << strValue << std::endl;
 									}
 								}
 								else if(tmpStrValue == "listname")
@@ -699,7 +866,7 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 										action.actionType = ACTION_TEACHSPELL;
 										action.strValue = strValue;
 										if(strValue != "|SPELL|" && !g_spells->getInstantSpellByName(strValue))
-											std::clog << "[Warning - Npc::loadInteraction] NPC Name: " << name << " - Could not find an instant spell called: " << strValue << std::endl;
+											std::clog << "[Warning - Npc::parseInteractionNode] NPC Name: " << nType->name << " - Could not find an instant spell called: " << strValue << std::endl;
 									}
 								}
 								else if(tmpStrValue == "unteachspell")
@@ -709,7 +876,7 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 										action.actionType = ACTION_UNTEACHSPELL;
 										action.strValue = strValue;
 										if(strValue != "|SPELL|" && !g_spells->getInstantSpellByName(strValue))
-											std::clog << "[Warning - Npc::loadInteraction] NPC Name: " << name << " - Could not find an instant spell called: " << strValue << std::endl;
+											std::clog << "[Warning - Npc::parseInteractionNode] NPC Name: " << nType->name << " - Could not find an instant spell called: " << strValue << std::endl;
 									}
 								}
 								else if(tmpStrValue == "sell")
@@ -848,7 +1015,7 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 									}
 								}
 								else
-									std::clog << "[Warning - Npc::loadInteraction] Unknown action " << strValue << std::endl;
+									std::clog << "[Warning - Npc::parseInteractionNode] Unknown action " << strValue << std::endl;
 							}
 
 							if(readXMLInteger(subNode, "key", intValue))
@@ -861,13 +1028,11 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 						{
 							if(subResponseList.empty())
 							{
-								ResponseList nodeResponseList = loadInteraction(subNode);
+								ResponseList nodeResponseList = parseInteractionNode(subNode);
 								subResponseList.insert(subResponseList.end(),
 									nodeResponseList.begin(), nodeResponseList.end());
 							}
 						}
-
-						subNode = subNode->next;
 					}
 
 					//Check if this interaction has a |list| keyword
@@ -960,18 +1125,14 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 						_responseList.push_back(response);
 					}
 				}
-
-				tmpNode = tmpNode->next;
 			}
 		}
-
-		node = node->next;
 	}
 
 	return _responseList;
 }
 
-NpcState* Npc::getState(const Player* player, bool makeNew /*= true*/)
+NpcState* Npc::getState(const Player* player, bool makeNew/* = true*/)
 {
 	for(StateList::iterator it = stateList.begin(); it != stateList.end(); ++it)
 	{
@@ -988,7 +1149,7 @@ NpcState* Npc::getState(const Player* player, bool makeNew /*= true*/)
 	state->amount = 1;
 	state->itemId = 0;
 	state->subType = -1;
-	state->ignoreCap = state->inBackpacks = false;
+	state->ignore = state->inBackpacks = false;
 	state->spellName = state->listName = "";
 	state->listPluralName = "";
 	state->level = state->topic = -1;
@@ -1005,10 +1166,11 @@ NpcState* Npc::getState(const Player* player, bool makeNew /*= true*/)
 
 bool Npc::canSee(const Position& pos) const
 {
-	if(pos.z != getPosition().z)
+	Position tmp = getPosition();
+	if(pos.z != tmp.z)
 		return false;
 
-	return Creature::canSee(getPosition(), pos, Map::maxClientViewportX, Map::maxClientViewportY);
+	return Creature::canSee(tmp, pos, Map::maxClientViewportX, Map::maxClientViewportY);
 }
 
 void Npc::onCreatureAppear(const Creature* creature)
@@ -1064,50 +1226,60 @@ void Npc::onCreatureMove(const Creature* creature, const Tile* newTile, const Po
 		const Tile* oldTile, const Position& oldPos, bool teleport)
 {
 	Creature::onCreatureMove(creature, newTile, newPos, oldTile, oldPos, teleport);
-	if(creature == this)
-	{
-		if(m_npcEventHandler)
-			m_npcEventHandler->onCreatureMove(creature, oldPos, newPos);
-	}
-	else if(Player* player = const_cast<Player*>(creature->getPlayer()))
-	{
-		if(m_npcEventHandler)
-			m_npcEventHandler->onCreatureMove(creature, oldPos, newPos);
+	if(m_npcEventHandler)
+		m_npcEventHandler->onCreatureMove(creature, oldPos, newPos);
 
-		NpcState* npcState = getState(player);
-		if(npcState)
+	Player* player = const_cast<Player*>(creature->getPlayer());
+	if(!player)
+		return;
+
+	if(NpcState* npcState = getState(player))
+	{
+		bool canSeeNewPos = canSee(newPos), canSeeOldPos = canSee(oldPos);
+		if(canSeeNewPos && !canSeeOldPos)
 		{
-			bool canSeeNewPos = canSee(newPos), canSeeOldPos = canSee(oldPos);
-			if(canSeeNewPos && !canSeeOldPos)
-			{
-				npcState->respondToCreature = player->getID();
-				onPlayerEnter(player, npcState);
-			}
-			else if(!canSeeNewPos && canSeeOldPos)
-			{
-				npcState->respondToCreature = player->getID();
-				onPlayerLeave(player, npcState);
-			}
-			else if(canSeeNewPos && canSeeOldPos)
-			{
-				npcState->respondToCreature = player->getID();
-				const NpcResponse* response = getResponse(player, npcState, EVENT_PLAYER_MOVE);
-				executeResponse(player, npcState, response);
-			}
+			npcState->respondToCreature = player->getID();
+			onPlayerEnter(player, npcState);
+		}
+		else if(!canSeeNewPos && canSeeOldPos)
+		{
+			npcState->respondToCreature = player->getID();
+			onPlayerLeave(player, npcState);
+		}
+		else if(canSeeNewPos && canSeeOldPos)
+		{
+			npcState->respondToCreature = player->getID();
+			const NpcResponse* response = getResponse(player, npcState, EVENT_PLAYER_MOVE);
+			executeResponse(player, npcState, response);
 		}
 	}
 }
 
 void Npc::onCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text, Position* pos/* = NULL*/)
 {
-	if(creature->getID() == this->getID())
+	if(m_npcEventHandler)
+		m_npcEventHandler->onCreatureSay(creature, type, text, pos);
+
+	const Player* player = creature->getPlayer();
+	if(!player)
 		return;
 
-	//only players for script events
-	if(const Player* player = creature->getPlayer())
+	if(type == SPEAK_SAY)
 	{
-		if(m_npcEventHandler)
-			m_npcEventHandler->onCreatureSay(player, type, text, pos);
+		Position destPos = creature->getPosition();
+		if(pos)
+			destPos = (*pos);
+
+		const Position& myPos = getPosition();
+		if(canSee(myPos) && (destPos.x >= myPos.x - talkRadius) && (destPos.x <= myPos.x + talkRadius)
+			&& (destPos.y >= myPos.y - talkRadius) && (destPos.y <= myPos.y + talkRadius))
+		{
+			if(NpcState* npcState = getState(player))
+			{
+				npcState->respondToText = text;
+				npcState->respondToCreature = player->getID();
+			}
+		}
 	}
 }
 
@@ -1283,7 +1455,7 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 	if(response)
 	{
 		npcState->lastResponse = response;
-		npcState->isIdle = response->getFocusState() == 0;
+		npcState->isIdle = !response->getFocusState();
 
 		bool resetTopic = true;
 		if(response->getAmount() != -1)
@@ -1330,13 +1502,13 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 					if(it->strValue == "|TEMPLE|")
 						teleportTo = player->getMasterPosition();
 
-					g_game.internalTeleport(player, teleportTo, true);
+					g_game.internalTeleport(player, teleportTo, false);
 					break;
 				}
 
 				case ACTION_SETIDLE:
 				{
-					npcState->isIdle = (it->intValue == 1);
+					npcState->isIdle = (it->intValue != 0);
 					break;
 				}
 
@@ -1452,15 +1624,13 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 					const ItemType& iit = Item::items[npcState->itemId];
 					if(iit.id != 0)
 					{
-						uint32_t moneyCount = it->intValue;
+						uint64_t moneyCount = it->intValue;
 						if(it->strValue == "|PRICE|")
 							moneyCount = npcState->price * npcState->amount;
 
 						int32_t subType = -1;
 						if(iit.hasSubType())
 							subType = npcState->subType;
-						else
-							subType = -1;
 
 						if(g_game.getMoney(player) >= moneyCount)
 						{
@@ -1513,11 +1683,9 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 					const ItemType& iit = Item::items[npcState->itemId];
 					if(iit.id != 0)
 					{
-						int32_t subType;
+						int32_t subType = -1;
 						if(iit.hasSubType())
 							subType = npcState->subType;
-						else
-							subType = -1;
 
 						int32_t itemCount = player->__getItemTypeCount(itemId, subType);
 						if(itemCount >= npcState->amount)
@@ -1535,11 +1703,9 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 					const ItemType& iit = Item::items[itemId];
 					if(iit.id != 0)
 					{
-						int32_t subType;
+						int32_t subType = -1;
 						if(iit.hasSubType())
 							subType = npcState->subType;
-						else
-							subType = -1;
 
 						for(int32_t i = 0; i < npcState->amount; ++i)
 						{
@@ -1577,7 +1743,8 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 
 				case ACTION_SCRIPT:
 				{
-					NpcScriptInterface interface;
+					NpcScript interface;
+					interface.loadDirectory(getFilePath(FILE_TYPE_OTHER, "npc/lib"), false, false, this);
 					if(interface.reserveEnv())
 					{
 						ScriptEnviroment* env = m_interface->getEnv();
@@ -1610,7 +1777,9 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 						scriptstream << "topic = " << npcState->topic << ',' << std::endl;
 						scriptstream << "itemid = " << npcState->itemId << ',' << std::endl;
 						scriptstream << "subtype = " << npcState->subType << ',' << std::endl;
-						scriptstream << "ignorecap = " << npcState->ignoreCap << ',' << std::endl;
+						scriptstream << "ignore = " << npcState->ignore << ',' << std::endl;
+						scriptstream << "ignorecapacity = ignore," << std::endl;
+						scriptstream << "ignoreequipped = ignore," << std::endl;
 						scriptstream << "inbackpacks = " << npcState->inBackpacks << ',' << std::endl;
 						scriptstream << "amount = " << npcState->amount << ',' << std::endl;
 						scriptstream << "price = " << npcState->price << ',' << std::endl;
@@ -1637,7 +1806,7 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 						{
 							lua_State* L = interface.getState();
 							lua_getglobal(L, "_state");
-							NpcScriptInterface::popState(L, npcState);
+							NpcScript::popState(L, npcState);
 						}
 
 						interface.releaseEnv();
@@ -1677,11 +1846,12 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 					lua_State* L = m_interface->getState();
 
 					env->setScriptId(functionId, m_interface);
-					Npc* prevNpc = env->getNpc();
 					env->setRealPos(getPosition());
-					env->setNpc(this);
 
+					Npc* prevNpc = env->getNpc();
+					env->setNpc(this);
 					m_interface->pushFunction(functionId);
+
 					int32_t paramCount = 0;
 					for(ActionList::const_iterator it = response->getFirstAction(); it != response->getEndAction(); ++it)
 					{
@@ -1701,12 +1871,12 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 						}
 					}
 
-					NpcScriptInterface::pushState(L, npcState);
+					NpcScript::pushState(L, npcState);
 					lua_setglobal(L, "_state");
 					m_interface->callFunction(paramCount);
 					lua_getglobal(L, "_state");
 
-					NpcScriptInterface::popState(L, npcState);
+					NpcScript::popState(L, npcState);
 					if(prevNpc)
 					{
 						env->setRealPos(prevNpc->getPosition());
@@ -1732,23 +1902,26 @@ void Npc::doSay(const std::string& text)
 	g_game.internalCreatureSay(this, SPEAK_SAY, text, false);
 }
 
-void Npc::doTurn(Direction dir)
+uint32_t Npc::getListItemPrice(uint16_t itemId, ShopEvent_t type)
 {
-	g_game.internalCreatureTurn(this, dir);
-}
+	std::list<ListItem> itemList;
+	for(ItemListMap::iterator it = itemListMap.begin(); it != itemListMap.end(); ++it)
+	{
+		itemList = it->second;
+		for(std::list<ListItem>::iterator iit = itemList.begin(); iit != itemList.end(); ++iit)
+		{
+			if(iit->itemId != itemId)
+				continue;
 
-void Npc::doMove(Direction dir)
-{
-	g_game.internalMoveCreature(this, dir);
-}
+			if(type == SHOPEVENT_BUY)
+				return iit->buyPrice;
 
-void Npc::doMoveTo(Position target)
-{
-	std::list<Direction> listDir;
-	if(!g_game.getPathToEx(this, target, listDir, 1, 1, true, true))
-		return;
+			if(type == SHOPEVENT_SELL)
+				return iit->sellPrice;
+		}
+	}
 
-	startAutoWalk(listDir);
+	return 0;
 }
 
 bool Npc::getNextStep(Direction& dir, uint32_t& flags)
@@ -1756,7 +1929,7 @@ bool Npc::getNextStep(Direction& dir, uint32_t& flags)
 	if(Creature::getNextStep(dir, flags))
 		return true;
 
-	if(walkTicks <= 0 || !isIdle || focusCreature || getTimeSinceLastMove() < walkTicks)
+	if(!walkTicks || !isIdle || focusCreature || getTimeSinceLastMove() < walkTicks)
 		return false;
 
 	return getRandomStep(dir);
@@ -1785,18 +1958,11 @@ bool Npc::canWalkTo(const Position& fromPos, Direction dir)
 bool Npc::getRandomStep(Direction& dir)
 {
 	std::vector<Direction> dirList;
-	const Position& creaturePos = getPosition();
-	if(canWalkTo(creaturePos, NORTH))
-		dirList.push_back(NORTH);
-
-	if(canWalkTo(creaturePos, SOUTH))
-		dirList.push_back(SOUTH);
-
-	if(canWalkTo(creaturePos, EAST))
-		dirList.push_back(EAST);
-
-	if(canWalkTo(creaturePos, WEST))
-		dirList.push_back(WEST);
+	for(int32_t i = NORTH; i < SOUTHWEST; ++i)
+	{
+		if(canWalkTo(getPosition(), (Direction)i))
+			dirList.push_back((Direction)i);
+	}
 
 	if(dirList.empty())
 		return false;
@@ -1810,13 +1976,15 @@ void Npc::setCreatureFocus(Creature* creature)
 {
 	if(!creature)
 	{
+		if(!walkTicks)
+			g_game.internalCreatureTurn(this, baseDirection);
+
 		focusCreature = 0;
 		return;
 	}
 
-	const Position& creaturePos = creature->getPosition();
-	const Position& myPos = getPosition();
-	int32_t dx = myPos.x - creaturePos.x, dy = myPos.y - creaturePos.y;
+	Position pos = creature->getPosition(), _pos = getPosition();
+	int32_t dx = _pos.x - pos.x, dy = _pos.y - pos.y;
 
 	float tan = 10;
 	if(dx != 0)
@@ -1833,8 +2001,8 @@ void Npc::setCreatureFocus(Creature* creature)
 	else if(dy > 0)
 		dir = NORTH;
 
-	focusCreature = creature->getID();
 	g_game.internalCreatureTurn(this, dir);
+	focusCreature = creature->getID();
 }
 
 const NpcResponse* Npc::getResponse(const ResponseList& list, const Player* player,
@@ -1886,7 +2054,7 @@ const NpcResponse* Npc::getResponse(const ResponseList& list, const Player* play
 			if(hasBitSet(RESPOND_DRUID, params))
 			{
 				Vocation* tmpVoc = player->vocation;
-				for(uint32_t i = 0; i <= player->promotionLevel; i++)
+				for(uint32_t i = 0; i <= player->promotionLevel; ++i)
 					tmpVoc = Vocations::getInstance()->getVocation(tmpVoc->getFromVocation());
 
 				if(tmpVoc->getId() != 2)
@@ -1898,7 +2066,7 @@ const NpcResponse* Npc::getResponse(const ResponseList& list, const Player* play
 			if(hasBitSet(RESPOND_KNIGHT, params))
 			{
 				Vocation* tmpVoc = player->vocation;
-				for(uint32_t i = 0; i <= player->promotionLevel; i++)
+				for(uint32_t i = 0; i <= player->promotionLevel; ++i)
 					tmpVoc = Vocations::getInstance()->getVocation(tmpVoc->getFromVocation());
 
 				if(tmpVoc->getId() != 4)
@@ -1910,7 +2078,7 @@ const NpcResponse* Npc::getResponse(const ResponseList& list, const Player* play
 			if(hasBitSet(RESPOND_PALADIN, params))
 			{
 				Vocation* tmpVoc = player->vocation;
-				for(uint32_t i = 0; i <= player->promotionLevel; i++)
+				for(uint32_t i = 0; i <= player->promotionLevel; ++i)
 					tmpVoc = Vocations::getInstance()->getVocation(tmpVoc->getFromVocation());
 
 				if(tmpVoc->getId() != 3)
@@ -1922,7 +2090,7 @@ const NpcResponse* Npc::getResponse(const ResponseList& list, const Player* play
 			if(hasBitSet(RESPOND_SORCERER, params))
 			{
 				Vocation* tmpVoc = player->vocation;
-				for(uint32_t i = 0; i <= player->promotionLevel; i++)
+				for(uint32_t i = 0; i <= player->promotionLevel; ++i)
 					tmpVoc = Vocations::getInstance()->getVocation(tmpVoc->getFromVocation());
 
 				if(tmpVoc->getId() != 1)
@@ -1941,7 +2109,7 @@ const NpcResponse* Npc::getResponse(const ResponseList& list, const Player* play
 
 			if(hasBitSet(RESPOND_LOWMONEY, params))
 			{
-				if((signed)g_game.getMoney(player) >= (npcState->price * npcState->amount))
+				if(g_game.getMoney(player) >= (uint64_t)(npcState->price * npcState->amount))
 					continue;
 
 				++matchCount;
@@ -2187,7 +2355,7 @@ const NpcResponse* Npc::getResponse(const Player* player, NpcState* npcState, co
 	return getResponse(responseList, player, npcState, text);
 }
 
-const NpcResponse* Npc::getResponse(const Player* player, NpcEvent_t eventType)
+const NpcResponse* Npc::getResponse(const Player*, NpcEvent_t eventType)
 {
 	std::string eventName = getEventResponseName(eventType);
 	if(eventName.empty())
@@ -2196,11 +2364,11 @@ const NpcResponse* Npc::getResponse(const Player* player, NpcEvent_t eventType)
 	std::vector<NpcResponse*> result;
 	for(ResponseList::const_iterator it = responseList.begin(); it != responseList.end(); ++it)
 	{
-		if((*it)->getInteractType() == INTERACT_EVENT)
-		{
-			if((*it)->getInputText() == asLowerCaseString(eventName))
-				result.push_back(*it);
-		}
+		if((*it)->getInteractType() != INTERACT_EVENT)
+			continue;
+
+		if((*it)->getInputText() == asLowerCaseString(eventName))
+			result.push_back(*it);
 	}
 
 	if(result.empty())
@@ -2234,6 +2402,14 @@ std::string Npc::getEventResponseName(NpcEvent_t eventType)
 			return "onPlayerMove";
 		case EVENT_PLAYER_LEAVE:
 			return "onPlayerLeave";
+		case EVENT_PLAYER_SHOPSELL:
+			return "onPlayerShopSell";
+		case EVENT_PLAYER_SHOPBUY:
+			return "onPlayerShopBuy";
+		case EVENT_PLAYER_SHOPCLOSE:
+			return "onPlayerShopClose";
+		case EVENT_PLAYER_CHATCLOSE:
+			return "onPlayerChatClose";
 		default:
 			break;
 	}
@@ -2290,78 +2466,39 @@ std::string Npc::formatResponse(Creature* creature, const NpcState* npcState, co
 	}
 
 	replaceString(responseString, "|NAME|", creature->getName());
-	replaceString(responseString, "|NPCNAME|", getName());
+	replaceString(responseString, "|NPCNAME|", nType->name);
 	return responseString;
 }
 
-NpcScriptInterface* Npc::getInterface()
+NpcScript* Npc::getInterface()
 {
 	return m_interface;
 }
 
-NpcScriptInterface::NpcScriptInterface() :
-	LuaScriptInterface("Npc interface")
+NpcScript::NpcScript():
+	LuaScriptInterface("NpcScript Interface")
 {
-	m_libLoaded = false;
 	initState();
 }
 
-
-NpcScriptInterface::~NpcScriptInterface()
-{
-	//
-}
-
-bool NpcScriptInterface::initState()
-{
-	return LuaScriptInterface::initState();
-}
-
-bool NpcScriptInterface::closeState()
-{
-	m_libLoaded = false;
-	return LuaScriptInterface::closeState();
-}
-
-bool NpcScriptInterface::loadNpcLib(std::string file)
-{
-	if(m_libLoaded)
-		return true;
-
-	if(!loadFile(file))
-	{
-		std::clog << "Warning: [NpcScriptInterface::loadNpcLib] Cannot load " << file << std::endl;
-		return false;
-	}
-
-	m_libLoaded = true;
-	return true;
-}
-
-void NpcScriptInterface::registerFunctions()
+void NpcScript::registerFunctions()
 {
 	LuaScriptInterface::registerFunctions();
-	lua_register(m_luaState, "selfFocus", NpcScriptInterface::luaActionFocus);
-	lua_register(m_luaState, "selfSay", NpcScriptInterface::luaActionSay);
+	lua_register(m_luaState, "selfFocus", NpcScript::luaActionFocus);
+	lua_register(m_luaState, "selfSay", NpcScript::luaActionSay);
+	lua_register(m_luaState, "selfFollow", NpcScript::luaActionFollow);
 
-	lua_register(m_luaState, "selfTurn", NpcScriptInterface::luaActionTurn);
-	lua_register(m_luaState, "selfMove", NpcScriptInterface::luaActionMove);
-	lua_register(m_luaState, "selfMoveTo", NpcScriptInterface::luaActionMoveTo);
-	lua_register(m_luaState, "selfFollow", NpcScriptInterface::luaActionFollow);
+	lua_register(m_luaState, "getNpcId", NpcScript::luaGetNpcId);
+	lua_register(m_luaState, "getNpcParameter", NpcScript::luaGetNpcParameter);
 
-	lua_register(m_luaState, "getNpcId", NpcScriptInterface::luaGetNpcId);
-	lua_register(m_luaState, "getNpcDistanceTo", NpcScriptInterface::luaGetNpcDistanceTo);
-	lua_register(m_luaState, "getNpcParameter", NpcScriptInterface::luaGetNpcParameter);
-
-	lua_register(m_luaState, "getNpcState", NpcScriptInterface::luaGetNpcState);
-	lua_register(m_luaState, "setNpcState", NpcScriptInterface::luaSetNpcState);
+	lua_register(m_luaState, "getNpcState", NpcScript::luaGetNpcState);
+	lua_register(m_luaState, "setNpcState", NpcScript::luaSetNpcState);
 }
 
-int32_t NpcScriptInterface::luaActionFocus(lua_State* L)
+int32_t NpcScript::luaActionFocus(lua_State* L)
 {
 	//selfFocus(cid)
 	ScriptEnviroment* env = getEnv();
-
 	Npc* npc = env->getNpc();
 	if(!npc)
 		return 0;
@@ -2376,7 +2513,7 @@ int32_t NpcScriptInterface::luaActionFocus(lua_State* L)
 	return 0;
 }
 
-int32_t NpcScriptInterface::luaActionSay(lua_State* L)
+int32_t NpcScript::luaActionSay(lua_State* L)
 {
 	//selfSay(words)
 	ScriptEnviroment* env = getEnv();
@@ -2388,49 +2525,14 @@ int32_t NpcScriptInterface::luaActionSay(lua_State* L)
 	return 0;
 }
 
-int32_t NpcScriptInterface::luaActionTurn(lua_State* L)
-{
-	//selfTurn(direction)
-	ScriptEnviroment* env = getEnv();
-	if(Npc* npc = env->getNpc())
-		npc->doTurn((Direction)popNumber(L));
-
-	return 0;
-}
-
-int32_t NpcScriptInterface::luaActionMove(lua_State* L)
-{
-	//selfMove(direction)
-	ScriptEnviroment* env = getEnv();
-	if(Npc* npc = env->getNpc())
-		npc->doMove((Direction)popNumber(L));
-
-	return 0;
-}
-
-int32_t NpcScriptInterface::luaActionMoveTo(lua_State* L)
-{
-	//selfMoveTo(x, y, z)
-	Position pos;
-	pos.z = (uint16_t)popNumber(L);
-	pos.y = (uint16_t)popNumber(L);
-	pos.x = (uint16_t)popNumber(L);
-
-	ScriptEnviroment* env = getEnv();
-	if(Npc* npc = env->getNpc())
-		npc->doMoveTo(pos);
-
-	return 0;
-}
-
-int32_t NpcScriptInterface::luaActionFollow(lua_State* L)
+int32_t NpcScript::luaActionFollow(lua_State* L)
 {
 	//selfFollow(cid)
 	uint32_t cid = popNumber(L);
 	ScriptEnviroment* env = getEnv();
 
-	Player* player = env->getPlayerByUID(cid);
-	if(cid && !player)
+	Creature* creature = env->getCreatureByUID(cid);
+	if(cid && !creature)
 	{
 		lua_pushboolean(L, false);
 		return 1;
@@ -2443,11 +2545,11 @@ int32_t NpcScriptInterface::luaActionFollow(lua_State* L)
 		return 1;
 	}
 
-	lua_pushboolean(L, npc->setFollowCreature(player, true));
+	lua_pushboolean(L, npc->setFollowCreature(creature, true));
 	return 1;
 }
 
-int32_t NpcScriptInterface::luaGetNpcId(lua_State* L)
+int32_t NpcScript::luaGetNpcId(lua_State* L)
 {
 	//getNpcId()
 	ScriptEnviroment* env = getEnv();
@@ -2459,34 +2561,9 @@ int32_t NpcScriptInterface::luaGetNpcId(lua_State* L)
 	return 1;
 }
 
-int32_t NpcScriptInterface::luaGetNpcDistanceTo(lua_State* L)
+int32_t NpcScript::luaGetNpcParameter(lua_State* L)
 {
-	//getNpcDistanceTo(uid)
-	ScriptEnviroment* env = getEnv();
-	Npc* npc = env->getNpc();
-
-	Thing* thing = env->getThingByUID(popNumber(L));
-	if(thing && npc)
-	{
-		Position thingPos = thing->getPosition();
-		Position npcPos = npc->getPosition();
-		if(npcPos.z == thingPos.z)
-			lua_pushnumber(L, std::max(std::abs(npcPos.x - thingPos.x), std::abs(npcPos.y - thingPos.y)));
-		else
-			lua_pushnumber(L, -1);
-	}
-	else
-	{
-		errorEx(getError(LUA_ERROR_THING_NOT_FOUND));
-		lua_pushnil(L);
-	}
-
-	return 1;
-}
-
-int32_t NpcScriptInterface::luaGetNpcParameter(lua_State* L)
-{
-	//getNpcParameter(paramKey)
+	//getNpcParameter(key)
 	ScriptEnviroment* env = getEnv();
 	if(Npc* npc = env->getNpc())
 	{
@@ -2502,7 +2579,7 @@ int32_t NpcScriptInterface::luaGetNpcParameter(lua_State* L)
 	return 1;
 }
 
-int32_t NpcScriptInterface::luaGetNpcState(lua_State* L)
+int32_t NpcScript::luaGetNpcState(lua_State* L)
 {
 	//getNpcState(cid)
 	ScriptEnviroment* env = getEnv();
@@ -2510,14 +2587,14 @@ int32_t NpcScriptInterface::luaGetNpcState(lua_State* L)
 
 	const Player* player = env->getPlayerByUID(popNumber(L));
 	if(player && npc)
-		NpcScriptInterface::pushState(L, npc->getState(player));
+		NpcScript::pushState(L, npc->getState(player));
 	else
 		lua_pushnil(L);
 
 	return 1;
 }
 
-int32_t NpcScriptInterface::luaSetNpcState(lua_State* L)
+int32_t NpcScript::luaSetNpcState(lua_State* L)
 {
 	//setNpcState(state, cid)
 	ScriptEnviroment* env = getEnv();
@@ -2527,7 +2604,7 @@ int32_t NpcScriptInterface::luaSetNpcState(lua_State* L)
 	if(player && npc)
 	{
 		NpcState* tmp = npc->getState(player);
-		NpcScriptInterface::popState(L, tmp);
+		NpcScript::popState(L, tmp);
 		lua_pushboolean(L, true);
 	}
 	else
@@ -2536,14 +2613,16 @@ int32_t NpcScriptInterface::luaSetNpcState(lua_State* L)
 	return 1;
 }
 
-void NpcScriptInterface::pushState(lua_State* L, NpcState* state)
+void NpcScript::pushState(lua_State* L, NpcState* state)
 {
 	lua_newtable(L);
 	setField(L, "price", state->price);
 	setField(L, "amount", state->amount);
 	setField(L, "itemid", state->itemId);
 	setField(L, "subtype", state->subType);
-	setFieldBool(L, "ignorecap", state->ignoreCap);
+	setFieldBool(L, "ignore", state->ignore);
+	setFieldBool(L, "ignorecapacity", state->ignore);
+	setFieldBool(L, "ignoreequipped", state->ignore);
 	setFieldBool(L, "inbackpacks", state->inBackpacks);
 	setField(L, "topic", state->topic);
 	setField(L, "level", state->level);
@@ -2565,13 +2644,14 @@ void NpcScriptInterface::pushState(lua_State* L, NpcState* state)
 	setField(L, "s3", state->scriptVars.s3);
 }
 
-void NpcScriptInterface::popState(lua_State* L, NpcState* &state)
+void NpcScript::popState(lua_State* L, NpcState* &state)
 {
 	state->price = getField(L, "price");
 	state->amount = getField(L, "amount");
 	state->itemId = getField(L, "itemid");
 	state->subType = getField(L, "subtype");
-	state->ignoreCap = getFieldBool(L, "ignorecap");
+	state->ignore = getFieldBool(L, "ignore") || getFieldBool(L,
+		"ignorecapacity") || getFieldBool(L, "ignoreequipped");
 	state->inBackpacks = getFieldBool(L, "inbackpacks");
 	state->topic = getField(L, "topic");
 	state->level = getField(L, "level");
@@ -2593,26 +2673,13 @@ void NpcScriptInterface::popState(lua_State* L, NpcState* &state)
 	state->scriptVars.s3 = getFieldString(L, "s3");
 }
 
-NpcEventsHandler::NpcEventsHandler(Npc* npc)
+NpcEvents::NpcEvents(std::string file, Npc* npc):
+	m_npc(npc), m_interface(npc->getInterface())
 {
-	m_npc = npc;
-	m_loaded = false;
-}
-
-bool NpcEventsHandler::isLoaded()
-{
-	return m_loaded;
-}
-
-NpcScript::NpcScript(std::string file, Npc* npc):
-	NpcEventsHandler(npc)
-{
-	m_interface = npc->getInterface();
 	if(!m_interface->loadFile(file, npc))
 	{
-		std::clog << "[Warning - NpcScript::NpcScript] Cannot load script: " << file << std::endl;
-		std::clog << m_interface->getLastError() << std::endl;
-
+		std::clog << "[Warning - NpcEvents::NpcEvents] Cannot load script: " << file
+			<< std::endl << m_interface->getLastError() << std::endl;
 		m_loaded = false;
 		return;
 	}
@@ -2625,7 +2692,7 @@ NpcScript::NpcScript(std::string file, Npc* npc):
 	m_loaded = true;
 }
 
-void NpcScript::onCreatureAppear(const Creature* creature)
+void NpcEvents::onCreatureAppear(const Creature* creature)
 {
 	if(m_onCreatureAppear == -1)
 		return;
@@ -2639,7 +2706,7 @@ void NpcScript::onCreatureAppear(const Creature* creature)
 		#ifdef __DEBUG_LUASCRIPTS__
 		std::stringstream desc;
 		desc << "npc " << m_npc->getName();
-		env->setEventDesc(desc.str());
+		env->setEvent(desc.str());
 		#endif
 
 		env->setScriptId(m_onCreatureAppear, m_interface);
@@ -2653,10 +2720,10 @@ void NpcScript::onCreatureAppear(const Creature* creature)
 		m_interface->releaseEnv();
 	}
 	else
-		std::clog << "[Error - NpcScript::onCreatureAppear] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
+		std::clog << "[Error - NpcEvents::onCreatureAppear] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
 }
 
-void NpcScript::onCreatureDisappear(const Creature* creature)
+void NpcEvents::onCreatureDisappear(const Creature* creature)
 {
 	if(m_onCreatureDisappear == -1)
 		return;
@@ -2670,7 +2737,7 @@ void NpcScript::onCreatureDisappear(const Creature* creature)
 		#ifdef __DEBUG_LUASCRIPTS__
 		std::stringstream desc;
 		desc << "npc " << m_npc->getName();
-		env->setEventDesc(desc.str());
+		env->setEvent(desc.str());
 		#endif
 
 		env->setScriptId(m_onCreatureDisappear, m_interface);
@@ -2684,10 +2751,10 @@ void NpcScript::onCreatureDisappear(const Creature* creature)
 		m_interface->releaseEnv();
 	}
 	else
-		std::clog << "[Error - NpcScript::onCreatureDisappear] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
+		std::clog << "[Error - NpcEvents::onCreatureDisappear] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
 }
 
-void NpcScript::onCreatureMove(const Creature* creature, const Position& oldPos, const Position& newPos)
+void NpcEvents::onCreatureMove(const Creature* creature, const Position& oldPos, const Position& newPos)
 {
 	if(m_onCreatureMove == -1)
 		return;
@@ -2701,7 +2768,7 @@ void NpcScript::onCreatureMove(const Creature* creature, const Position& oldPos,
 		#ifdef __DEBUG_LUASCRIPTS__
 		std::stringstream desc;
 		desc << "npc " << m_npc->getName();
-		env->setEventDesc(desc.str());
+		env->setEvent(desc.str());
 		#endif
 
 		env->setScriptId(m_onCreatureMove, m_interface);
@@ -2718,10 +2785,10 @@ void NpcScript::onCreatureMove(const Creature* creature, const Position& oldPos,
 		m_interface->releaseEnv();
 	}
 	else
-		std::clog << "[Error - NpcScript::onCreatureMove] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
+		std::clog << "[Error - NpcEvents::onCreatureMove] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
 }
 
-void NpcScript::onCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text, Position* pos/* = NULL*/)
+void NpcEvents::onCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text, Position* /*pos = NULL*/)
 {
 	if(m_onCreatureSay == -1)
 		return;
@@ -2735,7 +2802,7 @@ void NpcScript::onCreatureSay(const Creature* creature, SpeakClasses type, const
 		#ifdef __DEBUG_LUASCRIPTS__
 		std::stringstream desc;
 		desc << "npc " << m_npc->getName();
-		env->setEventDesc(desc.str());
+		env->setEvent(desc.str());
 		#endif
 
 		env->setScriptId(m_onCreatureSay, m_interface);
@@ -2752,10 +2819,10 @@ void NpcScript::onCreatureSay(const Creature* creature, SpeakClasses type, const
 		m_interface->releaseEnv();
 	}
 	else
-		std::clog << "[Error - NpcScript::onCreatureSay] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
+		std::clog << "[Error - NpcEvents::onCreatureSay] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
 }
 
-void NpcScript::onThink()
+void NpcEvents::onThink()
 {
 	if(m_onThink == -1)
 		return;
@@ -2768,7 +2835,7 @@ void NpcScript::onThink()
 		#ifdef __DEBUG_LUASCRIPTS__
 		std::stringstream desc;
 		desc << "npc " << m_npc->getName();
-		env->setEventDesc(desc.str());
+		env->setEvent(desc.str());
 		#endif
 
 		env->setScriptId(m_onThink, m_interface);
@@ -2781,6 +2848,5 @@ void NpcScript::onThink()
 		m_interface->releaseEnv();
 	}
 	else
-		std::clog << "[Error - NpcScript::onThink] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
+		std::clog << "[Error - NpcEvents::onThink] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
 }
-

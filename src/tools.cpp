@@ -663,31 +663,37 @@ std::string convertIPAddress(uint32_t ip)
 	return buffer;
 }
 
-Skulls_t getSkull(std::string strValue)
+Skulls_t getSkulls(std::string strValue)
 {
 	std::string tmpStrValue = asLowerCaseString(strValue);
 	if(tmpStrValue == "red" || tmpStrValue == "4")
 		return SKULL_RED;
-	else if(tmpStrValue == "white" || tmpStrValue == "3")
+
+	if(tmpStrValue == "white" || tmpStrValue == "3")
 		return SKULL_WHITE;
-	else if(tmpStrValue == "green" || tmpStrValue == "2")
+
+	if(tmpStrValue == "green" || tmpStrValue == "2")
 		return SKULL_GREEN;
-	else if(tmpStrValue == "yellow" || tmpStrValue == "1")
+
+	if(tmpStrValue == "yellow" || tmpStrValue == "1")
 		return SKULL_YELLOW;
 
 	return SKULL_NONE;
 }
 
-PartyShields_t getPartyShield(std::string strValue)
+PartyShields_t getShields(std::string strValue)
 {
 	std::string tmpStrValue = asLowerCaseString(strValue);
 	if(tmpStrValue == "yellow" || tmpStrValue == "4")
 		return SHIELD_YELLOW;
-	else if(tmpStrValue == "blue" || tmpStrValue == "3")
+
+	if(tmpStrValue == "blue" || tmpStrValue == "3")
 		return SHIELD_BLUE;
-	else if(tmpStrValue == "whiteyellow" || tmpStrValue == "2")
+
+	if(tmpStrValue == "whiteyellow" || tmpStrValue == "2")
 		return SHIELD_WHITEYELLOW;
-	else if(tmpStrValue == "whiteblue" || tmpStrValue == "1")
+
+	if(tmpStrValue == "whiteblue" || tmpStrValue == "1")
 		return SHIELD_WHITEBLUE;
 
 	return SHIELD_NONE;

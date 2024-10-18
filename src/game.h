@@ -544,8 +544,10 @@ class Game
 		void changeSpeed(Creature* creature, int32_t varSpeedDelta);
 		void internalCreatureChangeOutfit(Creature* creature, const Outfit_t& oufit, bool forced = false);
 		void internalCreatureChangeVisible(Creature* creature, Visible_t visible);
-		void updateCreatureSkull(Creature* creature);
 		void sendPublicSquare(Player* sender, SquareColor_t color);
+
+		void updateCreatureSkull(Creature* creature);
+		void updateCreatureShield(Creature* creature);
 
 		GameState_t getGameState() const {return gameState;}
 		void setGameState(GameState_t newState);

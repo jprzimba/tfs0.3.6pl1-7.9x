@@ -84,3 +84,8 @@ function getArea(position, x, y)
 
 	return t
 end
+
+function isValidPosition(position)
+	return (isNumeric(position.x .. position.y .. position.z) and position.x > 0
+		and position.y > 0 and position.z >= 0 and position.z <= 15)
+end

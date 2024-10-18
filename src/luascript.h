@@ -382,6 +382,8 @@ class LuaScriptInterface
 		static int32_t luaGetCreatureSpeakType(lua_State* L);
 		static int32_t luaDoCreatureSetSpeakType(lua_State* L);
 		static int32_t luaGetCreatureSkullType(lua_State* L);
+		static int32_t luaGetCreaturePartyShield(lua_State* L);
+		static int32_t luaDoCreatureSetPartyShield(lua_State* L);
 		static int32_t luaDoCreatureSetSkullType(lua_State* L);
 		static int32_t luaGetPlayerSkullEnd(lua_State* L);
 		static int32_t luaDoPlayerSetSkullEnd(lua_State* L);
@@ -651,9 +653,13 @@ class LuaScriptInterface
 		static int32_t luaIsItemDoor(lua_State* L);
 		static int32_t luaGetItemLevelDoor(lua_State* L);
 
+		static int32_t luaL_errors(lua_State* L);
 		static int32_t luaL_loadmodlib(lua_State* L);
 		static int32_t luaL_domodlib(lua_State* L);
 		static int32_t luaL_dodirectory(lua_State* L);
+
+		static const luaL_Reg luaSystemTable[2];
+		static int32_t luaSystemTime(lua_State* L);
 
 		static const luaL_Reg luaDatabaseTable[8];
 		static int32_t luaDatabaseExecute(lua_State* L);
@@ -694,6 +700,7 @@ class LuaScriptInterface
 		static int32_t luaStdSHA1(lua_State* L);
 
 		lua_State* m_luaState;
+		bool m_errors;
 		std::string m_lastError;
 
 	private:

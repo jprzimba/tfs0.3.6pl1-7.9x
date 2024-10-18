@@ -30,6 +30,7 @@
 #include "weapons.h"
 
 #include "monsters.h"
+#include "npc.h"
 #include "spawn.h"
 #include "raids.h"
 #include "group.h"
@@ -53,6 +54,7 @@ GlobalEvents* g_globalEvents = NULL;
 extern Chat g_chat;
 extern ConfigManager g_config;
 extern Monsters g_monsters;
+extern Npcs g_npcs;
 
 ScriptManager::ScriptManager():
 modsLoaded(false)
@@ -288,6 +290,8 @@ bool ScriptManager::loadFromXml(const std::string& file, bool& enabled)
 				Spawns::getInstance()->parseSpawnNode(p, modsLoaded);
 			else if(!xmlStrcmp(p->name, (const xmlChar*)"channel"))
 				g_chat.parseChannelNode(p); //TODO: duplicates- channel destructor needs to send closeChannel to users!
+			else if(!xmlStrcmp(p->name, (const xmlChar*)"npc"))
+				g_npcs.parseNpcNode(p, FILE_TYPE_MOD);
 			else if(!xmlStrcmp(p->name, (const xmlChar*)"monster"))
 			{
 				std::string path, name;

@@ -45,19 +45,22 @@ function selfMoveToCreature(id)
 	return
 end
 
-function getNpcDistanceToCreature(id)
-	if(not id or id == 0) then
-		selfIdle()
+function getNpcDistanceTo(id)
+	errors(false)
+	local thing = getThing(id)
+
+	errors(true)
+	if(thing.uid == 0) then
 		return nil
 	end
 
 	local c = getCreaturePosition(id)
-	if(not c.x or c.x == 0) then
+	if(not isValidPosition(c)) then
 		return nil
 	end
 
 	local s = getCreaturePosition(getNpcId())
-	if(not s.x or s.x == 0 or s.z ~= c.z) then
+	if(not isValidPosition(s) or s.z ~= c.z) then
 		return nil
 	end
 
@@ -144,4 +147,5 @@ doNpcBuyItem = doPlayerRemoveItem
 doNpcSetCreatureFocus = selfFocus
 getNpcCid = getNpcId
 getDistanceTo = getNpcDistanceTo
-getDistanceToCreature = getNpcDistanceToCreature
+getDistanceToCreature = getNpcDistanceTo
+getNpcDistanceToCreature = getNpcDistanceTo

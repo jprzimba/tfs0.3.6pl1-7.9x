@@ -381,7 +381,7 @@ function doBroadcastMessage(text, class)
 		doPlayerSendTextMessage(pid, class, text)
 	end
 
-	print(":: Broadcasted message: \"" .. text .. "\".")
+	print("Broadcasted message: \"" .. text .. "\".")
 	return true
 end
 
@@ -406,7 +406,7 @@ function doPlayerBroadcastMessage(cid, text, class, checkFlag, ghost)
 		doCreatureSay(cid, text, class, ghost, pid)
 	end
 
-	print(":: " .. getCreatureName(cid) .. " broadcasted message: \"" .. text .. "\".")
+	print("" .. getCreatureName(cid) .. " broadcasted message: \"" .. text .. "\".")
 	return true
 end
 
@@ -513,4 +513,8 @@ end
 function getMonsterSummonList(name)
 	local monster = getMonsterInfo(name)
 	return monster and monster.summons or false
+end
+
+function isNumeric(str)
+	return tonumber(str) ~= nil
 end
