@@ -649,11 +649,13 @@ function NameStateChanged()
 		}
 }
 </script>';
-			$newchar_name = ucwords(strtolower(trim($_POST['newcharname'])));
-			$newchar_sex = $_POST['newcharsex'];
-			$newchar_vocation = $_POST['newcharvocation'];
-			$newchar_town = $_POST['newchartown'];
-			if($_POST['savecharacter'] != 1)
+			$newchar_name = isset($_POST['newcharname']) ? ucwords(strtolower(trim($_POST['newcharname']))) : '';
+			$newchar_sex = isset($_POST['newcharsex']) ? $_POST['newcharsex'] : '';
+			$newchar_vocation = isset($_POST['newcharvocation']) ? $_POST['newcharvocation'] : '';
+			$newchar_town = isset($_POST['newchartown']) ? $_POST['newchartown'] : '';
+			$savecharacter = isset($_POST['savecharacter']) ? $_POST['savecharacter'] : 0;
+
+			if ($savecharacter != 1)
 			{
 				$main_content .= 'Please choose a name';
 				if(count($config['site']['newchar_vocations']) > 1)
