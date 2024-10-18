@@ -598,21 +598,15 @@ std::string formatDate(time_t _time/* = 0*/)
 	return s.str();
 }
 
-std::string formatDateShort(time_t _time, bool detailed/* = false*/)
+std::string formatDateEx(time_t _time/* = 0*/, std::string format/* = "%d %b %Y, %H:%M:%S"*/)
 {
-	char buffer[21];
 	if(!_time)
 		_time = time(NULL);
 
 	const tm* tms = localtime(&_time);
+	char buffer[100];
 	if(tms)
-	{
-		std::string format = "%d %b %Y";
-		if(detailed)
-			format += " %H:%M:%S";
-
 		strftime(buffer, 25, format.c_str(), tms);
-	}
 	else
 		sprintf(buffer, "UNIX Time: %d", (int32_t)_time);
 
