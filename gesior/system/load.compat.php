@@ -112,47 +112,70 @@ function check_account_name($name)
 
 function check_name_new_char($name)
 {
-	$name = (string) $name;
-	$name_to_check = strtolower($name);
-	//first word can't be:
-	$first_words_blocked = array('gm ','cm ', 'god ','tutor ', "'", '-');
-	//names blocked:
-	$names_blocked = array('gm','cm', 'god', 'tutor');
-	//name can't contain:
-	$words_blocked = array('gamemaster', 'game master', 'game-master', "game'master", '--', "''","' ", " '", '- ', ' -', "-'", "'-", 'fuck', 'sux', 'suck', 'noob', 'tutor');
-	foreach($first_words_blocked as $word)
-		if($word == substr($name_to_check, 0, strlen($word)))
-			return false;
-	if(substr($name_to_check, -1) == "'" || substr($name_to_check, -1) == "-")
-		return false;
-	if(substr($name_to_check, 1, 1) == ' ')
-		return false;
-	if(substr($name_to_check, -2, 1) == " ")
-		return false;
-	foreach($names_blocked as $word)
-		if($word == $name_to_check)
-			return false;
-	for($i = 0; $i < strlen($name_to_check); $i++)
-		if($name_to_check[$i-1] == ' ' && $name_to_check[$i+1] == ' ')
-			return false;
-	foreach($words_blocked as $word)
-		if (!(strpos($name_to_check, $word) === false))
-			return false;
-	for($i = 0; $i < strlen($name_to_check); $i++)
-		if($name_to_check[$i] == $name_to_check[($i+1)] && $name_to_check[$i] == $name_to_check[($i+2)])
-			return false;
-	for($i = 0; $i < strlen($name_to_check); $i++)
-		if($name_to_check[$i-1] == ' ' && $name_to_check[$i+1] == ' ')
-			return false;
-	$temp = strspn("$name", "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM- '");
-	if ($temp != strlen($name))
-		return false;
-	if(strlen($name) < 1)
-		return false;
-	if(strlen($name) > 25)
-		return false;
+    $name = (string) $name;
+    $name_to_check = strtolower($name);
+    
+    // First word can't be:
+    $first_words_blocked = array('gm ','cm ', 'god ','tutor ', "'", '-');
+    
+    // Names blocked:
+    $names_blocked = array('gm','cm', 'god', 'tutor');
+    
+    // Name can't contain:
+    $words_blocked = array('gamemaster', 'game master', 'game-master', "game'master", '--', "''","' ", " '", '- ', ' -', "-'", "'-", 'fuck', 'sux', 'suck', 'noob', 'tutor');
+    
+    foreach($first_words_blocked as $word) {
+        if($word == substr($name_to_check, 0, strlen($word))) {
+            return false;
+        }
+    }
+    
+    if(substr($name_to_check, -1) == "'" || substr($name_to_check, -1) == "-") {
+        return false;
+    }
 
-	return true;
+    if(strlen($name_to_check) > 1 && substr($name_to_check, 1, 1) == ' ') {
+        return false;
+    }
+    
+    if(strlen($name_to_check) > 2 && substr($name_to_check, -2, 1) == " ") {
+        return false;
+    }
+
+    foreach($names_blocked as $word) {
+        if($word == $name_to_check) {
+            return false;
+        }
+    }
+
+    for($i = 0; $i < strlen($name_to_check) - 2; $i++) {
+        if($name_to_check[$i] == $name_to_check[$i + 1] && $name_to_check[$i] == $name_to_check[$i + 2]) {
+            return false;
+        }
+    }
+    
+    foreach($words_blocked as $word) {
+        if(strpos($name_to_check, $word) !== false) {
+            return false;
+        }
+    }
+
+    for($i = 1; $i < strlen($name_to_check) - 1; $i++) {
+        if($name_to_check[$i - 1] == ' ' && $name_to_check[$i + 1] == ' ') {
+            return false;
+        }
+    }
+    
+    $valid_chars = strspn($name, "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM- '");
+    if($valid_chars != strlen($name)) {
+        return false;
+    }
+    
+    if(strlen($name) < 1 || strlen($name) > 25) {
+        return false;
+    }
+
+    return true;
 }
 
 function check_rank_name($name)

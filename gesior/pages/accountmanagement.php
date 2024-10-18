@@ -619,6 +619,22 @@ else
 //## CREATE CHARACTER on account ###
 	if($action == "createcharacter")
 	{
+		if(count($config['site']['worlds']) > 1)
+		{
+			if(isset($_REQUEST['world']))
+				$world_id = (int) $_REQUEST['world'];
+		}
+		else
+			$world_id = 0;
+		if(!isset($world_id))
+		{
+			$main_content .= 'Before you can create character you must select world: ';
+			foreach($config['site']['worlds'] as $id => $world_n)
+				$main_content .= '<br /><a href="?subtopic=accountmanagement&action=createcharacter&world='.$id.'">- '.htmlspecialchars($world_n).'</a>';
+			$main_content .= '<br /><h3><a href="?subtopic=accountmanagement">BACK</a></h3>';
+		}
+		else
+		{
 			$main_content .= '<script type="text/javascript">
 			var nameHttp;
 
@@ -658,12 +674,12 @@ function NameStateChanged()
 			if ($savecharacter != 1)
 			{
 				$main_content .= 'Please choose a name';
-				if(count($config['site']['newchar_vocations']) > 1)
+				if(count($config['site']['newchar_vocations'][$world_id]) > 1)
 					$main_content .= ', vocation';
 				$main_content .= ' and sex for your character. <br/>In any case the name must not violate the naming conventions stated in the <a href="?subtopic=tibiarules" target="_blank" >'.htmlspecialchars($config['server']['serverName']).' Rules</a>, or your character might get deleted or name locked.';
 				if($account_logged->getPlayersList()->count() >= $config['site']['max_players_per_account'])
 					$main_content .= '<b><font color="red"> You have maximum number of characters per account on your account. Delete one before you make new.</font></b>';
-				$main_content .= '<br/><br/><form action="?subtopic=accountmanagement&action=createcharacter" method="post" ><input type="hidden" name=savecharacter value="1" ><div class="TableContainer" >  <table class="Table3" cellpadding="0" cellspacing="0" >    <div class="CaptionContainer" >      <div class="CaptionInnerContainer" ><span class="CaptionEdgeLeftTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionEdgeRightTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionBorderTop" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span><span class="CaptionVerticalLeft" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span><div class="Text" >Create Character</div>        <span class="CaptionVerticalRight" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span><span class="CaptionBorderBottom" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span><span class="CaptionEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span></div>    </div><tr>      <td>        <div class="InnerTableContainer" >          <table style="width:100%;" ><tr><td><div class="TableShadowContainerRightTop" >  <div class="TableShadowRightTop" style="background-image:url('.$layout_name.'/images/content/table-shadow-rt.gif);" ></div></div><div class="TableContentAndRightShadow" style="background-image:url('.$layout_name.'/images/content/table-shadow-rm.gif);" >  <div class="TableContentContainer" ><table class="TableContent" width="100%" ><tr class="LabelH" ><td style="width:50%;" ><span >Name</td><td><span >Sex</td></tr><tr class="Odd" ><td><input id="newcharname" name="newcharname" onkeyup="checkName();" value="'.htmlspecialchars($newchar_name).'" size="30" maxlength="29" ><BR><font size="1" face="verdana,arial,helvetica"><div id="name_check">Please enter your character name.</div></font></td><td>';
+				$main_content .= '<br/><br/><form action="?subtopic=accountmanagement&action=createcharacter" method="post" ><input type="hidden" name="world" value="'.$world_id.'" ><input type="hidden" name=savecharacter value="1" ><div class="TableContainer" >  <table class="Table3" cellpadding="0" cellspacing="0" >    <div class="CaptionContainer" >      <div class="CaptionInnerContainer" ><span class="CaptionEdgeLeftTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionEdgeRightTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionBorderTop" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span><span class="CaptionVerticalLeft" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span><div class="Text" >Create Character</div>        <span class="CaptionVerticalRight" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span><span class="CaptionBorderBottom" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span><span class="CaptionEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span></div>    </div><tr>      <td>        <div class="InnerTableContainer" >          <table style="width:100%;" ><tr><td><div class="TableShadowContainerRightTop" >  <div class="TableShadowRightTop" style="background-image:url('.$layout_name.'/images/content/table-shadow-rt.gif);" ></div></div><div class="TableContentAndRightShadow" style="background-image:url('.$layout_name.'/images/content/table-shadow-rm.gif);" >  <div class="TableContentContainer" ><table class="TableContent" width="100%" ><tr class="LabelH" ><td style="width:50%;" ><span >Name</td><td><span >Sex</td></tr><tr class="Odd" ><td><input id="newcharname" name="newcharname" onkeyup="checkName();" value="'.htmlspecialchars($newchar_name).'" size="30" maxlength="29" ><BR><font size="1" face="verdana,arial,helvetica"><div id="name_check">Please enter your character name.</div></font></td><td>';
 				$main_content .= '<input type="radio" name="newcharsex" value="1" ';
 				if($newchar_sex == 1)
 					$main_content .= 'checked="checked" ';
@@ -672,33 +688,33 @@ function NameStateChanged()
 				if($newchar_sex == "0")
 					$main_content .= 'checked="checked" ';
 				$main_content .= '>female<br/></td></tr></table></div></div></table></div>';
-				if(count($config['site']['newchar_towns']) > 1 || count($config['site']['newchar_vocations']) > 1)
+				if(count($config['site']['newchar_towns'][$world_id]) > 1 || count($config['site']['newchar_vocations'][$world_id]) > 1)
 					$main_content .= '<div class="InnerTableContainer" >          <table style="width:100%;" ><tr>';
-				if(count($config['site']['newchar_vocations']) > 1)
+				if(count($config['site']['newchar_vocations'][$world_id]) > 1)
 				{
 					$main_content .= '<td><table class="TableContent" width="100%" ><tr class="Odd" valign="top"><td width="160"><br /><b>Select your vocation:</b></td><td><table class="TableContent" width="100%" >';
-					foreach($config['site']['newchar_vocations'] as $char_vocation_key => $sample_char)
+					foreach($config['site']['newchar_vocations'][$world_id] as $char_vocation_key => $sample_char)
 					{
 						$main_content .= '<tr><td><input type="radio" name="newcharvocation" value="'.$char_vocation_key.'" ';
 						if($newchar_vocation == $char_vocation_key)
 							$main_content .= 'checked="checked" ';
-						$main_content .= '>'.htmlspecialchars($vocation_name[$char_vocation_key]).'</td></tr>';
+						$main_content .= '>'.htmlspecialchars($vocation_name[0][$char_vocation_key]).'</td></tr>';
 					}
 					$main_content .= '</table></table></td>';
 				}
-				if(count($config['site']['newchar_towns']) > 1)
+				if(count($config['site']['newchar_towns'][$world_id]) > 1)
 				{
 					$main_content .= '<td><table class="TableContent" width="100%" ><tr class="Odd" valign="top"><td width="160"><br /><b>Select your city:</b></td><td><table class="TableContent" width="100%" >';
-					foreach($config['site']['newchar_towns'] as $town_id)
+					foreach($config['site']['newchar_towns'][$world_id] as $town_id)
 					{
 						$main_content .= '<tr><td><input type="radio" name="newchartown" value="'.$town_id.'" ';
 						if($newchar_town == $town_id)
 							$main_content .= 'checked="checked" ';
-						$main_content .= '>'.htmlspecialchars($towns_list[$town_id]).'</td></tr>';
+						$main_content .= '>'.htmlspecialchars($towns_list[$world_id][$town_id]).'</td></tr>';
 					}
 					$main_content .= '</table></table></td>';
 				}
-				if(count($config['site']['newchar_towns']) > 1 || count($config['site']['newchar_vocations']) > 1)
+				if(count($config['site']['newchar_towns'][$world_id]) > 1 || count($config['site']['newchar_vocations'][$world_id]) > 1)
 					$main_content .= '</tr></table></div>';
 				$main_content .= '</table></div></td></tr><br/><table style="width:100%;" ><tr align="center" ><td><table border="0" cellspacing="0" cellpadding="0" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Submit" alt="Submit" src="'.$layout_name.'/images/buttons/_sbutton_submit.gif" ></div></div></td><tr></form></table></td><td><table border="0" cellspacing="0" cellpadding="0" ><form action="?subtopic=accountmanagement" method="post" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Back" alt="Back" src="'.$layout_name.'/images/buttons/_sbutton_back.gif" ></div></div></td></tr></form></table></td></tr></table>';
 			}
@@ -708,30 +724,30 @@ function NameStateChanged()
 					$newchar_errors[] = 'Please enter a name for your character!';
 				if(empty($newchar_sex) && $newchar_sex != "0")
 					$newchar_errors[] = 'Please select the sex for your character!';
-				if(count($config['site']['newchar_vocations']) > 1)
+				if(count($config['site']['newchar_vocations'][$world_id]) > 1)
 				{
 					if(empty($newchar_vocation))
 						$newchar_errors[] = 'Please select a vocation for your character.';
 				}
 				else
-					$newchar_vocation = $config['site']['newchar_vocations'][0];
-				if(count($config['site']['newchar_towns']) > 1)
+					$newchar_vocation = $config['site']['newchar_vocations'][$world_id][0];
+				if(count($config['site']['newchar_towns'][$world_id]) > 1)
 				{
 					if(empty($newchar_town))
 						$newchar_errors[] = 'Please select a town for your character.';
 				}
 				else
-					$newchar_town = $config['site']['newchar_towns'][0];
+					$newchar_town = $config['site']['newchar_towns'][$world_id][0];
 				if(empty($newchar_errors))
 				{
 					if(!check_name_new_char($newchar_name))
 						$newchar_errors[] = 'This name contains invalid letters, words or format. Please use only a-Z, - , \' and space.';
 					if($newchar_sex != 1 && $newchar_sex != "0")
 						$newchar_errors[] = 'Sex must be equal <b>0 (female)</b> or <b>1 (male)</b>.';
-					if(count($config['site']['newchar_vocations']) > 1)
+					if(count($config['site']['newchar_vocations'][$world_id]) > 1)
 					{
 						$newchar_vocation_check = FALSE;
-						foreach($config['site']['newchar_vocations'] as $char_vocation_key => $sample_char)
+						foreach($config['site']['newchar_vocations'][$world_id] as $char_vocation_key => $sample_char)
 							if($newchar_vocation == $char_vocation_key)
 								$newchar_vocation_check = TRUE;
 						if(!$newchar_vocation_check)
@@ -752,7 +768,7 @@ function NameStateChanged()
 				}
 				if(empty($newchar_errors))
 				{
-					$char_to_copy_name = $config['site']['newchar_vocations'][$newchar_vocation];
+					$char_to_copy_name = $config['site']['newchar_vocations'][$world_id][$newchar_vocation];
 					$char_to_copy = new Player();
 					$char_to_copy->find($char_to_copy_name);
 					if(!$char_to_copy->isLoaded())
@@ -777,6 +793,8 @@ function NameStateChanged()
 					$char_to_copy->setPosX(0);
 					$char_to_copy->setPosY(0);
 					$char_to_copy->setPosZ(0);
+					$char_to_copy->setBalance(0);
+					$char_to_copy->setWorldID((int) $world_id);
 					$char_to_copy->setCreateIP(Visitor::getIP());
 					$char_to_copy->setCreateDate(time());
 					$char_to_copy->setSave(); // make character saveable
@@ -800,9 +818,9 @@ function NameStateChanged()
 						$main_content .= '<li>'.$newchar_error;
 					$main_content .= '</div>    <div class="BoxFrameHorizontal" style="background-image:url('.$layout_name.'/images/content/box-frame-horizontal.gif);" /></div>    <div class="BoxFrameEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></div>    <div class="BoxFrameEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></div>  </div></div><br/>';
 					$main_content .= 'Please choose a name';
-					if(count($config['site']['newchar_vocations']) > 1)
+					if(count($config['site']['newchar_vocations'][$world_id]) > 1)
 						$main_content .= ', vocation';
-					$main_content .= ' and sex for your character. <br/>In any case the name must not violate the naming conventions stated in the <a href="?subtopic=tibiarules" target="_blank" >'.$config['server']['serverName'].' Rules</a>, or your character might get deleted or name locked.<br/><br/><form action="?subtopic=accountmanagement&action=createcharacter" method="post" ><input type="hidden" name=savecharacter value="1" ><div class="TableContainer" >  <table class="Table3" cellpadding="0" cellspacing="0" >    <div class="CaptionContainer" >      <div class="CaptionInnerContainer" ><span class="CaptionEdgeLeftTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionEdgeRightTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionBorderTop" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span><span class="CaptionVerticalLeft" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span><div class="Text" >Create Character</div>        <span class="CaptionVerticalRight" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span><span class="CaptionBorderBottom" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span><span class="CaptionEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span></div>    </div><tr>      <td>        <div class="InnerTableContainer" >          <table style="width:100%;" ><tr><td><div class="TableShadowContainerRightTop" >  <div class="TableShadowRightTop" style="background-image:url('.$layout_name.'/images/content/table-shadow-rt.gif);" ></div></div><div class="TableContentAndRightShadow" style="background-image:url('.$layout_name.'/images/content/table-shadow-rm.gif);" >  <div class="TableContentContainer" ><table class="TableContent" width="100%" ><tr class="LabelH" ><td style="width:50%;" ><span >Name</td><td><span >Sex</td></tr><tr class="Odd" ><td><input id="newcharname" name="newcharname" onkeyup="checkName();" value="'.$newchar_name.'" size="30" maxlength="29" ><BR><font size="1" face="verdana,arial,helvetica"><div id="name_check">Please enter your character name.</div></font></td><td>';
+					$main_content .= ' and sex for your character. <br/>In any case the name must not violate the naming conventions stated in the <a href="?subtopic=tibiarules" target="_blank" >'.$config['server']['serverName'].' Rules</a>, or your character might get deleted or name locked.<br/><br/><form action="?subtopic=accountmanagement&action=createcharacter" method="post" ><input type="hidden" name="world" value="'.$world_id.'" ><input type="hidden" name=savecharacter value="1" ><div class="TableContainer" >  <table class="Table3" cellpadding="0" cellspacing="0" >    <div class="CaptionContainer" >      <div class="CaptionInnerContainer" ><span class="CaptionEdgeLeftTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionEdgeRightTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionBorderTop" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span><span class="CaptionVerticalLeft" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span><div class="Text" >Create Character</div>        <span class="CaptionVerticalRight" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></span><span class="CaptionBorderBottom" style="background-image:url('.$layout_name.'/images/content/table-headline-border.gif);" ></span><span class="CaptionEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span><span class="CaptionEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></span></div>    </div><tr>      <td>        <div class="InnerTableContainer" >          <table style="width:100%;" ><tr><td><div class="TableShadowContainerRightTop" >  <div class="TableShadowRightTop" style="background-image:url('.$layout_name.'/images/content/table-shadow-rt.gif);" ></div></div><div class="TableContentAndRightShadow" style="background-image:url('.$layout_name.'/images/content/table-shadow-rm.gif);" >  <div class="TableContentContainer" ><table class="TableContent" width="100%" ><tr class="LabelH" ><td style="width:50%;" ><span >Name</td><td><span >Sex</td></tr><tr class="Odd" ><td><input id="newcharname" name="newcharname" onkeyup="checkName();" value="'.$newchar_name.'" size="30" maxlength="29" ><BR><font size="1" face="verdana,arial,helvetica"><div id="name_check">Please enter your character name.</div></font></td><td>';
 					$main_content .= '<input type="radio" name="newcharsex" value="1" ';
 					if($newchar_sex == 1)
 						$main_content .= 'checked="checked" ';
@@ -811,37 +829,38 @@ function NameStateChanged()
 					if($newchar_sex == "0")
 						$main_content .= 'checked="checked" ';
 					$main_content .= '>female<br/></td></tr></table></div></div></table></div>';
-					if(count($config['site']['newchar_towns']) > 1 || count($config['site']['newchar_vocations']) > 1)
+					if(count($config['site']['newchar_towns'][$world_id]) > 1 || count($config['site']['newchar_vocations'][$world_id]) > 1)
 						$main_content .= '<div class="InnerTableContainer" >          <table style="width:100%;" ><tr>';
-					if(count($config['site']['newchar_vocations']) > 1)
+					if(count($config['site']['newchar_vocations'][$world_id]) > 1)
 					{
 						$main_content .= '<td><table class="TableContent" width="100%" ><tr class="Odd" valign="top"><td width="160"><br /><b>Select your vocation:</b></td><td><table class="TableContent" width="100%" >';
-						foreach($config['site']['newchar_vocations'] as $char_vocation_key => $sample_char)
+						foreach($config['site']['newchar_vocations'][$world_id] as $char_vocation_key => $sample_char)
 						{
 							$main_content .= '<tr><td><input type="radio" name="newcharvocation" value="'.htmlspecialchars($char_vocation_key).'" ';
 							if($newchar_vocation == $char_vocation_key)
 								$main_content .= 'checked="checked" ';
-							$main_content .= '>'.htmlspecialchars($vocation_name[$char_vocation_key]).'</td></tr>';
+							$main_content .= '>'.htmlspecialchars($vocation_name[0][$char_vocation_key]).'</td></tr>';
 						}
 						$main_content .= '</table></table></td>';
 					}
-					if(count($config['site']['newchar_towns']) > 1)
+					if(count($config['site']['newchar_towns'][$world_id]) > 1)
 					{
 						$main_content .= '<td><table class="TableContent" width="100%" ><tr class="Odd" valign="top"><td width="160"><br /><b>Select your city:</b></td><td><table class="TableContent" width="100%" >';
-						foreach($config['site']['newchar_towns'] as $town_id)
+						foreach($config['site']['newchar_towns'][$world_id] as $town_id)
 						{
 							$main_content .= '<tr><td><input type="radio" name="newchartown" value="'.htmlspecialchars($town_id).'" ';
 							if($newchar_town == $town_id)
 								$main_content .= 'checked="checked" ';
-							$main_content .= '>'.htmlspecialchars($towns_list[$town_id]).'</td></tr>';
+							$main_content .= '>'.htmlspecialchars($towns_list[$world_id][$town_id]).'</td></tr>';
 						}
 						$main_content .= '</table></table></td>';
 					}
-					if(count($config['site']['newchar_towns']) > 1 || count($config['site']['newchar_vocations']) > 1)
+					if(count($config['site']['newchar_towns'][$world_id]) > 1 || count($config['site']['newchar_vocations'][$world_id]) > 1)
 						$main_content .= '</tr></table></div>';
 					$main_content .= '</table></div></td></tr><br/><table style="width:100%;" ><tr align="center" ><td><table border="0" cellspacing="0" cellpadding="0" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Submit" alt="Submit" src="'.$layout_name.'/images/buttons/_sbutton_submit.gif" ></div></div></td><tr></form></table></td><td><table border="0" cellspacing="0" cellpadding="0" ><form action="?subtopic=accountmanagement" method="post" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Back" alt="Back" src="'.$layout_name.'/images/buttons/_sbutton_back.gif" ></div></div></td></tr></form></table></td></tr></table>';
 				}
 			}
-		
+		}
+
 	}
 }
