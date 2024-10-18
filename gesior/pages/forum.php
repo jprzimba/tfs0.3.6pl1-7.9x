@@ -21,11 +21,14 @@ function canPost($account)
 {
     if($account->isLoaded())
     {
-        $SQL = $GLOBALS['SQL'];
-        $level_limit = $GLOBALS['level_limit'];
-        $player = $SQL->query("SELECT " . $SQL->fieldName('level') . " FROM " . $SQL->tableName('players') . " WHERE " . $SQL->fieldName('account_id') . " = ".$SQL->quote($account->getId())." ORDER BY " . $SQL->fieldName('level') . " DESC")->fetch();
-        if($player['level'] >= $level_limit)
-            return true;
+        if(!$account->isBanned())
+        {
+            $SQL = $GLOBALS['SQL'];
+            $level_limit = $GLOBALS['level_limit'];
+            $player = $SQL->query("SELECT " . $SQL->fieldName('level') . " FROM " . $SQL->tableName('players') . " WHERE " . $SQL->fieldName('account_id') . " = ".$SQL->quote($account->getId())." ORDER BY " . $SQL->fieldName('level') . " DESC")->fetch();
+            if($player['level'] >= $level_limit)
+                return true;
+        }
     }
     return false;
 }

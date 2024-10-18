@@ -47,7 +47,13 @@ else
 			$account_email_new = $account_logged->getCustomField("email_new");
 		$account_rlname = $account_logged->getRLName();
 		$account_location = $account_logged->getLocation();
-		$welcome_msg = 'Welcome to your account!';
+		if($account_logged->isBanned())
+			if($account_logged->getBanTime() > 0)
+				$welcome_msg = '<font color="red">Your account is banished until '.date("j F Y, G:i:s", $account_logged->getBanTime()).'!</font>';
+			else
+				$welcome_msg = '<font color="red">Your account is banished FOREVER!</font>';
+		else
+			$welcome_msg = 'Welcome to your account!';
 		$main_content .= '<div class="SmallBox" >  <div class="MessageContainer" ><div class="BoxFrameHorizontal" style="background-image:url('.$layout_name.'/images/content/box-frame-horizontal.gif);" /></div><div class="BoxFrameEdgeLeftTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></div><div class="BoxFrameEdgeRightTop" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></div><div class="Message" >      <div class="BoxFrameVerticalLeft" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></div><div class="BoxFrameVerticalRight" style="background-image:url('.$layout_name.'/images/content/box-frame-vertical.gif);" /></div><table><td width="100%"></td><td><table border="0" cellspacing="0" cellpadding="0" ><form action="?subtopic=accountmanagement&action=logout" method="post" ><tr><td style="border:0px;" ><div class="BigButton" style="background-image:url('.$layout_name.'/images/buttons/sbutton.gif)" ><div onMouseOver="MouseOverBigButton(this);" onMouseOut="MouseOutBigButton(this);" ><div class="BigButtonOver" style="background-image:url('.$layout_name.'/images/buttons/sbutton_over.gif);" ></div><input class="ButtonText" type="image" name="Logout" alt="Logout" src="'.$layout_name.'/images/buttons/_sbutton_logout.gif" ></div></div></td></tr></form></table></td></tr></table>    </div><div class="BoxFrameHorizontal" style="background-image:url('.$layout_name.'/images/content/box-frame-horizontal.gif);" /></div>    <div class="BoxFrameEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></div>    <div class="BoxFrameEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></div>  </div></div><br/><center><table><tr><td><img src="'.$layout_name.'/images/content/headline-bracer-left.gif" /></td><td style="text-align:center;vertical-align:middle;horizontal-align:center;font-size:17px;font-weight:bold;" >'.$welcome_msg.'<br/></td><td><img src="'.$layout_name.'/images/content/headline-bracer-right.gif" /></td></tr></table><br/></center>';
 		//if account dont have recovery key show hint
 		if(empty($account_reckey))
@@ -511,9 +517,12 @@ else
 //### DELETE character from account ###
 	if($action == "deletecharacter")
 	{
-		$player_name = trim($_POST['delete_name']);
-		$password_verify = trim($_POST['delete_password']);
-		if($_POST['deletecharactersave'] == 1)
+		$player_name = isset($_POST['delete_name']) ? trim($_POST['delete_name']) : '';
+		$password_verify = isset($_POST['delete_password']) ? trim($_POST['delete_password']) : '';
+		$deletecharactersave = isset($_POST['deletecharactersave']) ? $_POST['deletecharactersave'] : 0;
+		$dontshowtableagain = 0;
+		
+		if($deletecharactersave == 1)
 		{
 			if(!empty($player_name) && !empty($password_verify))
 			{

@@ -126,6 +126,65 @@ class Account extends ObjectData
 			return 0;
 	}
 
+	public function unban()
+	{
+		$bans = new DatabaseList('Ban');
+		$filterType = new SQL_Filter(new SQL_Field('type'), SQL_Filter::EQUAL, Ban::TYPE_ACCOUNT);
+		$filterValue = new SQL_Filter(new SQL_Field('value'), SQL_Filter::EQUAL, $this->data['id']);
+		$filterActive = new SQL_Filter(new SQL_Field('active'), SQL_Filter::EQUAL, 1);
+		$filter = new SQL_Filter($filterType, SQL_Filter::CRITERIUM_AND, $filterValue);
+		$filter = new SQL_Filter($filter, SQL_Filter::CRITERIUM_AND, $filterActive);
+		$bans->setFilter($filter);
+		foreach($bans as $ban)
+		{
+			$ban->setActive(0);
+			$ban->save();
+		}
+	}
+
+	public function loadBans($forceReload = false)
+	{
+		if(!isset($this->bans) || $forceReload)
+		{
+			$this->bans = new DatabaseList('Ban');
+			$filterType = new SQL_Filter(new SQL_Field('type'), SQL_Filter::EQUAL, Ban::TYPE_ACCOUNT);
+			$filterValue = new SQL_Filter(new SQL_Field('value'), SQL_Filter::EQUAL, $this->data['id']);
+			$filterActive = new SQL_Filter(new SQL_Field('active'), SQL_Filter::EQUAL, 1);
+			$filter = new SQL_Filter($filterType, SQL_Filter::CRITERIUM_AND, $filterValue);
+			$filter = new SQL_Filter($filter, SQL_Filter::CRITERIUM_AND, $filterActive);
+			$this->bans->setFilter($filter);
+		}
+	}
+
+	public function isBanned($forceReload = false)
+	{
+		$this->loadBans($forceReload);
+		$isBanned = false;
+		foreach($this->bans as $ban)
+		{
+			if($ban->getExpires() <= 0 || $ban->getExpires() > time())
+				$isBanned = true;
+		}
+		return $isBanned;
+	}
+
+	public function getBanTime($forceReload = false)
+	{
+		$this->loadBans($forceReload);
+		$lastExpires = 0;
+		foreach($bans as $ban)
+		{
+			if($ban->getExpires() <= 0)
+			{
+				$lastExpires = 0;
+				break;
+			}
+			if($ban->getExpires() > time() && $ban->getExpires() > $lastExpires)
+				$lastExpires = $ban->getExpires();
+		}
+		return $lastExpires;
+	}
+	
     public function delete()
     {
         $this->getDatabaseHandler()->query('DELETE FROM ' . $this->getDatabaseHandler()->tableName(self::$table) . ' WHERE ' . $this->getDatabaseHandler()->fieldName('id') . ' = ' . $this->getDatabaseHandler()->quote($this->data['id']));
