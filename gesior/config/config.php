@@ -32,7 +32,7 @@ $config['site']['send_register_email'] = false;
 
 # Create Character Options
 $config['site']['newchar_vocations'][0] = array(1 => 'Sorcerer Sample', 2 => 'Druid Sample', 3 => 'Paladin Sample', 4 => 'Knight Sample');
-$config['site']['newchar_towns'] = array(1);
+$config['site']['newchar_towns'][0] = array(1);
 $config['site']['max_players_per_account'] = 15;
 
 
