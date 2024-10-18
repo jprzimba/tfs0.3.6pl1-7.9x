@@ -377,12 +377,11 @@ function doBroadcastMessage(text, class)
 		return false
 	end
 
-	local players = getPlayersOnline()
-	for _, pid in ipairs(players) do
+	for _, pid in ipairs(getPlayersOnline()) do
 		doPlayerSendTextMessage(pid, class, text)
 	end
 
-	print("> Broadcasted message: \"" .. text .. "\".")
+	print(":: Broadcasted message: \"" .. text .. "\".")
 	return true
 end
 
@@ -403,12 +402,11 @@ function doPlayerBroadcastMessage(cid, text, class, checkFlag, ghost)
 		return false
 	end
 
-	local players = getPlayersOnline()
-	for _, pid in ipairs(players) do
+	for _, pid in ipairs(getPlayersOnline()) do
 		doCreatureSay(cid, text, class, ghost, pid)
 	end
 
-	print("> " .. getCreatureName(cid) .. " broadcasted message: \"" .. text .. "\".")
+	print(":: " .. getCreatureName(cid) .. " broadcasted message: \"" .. text .. "\".")
 	return true
 end
 

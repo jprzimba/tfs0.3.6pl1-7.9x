@@ -44,7 +44,7 @@ CREATE TABLE `accounts`
 	`blocked` TINYINT(1) NOT NULL DEFAULT FALSE COMMENT 'internal usage',
 	`warnings` INT NOT NULL DEFAULT 0,
 	`group_id` INT NOT NULL DEFAULT 1,
-	PRIMARY KEY (`id`), UNIQUE (`name`)
+	PRIMARY KEY (`id`), UNIQUE (`id`)
 ) ENGINE = InnoDB;
 
 INSERT INTO `accounts` VALUES (1, '1', '1', 65535, 0, '', '0', 0, 0, 1);

@@ -3,7 +3,7 @@
 	-- Database
 	-- NOTE: sqlFile is used only by sqlite database, and sqlKeepAlive by mysql database.
 	-- To disable sqlKeepAlive such as mysqlReadTimeout use 0 value.
-	sqlType = "sqlite"
+	sqlType = "mysql"
 	sqlHost = "localhost"
 	sqlPort = 3306
 	sqlUser = "root"
@@ -16,7 +16,7 @@
 	encryptionType = "plain"
 
 	-- Account manager
-	accountManager = true
+	accountManager = false
 	namelockManager = true
 	newPlayerChooseVoc = true
 	newPlayerSpawnPosX = 438
