@@ -257,7 +257,6 @@ class ConfigManager
 			HOUSE_PROTECTION,
 			HOUSE_SKIP_INIT_RENT,
 			ROOK_SYSTEM,
-			CONFIM_OUTDATED_VERSION,
 			LAST_BOOL_CONFIG /* this must be the last one */
 		};
 

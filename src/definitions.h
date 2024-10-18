@@ -28,7 +28,6 @@
 #define STATUS_SERVER_CODENAME "Crying Damson"
 #define STATUS_SERVER_PROTOCOL "7.9x"
 
-#define VERSION_CHECK "https://raw.githubusercontent.com/jprzimba/tfs0.3.6pl1-7.9x/refs/heads/main/version.xml"
 #define VERSION_PATCH 1
 #define VERSION_DATABASE 24
 

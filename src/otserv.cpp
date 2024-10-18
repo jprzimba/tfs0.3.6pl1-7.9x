@@ -446,52 +446,6 @@ void otserv(StringVec args)
 		std::clog << "Using plaintext encryption" << std::endl;
 	}
 
-	std::clog << ":: Checking software version... ";
-	if(xmlDocPtr doc = xmlParseFile(VERSION_CHECK))
-	{
-		xmlNodePtr p, root = xmlDocGetRootElement(doc);
-		if(!xmlStrcmp(root->name, (const xmlChar*)"versions"))
-		{
-			p = root->children->next;
-			if(!xmlStrcmp(p->name, (const xmlChar*)"entry"))
-			{
-				std::string version;
-				int32_t patch;
-
-				bool tmp = false;
-				if(readXMLString(p, "version", version) && version != STATUS_SERVER_VERSION)
-					tmp = true;
-
-				if(readXMLInteger(p, "patch", patch) && patch > VERSION_PATCH)
-					tmp = true;
-
-				if(tmp)
-				{
-					std::clog << "outdated, please consider updating!" << std::endl;
-					std::clog << ":: Current version information - version: " << STATUS_SERVER_VERSION << ", patch: " << VERSION_PATCH;
-					std::clog << ":: Latest version information - version: " << version << ", patch: " << patch;
-					if(g_config.getBool(ConfigManager::CONFIM_OUTDATED_VERSION) && version.find("_SVN") == std::string::npos)
-					{
-						std::clog << "Continue? (y/N)" << std::endl;
-                        char buffer = OTSYS_getch();
-						if(buffer == 10 || (buffer != 121 && buffer != 89))
-							startupErrorMessage("Aborted.");
-					}
-				}
-				else
-					std::clog << "up to date!" << std::endl;
-			}
-			else
-				std::clog << "failed checking - malformed entry." << std::endl;
-		}
-		else
-			std::clog << "failed checking - malformed file." << std::endl;
-
-		xmlFreeDoc(doc);
-	}
-	else
-		std::clog << "failed - could not parse remote file (are you connected to the internet?)" << std::endl;
-
 	std::clog << "Loading RSA key" << std::endl;
 	const char* p("14299623962416399520070177382898895550795403345466153217470516082934737582776038882967213386204600674145392845853859217990626450972452084065728686565928113");
 	const char* q("7630979195970404721891201847792002125535401292779123937207447574596692788513647179235335529307251350570728407373705564708871762033017096809910315212884101");

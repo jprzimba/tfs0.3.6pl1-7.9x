@@ -178,7 +178,6 @@
 	-- Startup
 	optimizeDatabaseAtStartup = true
 	removePremiumOnInit = true
-	confirmOutdatedVersion = true
 
 	-- Spells
 	formulaLevel = 5.0
