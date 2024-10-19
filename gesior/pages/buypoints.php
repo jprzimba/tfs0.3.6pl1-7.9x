@@ -56,6 +56,8 @@ $config['dotpay'][3]['sms_text'] = "AP.SWEV24"; # tresc jaka ma byc w SMSie
 $config['dotpay'][3]['sms_cost'] = "24.60 zł brutto"; # cena za wyslanie sms
 
 #################################################################################
+$errors = []; 
+
 function save_trans($file, $acc, $code)
 {
 	$hak = fopen($file, "a");
@@ -96,10 +98,10 @@ function add_points($account, $number_of_points)
 if (isset($_REQUEST['system']) && $_REQUEST['system'] == 'dotpay' && isset($config['dotpay_active']) && $config['dotpay_active'])
 {
 	#################################################################################
-	$sms_type = (int) $_POST['sms_type'];
-	$posted_code = trim($_POST['code']);
-	$to_user = trim($_POST['to_user']);
-	$verify_code = trim($_POST['verify_code']);
+	$sms_type = isset($_POST['sms_type']) ? (int) $_POST['sms_type'] : 0;
+	$posted_code = isset($_POST['code']) ? trim($_POST['code']) : '';
+	$to_user = isset($_POST['to_user']) ? trim($_POST['to_user']) : '';
+	$verify_code = isset($_POST['verify_code']) ? trim($_POST['verify_code']) : '';
 	#################################################################################
 	if(!empty($to_user))
 	{
