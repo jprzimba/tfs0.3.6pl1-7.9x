@@ -25,7 +25,7 @@
 extern Game g_game;
 extern ConfigManager g_config;
 
-LuaScriptInterface ScriptEvent::m_interface("Raid Interface");
+LuaInterface ScriptEvent::m_interface("Raid Interface");
 
 Raids::Raids()
 {

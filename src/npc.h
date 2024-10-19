@@ -49,7 +49,7 @@ class Npcs
 };
 
 struct NpcState;
-class NpcScript : public LuaScriptInterface
+class NpcScript : public LuaInterface
 {
 	public:
 		NpcScript();

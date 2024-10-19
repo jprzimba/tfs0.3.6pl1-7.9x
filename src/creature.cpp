@@ -1482,7 +1482,7 @@ void Creature::setNormalCreatureLight()
 bool Creature::registerCreatureEvent(const std::string& name)
 {
 	CreatureEvent* event = g_creatureEvents->getEventByName(name);
-	if(!event) //check for existance
+	if(!event || !event->isLoaded()) //check for existance
 		return false;
 
 	for(CreatureEventList::iterator it = eventsList.begin(); it != eventsList.end(); ++it)
@@ -1491,22 +1491,34 @@ bool Creature::registerCreatureEvent(const std::string& name)
 			return false;
 	}
 
-	if(!hasEventRegistered(event->getEventType())) //there's no such type registered yet, so set the bit in the bitfield
-		scriptEventsBitField |= ((uint32_t)1 << event->getEventType());
-
 	eventsList.push_back(event);
 	return true;
+}
+
+bool Creature::unregisterCreatureEvent(const std::string& name)
+{
+	CreatureEvent* event = g_creatureEvents->getEventByName(name);
+	if(!event || !event->isLoaded()) //check for existance
+		return false;
+
+	for(CreatureEventList::iterator it = eventsList.begin(); it != eventsList.end(); ++it)
+	{
+		if((*it) != event)
+			continue;
+
+		eventsList.erase(it);
+		return true; // we shouldn't have a duplicate
+	}
+
+	return false;
 }
 
 CreatureEventList Creature::getCreatureEvents(CreatureEventType_t type)
 {
 	CreatureEventList retList;
-	if(!hasEventRegistered(type))
-		return retList;
-
 	for(CreatureEventList::iterator it = eventsList.begin(); it != eventsList.end(); ++it)
 	{
-		if((*it)->getEventType() == type)
+		if((*it)->getEventType() == type && (*it)->isLoaded())
 			retList.push_back(*it);
 	}
 

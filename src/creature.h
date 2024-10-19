@@ -416,6 +416,7 @@ class Creature : public AutoId, virtual public Thing
 
 		//creature script events
 		bool registerCreatureEvent(const std::string& name);
+		bool unregisterCreatureEvent(const std::string& name);
 		CreatureEventList getCreatureEvents(CreatureEventType_t type);
 
 		virtual void setParent(Cylinder* cylinder)
@@ -535,6 +536,6 @@ class Creature : public AutoId, virtual public Thing
 
 		friend class Game;
 		friend class Map;
-		friend class LuaScriptInterface;
+		friend class LuaInterface;
 };
 #endif

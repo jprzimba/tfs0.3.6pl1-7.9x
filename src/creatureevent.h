@@ -50,7 +50,8 @@ enum CreatureEventType_t
 	CREATURE_EVENT_CAST,
 	CREATURE_EVENT_KILL,
 	CREATURE_EVENT_DEATH,
-	CREATURE_EVENT_PREPAREDEATH
+	CREATURE_EVENT_PREPAREDEATH,
+	CREATURE_EVENT_MOVEITEM
 };
 
 enum StatsChange_t
@@ -71,8 +72,9 @@ class CreatureEvents : public BaseEvents
 		// global events
 		bool playerLogin(Player* player);
 		bool playerLogout(Player* player, bool forceLogout);
+		uint32_t executeMoveItems(Creature* actor, Item* item, const Position& frompos, const Position& pos);
 
-		CreatureEvent* getEventByName(const std::string& name, bool forceLoaded = true);
+		CreatureEvent* getEventByName(const std::string& name);
 
 	protected:
 		virtual std::string getScriptBaseName() const {return "creaturescripts";}
@@ -81,11 +83,11 @@ class CreatureEvents : public BaseEvents
 		virtual Event* getEvent(const std::string& nodeName);
 		virtual bool registerEvent(Event* event, xmlNodePtr p, bool override);
 
-		virtual LuaScriptInterface& getInterface() {return m_interface;}
-		LuaScriptInterface m_interface;
+		virtual LuaInterface& getInterface() {return m_interface;}
+		LuaInterface m_interface;
 
 		//creature events
-		typedef std::map<std::string, CreatureEvent*> CreatureEventList;
+		typedef std::vector<CreatureEvent*> CreatureEventList;
 		CreatureEventList m_creatureEvents;
 };
 
@@ -96,7 +98,7 @@ typedef std::map<uint32_t, Player*> UsersMap;
 class CreatureEvent : public Event
 {
 	public:
-		CreatureEvent(LuaScriptInterface* _interface);
+		CreatureEvent(LuaInterface* _interface);
 		virtual ~CreatureEvent() {}
 
 		virtual bool configureEvent(xmlNodePtr p);
@@ -135,6 +137,7 @@ class CreatureEvent : public Event
 		uint32_t executeKill(Creature* creature, Creature* target, bool lastHit);
 		uint32_t executeDeath(Creature* creature, Item* corpse, DeathList deathList);
 		uint32_t executePrepareDeath(Creature* creature, DeathList deathList);
+		uint32_t executeMoveItem(Creature* actor, Item* item, const Position& frompos, const Position& pos);
 		//
 
 	protected:

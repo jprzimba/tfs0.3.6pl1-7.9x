@@ -2476,14 +2476,14 @@ NpcScript* Npc::getInterface()
 }
 
 NpcScript::NpcScript():
-	LuaScriptInterface("NpcScript Interface")
+	LuaInterface("NpcScript Interface")
 {
 	initState();
 }
 
 void NpcScript::registerFunctions()
 {
-	LuaScriptInterface::registerFunctions();
+	LuaInterface::registerFunctions();
 	lua_register(m_luaState, "selfFocus", NpcScript::luaActionFocus);
 	lua_register(m_luaState, "selfSay", NpcScript::luaActionSay);
 	lua_register(m_luaState, "selfFollow", NpcScript::luaActionFollow);
@@ -2778,8 +2778,8 @@ void NpcEvents::onCreatureMove(const Creature* creature, const Position& oldPos,
 		m_interface->pushFunction(m_onCreatureMove);
 		lua_pushnumber(L, env->addThing(const_cast<Creature*>(creature)));
 
-		LuaScriptInterface::pushPosition(L, oldPos, 0);
-		LuaScriptInterface::pushPosition(L, newPos, 0);
+		LuaInterface::pushPosition(L, oldPos, 0);
+		LuaInterface::pushPosition(L, newPos, 0);
 
 		m_interface->callFunction(3);
 		m_interface->releaseEnv();

@@ -198,7 +198,7 @@ bool Event::loadBuffer(const std::string& buffer)
 
 bool Event::checkBuffer(const std::string& base, const std::string& script) const
 {
-	LuaScriptInterface testInterface("Test Interface");
+	LuaInterface testInterface("Test Interface");
 	testInterface.initState();
 
 	std::string path = getFilePath(FILE_TYPE_OTHER, std::string(base + "/lib/"));
@@ -279,7 +279,7 @@ bool Event::loadScript(const std::string& script, bool file)
 
 bool Event::checkScript(const std::string& base, const std::string& script, bool file) const
 {
-	LuaScriptInterface testInterface("Test Interface");
+	LuaInterface testInterface("Test Interface");
 	testInterface.initState();
 
 	std::string path = getFilePath(FILE_TYPE_OTHER, std::string(base + "/lib/"));
@@ -330,7 +330,7 @@ CallBack::CallBack()
 	m_loaded = false;
 }
 
-bool CallBack::loadCallBack(LuaScriptInterface* _interface, std::string name)
+bool CallBack::loadCallBack(LuaInterface* _interface, std::string name)
 {
 	if(!_interface)
 	{

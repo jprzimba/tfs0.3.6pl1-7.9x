@@ -108,7 +108,8 @@
 			rookLevelToGetRooked, rookLevelToLeaveRook. (Tryller)
 		* Add new lua functions doSteerCreature(cid, position[, maxNodes]), getCreaturePartyShield(cid[, target]),
 			doCreatureSetPartyShield(cid, shield), isValidPosition(position), isNumeric(str), getTotalGold(cid), 
-			doPlayerPay(cid, cost). (Tryller)
+			doPlayerPay(cid, cost), unregisterCreatureEvent(cid, name). (Tryller)
+		* Add new creature events onMoveItem(moveItem, frompos, position, cid). (Elf Tryller)
 		* Add old quest system based on unique id (quests.lua). (Tryller)
 		* Clean actions, movements and weapons scripts to work only with 7.9 items. (Tryller)
 		* Auto stack items. (Elf)
