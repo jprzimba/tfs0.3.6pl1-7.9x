@@ -93,7 +93,7 @@ function add_points($account, $number_of_points)
 }
 
 
-if ($_REQUEST['system'] == 'dotpay' && $config['dotpay_active'])
+if (isset($_REQUEST['system']) && $_REQUEST['system'] == 'dotpay' && isset($config['dotpay_active']) && $config['dotpay_active'])
 {
 	#################################################################################
 	$sms_type = (int) $_POST['sms_type'];
@@ -176,7 +176,7 @@ if ($_REQUEST['system'] == 'dotpay' && $config['dotpay_active'])
 	$main_content .= '<tr><td></td><td><input type="submit" value="Sprawdź" /></td></tr></table></form>';
 	$main_content .= '</div>';
 }
-elseif ($_REQUEST['system'] == 'zaypay' && $config['zaypay_active'])
+elseif (isset($_REQUEST['system']) && $_REQUEST['system'] == 'zaypay' && isset($config['zaypay_active']) && $config['zaypay_active'])
 {
 	if($logged)
 	{
