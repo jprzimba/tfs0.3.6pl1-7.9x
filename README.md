@@ -2,7 +2,7 @@
 
 This is a modified server based on **The Forgotten Server 0.3.6pl1**, designed to run on the 7.9x protocol. The project has been adjusted to support the 7.9x version of the Tibia protocol while maintaining compatibility with its mechanics and features.
 
-This version contains alot of features from TFS 0.4.
+This version contains alot of features from TFS 0.4, there have a compatible version of [Gesior2012 Account Maker](https://github.com/jprzimba/tfs0.3.6pl1-7.9x).
 
 If you like the project, feel free to contribute with a pull request, and we will continue to keep the project updated.
 
