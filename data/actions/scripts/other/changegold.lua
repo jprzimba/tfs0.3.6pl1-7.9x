@@ -6,7 +6,7 @@ local coins = {
 		from = ITEM_GOLD_COIN, to = ITEM_CRYSTAL_COIN, effect = TEXTCOLOR_LIGHTBLUE
 	},
 	[ITEM_CRYSTAL_COIN] = {
-		from = ITEM_PLATINUM_COIN, effect = TEXTCOLOR_TEAL
+		from = ITEM_PLATINUM_COIN, effect = TEXTCOLOR_PURPLE
 	}
 }
 
