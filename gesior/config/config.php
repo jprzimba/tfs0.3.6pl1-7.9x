@@ -66,8 +66,8 @@ $config['site']['generate_new_reckey'] = false;
 $config['site']['generate_new_reckey_price'] = 500;
 
 # PAGE: guilds.php
-$config['site']['guild_need_level'] = 100;
-$config['site']['guild_need_pacc'] = true;
+$config['site']['guild_need_level'] = 10;
+$config['site']['guild_need_pacc'] = false;
 $config['site']['guild_image_size_kb'] = 50;
 $config['site']['guild_description_chars_limit'] = 2000;
 $config['site']['guild_description_lines_limit'] = 6;
@@ -90,7 +90,7 @@ $config['site']['groups_hidden'] = array(4, 5, 6);
 $config['site']['accounts_hidden'] = array(1);
 
 # PAGE: shopsystem.php
-$config['site']['shop_system'] = false;
+$config['site']['shop_system'] = true;
 
 # PAGE: lostaccount.php
 $config['site']['email_lai_sec_interval'] = 180;

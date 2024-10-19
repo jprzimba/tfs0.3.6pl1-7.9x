@@ -173,7 +173,7 @@ class Website extends WebsiteErrors
 	public static function loadGroups()
 	{
 		$path = self::getWebsiteConfig()->getValue('serverPath');
-		self::$groups = new Groups();
+		self::$groups = new Groups($path . 'data/XML/groups.xml');
 	}
 
 	public static function getGroups()

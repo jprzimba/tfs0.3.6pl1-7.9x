@@ -2,6 +2,11 @@
 if(!defined('INITIALIZED'))
 	exit;
 
+$show_accept_invite = 0;
+$rid = 0;
+$sid = 0;
+$array_of_player_ig = [];
+
 if($action == 'login')
 {
 	if(check_guild_name($_REQUEST['guild']))
@@ -351,7 +356,7 @@ if($action == 'changerank')
 				}
 			}
 		}
-		if($_REQUEST['todo'] == 'save')
+		if(isset($_REQUEST['todo']) == 'save')
 		{
 			$player_name = $_REQUEST['name'];
 			$new_rank = (int) $_REQUEST['rankid'];
@@ -533,7 +538,7 @@ if($action == 'deleteinvite')
 	}
 	else
 	{
-		if($_REQUEST['todo'] == 'save')
+		if (isset($_REQUEST['todo']) && $_REQUEST['todo'] == 'save') 
 		{
 			$guild->deleteInvite($player);
 			$main_content .= '<TABLE BORDER=0 CELLSPACING=1 CELLPADDING=4 WIDTH=100%><TR BGCOLOR='.$config['site']['vdarkborder'].'><TD CLASS=white><B>Delete player invitation</B></TD></TR><TR BGCOLOR='.$config['site']['darkborder'].'><TD WIDTH=100%>Player with name <b>'.htmlspecialchars($player->getName()).'</b> has been deleted from "invites list".</TD></TR></TABLE><br/><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=100%><FORM ACTION="?subtopic=guilds&action=show&guild='.$guild_id.'" METHOD=post><TR><TD><center><INPUT TYPE=image NAME="Back" ALT="Back" SRC="'.$layout_name.'/images/buttons/sbutton_back.gif" BORDER=0 WIDTH=120 HEIGHT=18></center></TD></TR></FORM></TABLE>';
@@ -552,7 +557,7 @@ if($action == 'invite')
 {
 	//set rights in guild
 	$guild_id = (int) $_REQUEST['guild'];
-	$name = $_REQUEST['name'];
+	$name = isset($_REQUEST['name']) ? $_REQUEST['name'] : '';
 	if(!$logged)
 		$guild_errors[] = 'You are not logged in. You can\'t invite players.';
 	if(empty($guild_errors))
@@ -591,7 +596,7 @@ if($action == 'invite')
 	}
 	if(!$guild_vice)
 		$guild_errors[] = 'You are not a leader or vice leader of guild ID <b>'.$guild_id.'</b>.';
-	if($_REQUEST['todo'] == 'save')
+	if (isset($_REQUEST['todo']) && $_REQUEST['todo'] == 'save') 
 	{
 		if(!check_name($name))
 			$guild_errors[] = 'Invalid name format.';
@@ -627,7 +632,7 @@ if($action == 'invite')
 		$main_content .= '</div>    <div class="BoxFrameHorizontal" style="background-image:url('.$layout_name.'/images/content/box-frame-horizontal.gif);" /></div>    <div class="BoxFrameEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></div>    <div class="BoxFrameEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></div>  </div></div><br/><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=100%><FORM ACTION="?subtopic=guilds&action=show&guild='.$guild_id.'" METHOD=post><TR><TD><center><INPUT TYPE=image NAME="Back" ALT="Back" SRC="'.$layout_name.'/images/buttons/sbutton_back.gif" BORDER=0 WIDTH=120 HEIGHT=18></center></TD></TR></FORM></TABLE>';
 	}
 	else
-		if($_REQUEST['todo'] == 'save')
+		if(isset($_REQUEST['todo']) == 'save')
 		{
 			$guild->invite($player);
 			$main_content .= '<TABLE BORDER=0 CELLSPACING=1 CELLPADDING=4 WIDTH=100%><TR BGCOLOR='.$config['site']['vdarkborder'].'><TD CLASS=white><B>Invite player</B></TD></TR><TR BGCOLOR='.$config['site']['darkborder'].'><TD WIDTH=100%>Player with name <b>'.htmlspecialchars($player->getName()).'</b> has been invited to your guild.</TD></TR></TABLE><br/><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=100%><FORM ACTION="?subtopic=guilds&action=show&guild='.$guild_id.'" METHOD=post><TR><TD><center><INPUT TYPE=image NAME="Back" ALT="Back" SRC="'.$layout_name.'/images/buttons/sbutton_back.gif" BORDER=0 WIDTH=120 HEIGHT=18></center></TD></TR></FORM></TABLE>';
@@ -646,7 +651,7 @@ if($action == 'acceptinvite')
 {
 	//set rights in guild
 	$guild_id = (int) $_REQUEST['guild'];
-	$name = $_REQUEST['name'];
+	$name = isset($_REQUEST['name']) ? $_REQUEST['name'] : '';
 	if(!$logged)
 		$guild_errors[] = 'You are not logged in. You can\'t accept invitations.';
 	if(empty($guild_errors))
@@ -657,7 +662,7 @@ if($action == 'acceptinvite')
 			$guild_errors[] = 'Guild with ID <b>'.$guild_id.'</b> doesn\'t exist.';
 	}
 
-	if($_REQUEST['todo'] == 'save')
+	if (isset($_REQUEST['todo']) && $_REQUEST['todo'] == 'save')
 	{
 		if(!check_name($name))
 			$guild_errors[] = 'Invalid name format.';
@@ -679,7 +684,7 @@ if($action == 'acceptinvite')
 			}
 		}
 	}
-	if($_REQUEST['todo'] == 'save')
+	if (isset($_REQUEST['todo']) && $_REQUEST['todo'] == 'save')
 	{
 		if(empty($guild_errors))
 		{
@@ -739,7 +744,7 @@ if($action == 'acceptinvite')
 	}
 	else
 	{
-		if($_REQUEST['todo'] == 'save')
+		if (isset($_REQUEST['todo']) && $_REQUEST['todo'] == 'save')
 		{
 			$guild->acceptInvite($player);
 			$main_content .= '<TABLE BORDER=0 CELLSPACING=1 CELLPADDING=4 WIDTH=100%><TR BGCOLOR='.$config['site']['vdarkborder'].'><TD CLASS=white><B>Accept invitation</B></TD></TR><TR BGCOLOR='.$config['site']['darkborder'].'><TD WIDTH=100%>Player with name <b>'.htmlspecialchars($player->getName()).'</b> has been added to guild <b>'.htmlspecialchars($guild->getName()).'</b>.</TD></TR></TABLE><br/><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=100%><FORM ACTION="?subtopic=guilds&action=show&guild='.$guild_id.'" METHOD=post><TR><TD><center><INPUT TYPE=image NAME="Back" ALT="Back" SRC="'.$layout_name.'/images/buttons/sbutton_back.gif" BORDER=0 WIDTH=120 HEIGHT=18></center></TD></TR></FORM></TABLE>';
@@ -860,7 +865,7 @@ if($action == 'kickplayer')
 		$main_content .= '</div>    <div class="BoxFrameHorizontal" style="background-image:url('.$layout_name.'/images/content/box-frame-horizontal.gif);" /></div>    <div class="BoxFrameEdgeRightBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></div>    <div class="BoxFrameEdgeLeftBottom" style="background-image:url('.$layout_name.'/images/content/box-frame-edge.gif);" /></div>  </div></div><br/><TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=100%><FORM ACTION="?subtopic=guilds&action=show&guild='.$guild_id.'" METHOD=post><TR><TD><center><INPUT TYPE=image NAME="Back" ALT="Back" SRC="'.$layout_name.'/images/buttons/sbutton_back.gif" BORDER=0 WIDTH=120 HEIGHT=18></center></TD></TR></FORM></TABLE>';
 	}
 	else
-		if($_REQUEST['todo'] == 'save')
+		if (isset($_REQUEST['todo']) && $_REQUEST['todo'] == 'save')
 		{
 			$player->setRank();
 			$player->save();
@@ -879,7 +884,7 @@ if($action == 'leaveguild')
 {
 	//set rights in guild
 	$guild_id = (int) $_REQUEST['guild'];
-	$name = $_REQUEST['name'];
+	$name = isset($_REQUEST['name']) ? $_REQUEST['name'] : '';
 	if(!$logged)
 		$guild_errors[] = 'You are not logged in. You can\'t leave guild.';
 	if(empty($guild_errors))
@@ -893,7 +898,7 @@ if($action == 'leaveguild')
 	if(empty($guild_errors))
 	{
 		$guild_owner_id = $guild->getOwner()->getId();
-		if($_REQUEST['todo'] == 'save')
+		if (isset($_REQUEST['todo']) && $_REQUEST['todo'] == 'save')
 		{
 			if(!check_name($name))
 				$guild_errors[] = 'Invalid name format.';
@@ -944,7 +949,7 @@ if($action == 'leaveguild')
 	}
 	else
 	{
-		if($_REQUEST['todo'] == 'save')
+		if (isset($_REQUEST['todo']) && $_REQUEST['todo'] == 'save')
 		{
 			$player->setRank();
 			$player->save();
@@ -980,9 +985,9 @@ if($action == 'leaveguild')
 //create guild
 if($action == 'createguild')
 {
-	$new_guild_name = trim($_REQUEST['guild']);
-	$name = $_REQUEST['name'];
-	$todo = $_REQUEST['todo'];
+	$new_guild_name = isset($_REQUEST['guild']) ? trim($_REQUEST['guild']) : '';
+	$name = isset($_REQUEST['name']) ? $_REQUEST['name'] : '';
+	$todo = isset($_REQUEST['todo']) ? $_REQUEST['todo'] : '';
 	if(!$logged)
 		$guild_errors[] = 'You are not logged in. You can\'t create guild.';
 	if(empty($guild_errors)) 
@@ -991,6 +996,9 @@ if($action == 'createguild')
 		foreach($account_players as $player)
 		{
 			$player_rank = $player->getRank();
+			if (!isset($array_of_player_nig)) {
+				$array_of_player_nig = [];
+			}
 			if(empty($player_rank))
 				if($player->getLevel() >= $config['site']['guild_need_level'])
 					if(!$config['site']['guild_need_pacc'] || $account_logged->isPremium())
@@ -1050,6 +1058,7 @@ if($action == 'createguild')
 		unset($todo);
 	}
 
+	$todo = isset($_REQUEST['todo']) ? $_REQUEST['todo'] : '';
 	if($todo == 'save')
 	{
 		$new_guild = new Guild();
@@ -1058,6 +1067,8 @@ if($action == 'createguild')
 		$new_guild->setOwner($player);
 		$new_guild->setDescription('New guild. Leader must edit this text :)');
 		$new_guild->setWorldID($player->getWorld());
+		$new_guild->setMOTD('');
+		$new_guild->setCreateIP(Visitor::getIP());
 		$new_guild->setGuildLogo('image/gif', Website::getFileContents('./images/default_guild_logo.gif'));
 		
 		$new_guild->save();
@@ -1232,7 +1243,7 @@ if($action == 'changelogo')
 			if($guild_leader)
 			{
 				$max_image_size_b = $config['site']['guild_image_size_kb'] * 1024;
-				if($_REQUEST['todo'] == 'save')
+				if (isset($_REQUEST['todo']) && $_REQUEST['todo'] == 'save')
 				{
 					$file = $_FILES['newlogo'];
 					switch($file['error'])
@@ -1504,7 +1515,7 @@ if($action == 'changedescription')
 				}
 			if($guild_leader)
 			{
-				if($_REQUEST['todo'] == 'save')
+				if (isset($_REQUEST['todo']) && $_REQUEST['todo'] == 'save')
 				{
 					$description = htmlspecialchars(substr(trim($_REQUEST['description']),0,$config['site']['guild_description_chars_limit']));
 					$guild->set('description', $description);
@@ -1775,7 +1786,7 @@ if($action == 'changemotd')
 				}
 			if($guild_leader)
 			{
-				if($_REQUEST['todo'] == 'save')
+				if (isset($_REQUEST['todo']) && $_REQUEST['todo'] == 'save')
 				{
 					$motd = htmlspecialchars(substr(trim($_REQUEST['motd']),0,$config['site']['guild_motd_chars_limit']));
 					$guild->set('motd', $motd);
@@ -1967,7 +1978,13 @@ if($action == 'cleanup_players')
 						{
 							$player->setGuildNick($new_nick);
 							$player->save();
-							$main_content .= 'Guild nick of player <b>'.htmlspecialchars($player->getName()).'</b> changed to <b>'.htmlspecialchars($new_nick).'</b>.';
+
+							if (empty($new_nick)) {
+								$main_content .= 'Guild nick of player <b>' . htmlspecialchars($player->getName()) . '</b> has been reset.';
+							} else {
+								$main_content .= 'Guild nick of player <b>' . htmlspecialchars($player->getName()) . '</b> changed to <b>' . htmlspecialchars($new_nick) . '</b>.';
+							}
+							
 							$addtolink = '&action=show&guild='.$player->getRank()->getGuild()->getId();
 						}
 						else

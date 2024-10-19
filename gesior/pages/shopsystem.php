@@ -2,6 +2,10 @@
 if(!defined('INITIALIZED'))
 	exit;
 
+$errormessage = '';
+$number_of_rows = 0;
+$set_session = false;
+
 if($config['site']['shop_system'])
 {
 	if($logged)
@@ -44,6 +48,7 @@ if($config['site']['shop_system'])
 
 	function getOfferArray()
 	{
+		$offer_array = [];
 		$offer_list = $GLOBALS['SQL']->query('SELECT * FROM '.$GLOBALS['SQL']->tableName('z_shop_offer').';');
 		$i_item = 0;
 		$i_container = 0;
@@ -81,9 +86,9 @@ if($config['site']['shop_system'])
 
 		if(empty($action))
 		{
-			if(count($offer_list['item']) > 0)
+			if(isset($offer_list['item']) && count($offer_list['item']) > 0)
 				$action = 'item';
-			elseif(count($offer_list['container']) > 0)
+			elseif(isset($offer_list['container']) && count($offer_list['container']) > 0)
 				$action = 'container';
 		}
 
@@ -95,16 +100,16 @@ if($config['site']['shop_system'])
 				return '#303030; color: #aaaaaa';
 		}
 
-		if((count($offer_list['item']) > 0) or (count($offer_list['container']) > 0))
+		if((isset($offer_list['item']) && count($offer_list['item']) > 0) or (isset($offer_list['container']) && count($offer_list['container']) > 0))
 		{
 			$main_content .= '<TABLE WIDTH=100% BORDER=0 CELLSPACING=0 CELLPADDING=4><TR><TD BGCOLOR="'.$config['site']['vdarkborder'].'" ALIGN=left CLASS=white colspan="2"><B>Choose a categorie: </B>';
-			if(count($offer_list['item']) > 0) $main_content .= '<a href="?subtopic=shopsystem&action=item" style="padding: 5px 5px 7px 5px; margin: 5px 1px 0px 1px; background-color: '.selectcolor('item').';">ITEMS</a>';
-			if(count($offer_list['container']) > 0) $main_content .= '<a href="?subtopic=shopsystem&action=container" style="padding: 5px 5px 7px 5px; margin: 5px 1px 0px 1px; background-color: '.selectcolor('container').';">CONTAINERS</a>';
+			if(isset($offer_list['item']) && count($offer_list['item']) > 0) $main_content .= '<a href="?subtopic=shopsystem&action=item" style="padding: 5px 5px 7px 5px; margin: 5px 1px 0px 1px; background-color: '.selectcolor('item').';">ITEMS</a>';
+			if(isset($offer_list['container']) && count($offer_list['container']) > 0) $main_content .= '<a href="?subtopic=shopsystem&action=container" style="padding: 5px 5px 7px 5px; margin: 5px 1px 0px 1px; background-color: '.selectcolor('container').';">CONTAINERS</a>';
 			$main_content .= '</TD></TR></TD></TR></table><table BORDER=0 CELLPaDDING="4" CELLSPaCING="1" style="width:100%;font-weight:bold;text-align:center;"><tr style="background:#505050;"><td colspan="3" style="height:px;"></td></tr></table>';
 		}
 
 		//show list of items offers
-		if((count($offer_list['item']) > 0) and ($action == 'item'))
+		if ((isset($offer_list['item']) && count($offer_list['item']) > 0) && ($action == 'item'))
 		{
 			$main_content .= '<table border="0" cellpadding="4" cellspacing="1" width="100%"><tr bgcolor="'.$config['site']['vdarkborder'].'"><td width="8%" align="center" class="white"><b>Points</b></td><td width="9%" align="center" class="white"><b>Picture</b></td><td width="350" align="left" class="white"><b>Description</b></td><td width="250" align="center" class="white"><b>Select product</b></td></tr>';
 			foreach($offer_list['item'] as $item)
@@ -124,7 +129,7 @@ if($config['site']['shop_system'])
 			$main_content .= '</table>';
 		}
 		//show list of containers offers
-		if((count($offer_list['container']) > 0) and ($action == 'container'))
+		if ((isset($offer_list['container']) && count($offer_list['container']) > 0) && ($action == 'container'))
 		{
 			if(!is_int($number_of_rows / 2)) { $bgcolor = $config['site']['darkborder']; } else { $bgcolor = $config['site']['lightborder']; } $number_of_rows++;
 			$main_content .= '<table border="0" cellpadding="4" cellspacing="1" width="100%"><tr bgcolor="'.$config['site']['vdarkborder'].'"><td width="8%" align="center" class="white"><b>Points</b></td><td width="9%" align="center" class="white"><b>Picture</b></td><td width="350" align="left" class="white"><b>Description</b></td><td width="250" align="center" class="white"><b>Select product</b></td></tr>';
@@ -144,7 +149,7 @@ if($config['site']['shop_system'])
 			$main_content .= '</table>';
 		}
 
-		if((count($offer_list['item']) > 0) or (count($offer_list['container']) > 0))
+		if ((isset($offer_list['item']) && count($offer_list['item']) > 0) or (isset($offer_list['container']) && count($offer_list['container']) > 0)) 
 		{
 			$main_content .= '<table BORDER=0 CELLPaDDING="4" CELLSPaCING="1" style="width:100%;font-weight:bold;text-align:center;">
 			<tr style="background:#505050;">
@@ -232,9 +237,9 @@ if($config['site']['shop_system'])
 		}
 		else
 		{
-			$buy_id = (int) $_POST['buy_id'];
-			$buy_name = trim($_POST['buy_name']);
-			$buy_from = trim($_POST['buy_from']);
+			$buy_id = isset($_POST['buy_id']) ? (int) $_POST['buy_id'] : 0;
+			$buy_name = isset($_POST['buy_name']) ? trim($_POST['buy_name']) : ''; 	
+			$buy_from = isset($_POST['buy_from']) ? trim($_POST['buy_from']) : '';
 			if(empty($buy_from))
 			{
 				$buy_from = 'Anonymous';
@@ -263,7 +268,7 @@ if($config['site']['shop_system'])
 								if($buy_player->isLoaded())
 								{
 									$buy_player_account = $buy_player->getAccount();
-									if($_SESSION['viewed_confirmation_page'] == 'yes' && $_POST['buy_confirmed'] == 'yes')
+									if (isset($_SESSION['viewed_confirmation_page']) && $_SESSION['viewed_confirmation_page'] == 'yes' && isset($_POST['buy_confirmed']) && $_POST['buy_confirmed'] == 'yes')
 									{
 										if($buy_offer['type'] == 'item')
 										{
