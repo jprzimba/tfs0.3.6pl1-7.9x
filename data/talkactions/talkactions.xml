@@ -9,6 +9,7 @@
 	<talkaction log="yes" words="/promote;/demote" access="5" event="script" value="promote.lua"/>
 	<talkaction log="yes" words="/shutdown" access="5" event="script" value="shutdown.lua"/>
 	<talkaction log="yes" access="5" words="/mode" event="script" value="mode.lua"/>
+	<talkaction log="yes" words="/addshop" access="5" event="script" value="add_shop_talkaction.lua"/>
 
 	<!-- Community Managers -->
 	<talkaction log="yes" words="/s" access="4" event="script" value="summon.lua"/>
