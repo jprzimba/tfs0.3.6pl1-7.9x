@@ -4,7 +4,7 @@
 	<look type="129" head="114" body="119" legs="114" feet="114" corpse="2212"/>
     <parameters>
         <parameter key="module_travel" value="1"/>
-		<parameter key="message_greet" value="Hello |PLAYERNAME|. If you don't know where to flow, say travel."/>
-        <parameter key="travel_destinations" value="rhyves,159,338,6,50;jorvik,420,256,6,50;"/>
+        <parameter key="message_greet" value="Hello |PLAYERNAME|. I can travel to Enigma City, Mystic Island, Karmia, Folda, Desert, Inferno and Venore. Where would you like to go?."/>
+        <parameter key="travel_destinations" value="enigma city,942,978,6,200;mystic island,1447,1504,7,250;karmia,454,480,6,220;folda,266,316,6,100;desert,399,481,6,120;inferno,517,437,6,100;venore,431,420,6,100"/>
     </parameters>
 </npc>
