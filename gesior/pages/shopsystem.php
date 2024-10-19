@@ -5,6 +5,7 @@ if(!defined('INITIALIZED'))
 $errormessage = '';
 $number_of_rows = 0;
 $set_session = false;
+$items_received_text = '';
 
 if($config['site']['shop_system'])
 {
