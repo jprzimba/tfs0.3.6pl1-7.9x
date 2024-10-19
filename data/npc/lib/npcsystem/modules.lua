@@ -69,7 +69,7 @@ if(Modules == nil) then
 				npcHandler:say('You are already promoted!')
 			elseif(getPlayerLevel(cid) < parameters.level) then
 				npcHandler:say('I am sorry, but I can only promote you once you have reached level ' .. parameters.level .. '.')
-			elseif(not doPlayerRemoveMoney(cid, parameters.cost)) then
+			elseif(not doPlayerPay(cid, parameters.cost)) then
 				npcHandler:say('You do not have enough money!')
 			else
 				setPlayerPromotionLevel(cid, parameters.promotion)
@@ -100,7 +100,7 @@ if(Modules == nil) then
 				npcHandler:say('You need to obtain a level of ' .. parameters.level .. ' or higher to be able to learn ' .. parameters.spellName .. '.')
 			elseif(not parameters.vocation(cid)) then
 				npcHandler:say('This spell is not for your vocation')
-			elseif(not doPlayerRemoveMoney(cid, parameters.price)) then
+			elseif(not doPlayerPay(cid, parameters.price)) then
 				npcHandler:say('You do not have enough money, this spell costs ' .. parameters.price .. ' gold coins.')
 			else
 				npcHandler:say('You have learned ' .. parameters.spellName .. '.')
@@ -132,7 +132,7 @@ if(Modules == nil) then
 
 			if(getPlayerBlessing(cid, parameters.number)) then
 				npcHandler:say("Gods have already blessed you with this blessing!")
-			elseif(not doPlayerRemoveMoney(cid, price)) then
+			elseif(not doPlayerPay(cid, price)) then
 				npcHandler:say("You don't have enough money for blessing.")
 			else
 				npcHandler:say("You have been blessed by one of the five gods!")
@@ -175,7 +175,7 @@ if(Modules == nil) then
 			else
 				local totalPrice = price * #missingBlessings
 	
-				if not doPlayerRemoveMoney(cid, totalPrice) then
+				if not doPlayerPay(cid, totalPrice) then
 					npcHandler:say("You don't have enough money for all the blessings.")
 				else
 					for _, blessId in ipairs(missingBlessings) do
@@ -211,7 +211,7 @@ if(Modules == nil) then
 			npcHandler:say(parameters.storageInfo or 'You may not travel there!')
 		elseif(not pzLocked and isPlayerPzLocked(cid)) then
 			npcHandler:say('Get out of there with this blood!')
-		elseif(not doPlayerRemoveMoney(cid, parameters.cost)) then
+		elseif(not doPlayerPay(cid, parameters.cost)) then
 			npcHandler:say('You do not have enough money.')
 		else
 			npcHandler:say('It was a pleasure doing business with you.')
@@ -455,7 +455,7 @@ if(Modules == nil) then
 		local parent = node:getParent():getParameters()
 		if(isPlayerPremiumCallback(cid) or not parent.premium) then
 			if(not isPlayerPzLocked(cid)) then
-				if(doPlayerRemoveMoney(cid, parent.cost)) then
+				if(doPlayerPay(cid, parent.cost)) then
 					module.npcHandler:say('It was a pleasure doing business with you.')
 					module.npcHandler:releaseFocus(cid)
 
@@ -493,7 +493,7 @@ if(Modules == nil) then
 			return false
 		end
 
-		if((isPlayerPremiumCallback(cid) or not parameters.premium) and not isPlayerPzLocked(cid) and doPlayerRemoveMoney(cid, parameters.cost)) then
+		if((isPlayerPremiumCallback(cid) or not parameters.premium) and not isPlayerPzLocked(cid) and doPlayerPay(cid, parameters.cost)) then
 			module.npcHandler:say('Sure!')
 			module.npcHandler:releaseFocus(cid)
 
@@ -741,7 +741,7 @@ if(Modules == nil) then
 									found = false
 								end
 							elseif(k == 20000) then
-								if(getPlayerMoney(cid) < tmp) then
+								if(getTotalGold(cid) < tmp) then
 									found = false
 								end
 							elseif(getPlayerItemCount(cid, k, v[2]) < tmp) then
@@ -757,7 +757,7 @@ if(Modules == nil) then
 							for k, v in pairs(parent.items) do
 								if(tonumber(v[1]) ~= nil) then
 									if(k == 20000) then
-										doPlayerRemoveMoney(cid, v[1])
+										doPlayerPay(cid, v[1])
 									else
 										doPlayerRemoveItem(cid, k, v[1], v[2])
 									end
@@ -1083,7 +1083,7 @@ if(Modules == nil) then
 			[TAG_ITEMNAME] = shopItem.name
 		}
 
-		if(getPlayerMoney(cid) < totalCost) then
+		if(getTotalGold(cid) < totalCost) then
 			local msg = self.npcHandler:getMessage(MESSAGE_NEEDMONEY)
 			doPlayerSendCancel(cid, self.npcHandler:parseMessage(msg, parseInfo))
 			return false
@@ -1104,7 +1104,7 @@ if(Modules == nil) then
 			self.npcHandler.talkStart = os.time()
 
 			if(a > 0) then
-				doPlayerRemoveMoney(cid, ((a * shopItem.buy) + (b * 20)))
+				doPlayerPay(cid, ((a * shopItem.buy) + (b * 20)))
 				return true
 			end
 

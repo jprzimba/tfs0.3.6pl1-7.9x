@@ -106,8 +106,9 @@
 			vipListDefaultLimit and vipListDefaultPremiumLimit, mailMaxAttempts, mailBlockPeriod and mailAttemptsFadeTime,
 			houseProtection, houseSkipInitialRent, houseTileLimit, tileLimit, protectionTileLimit, useRookSystem, rookTownId,
 			rookLevelToGetRooked, rookLevelToLeaveRook. (Tryller)
-		* Add new lua functions from TFS 0.4 doSteerCreature(cid, position[, maxNodes]), getCreaturePartyShield(cid[, target]),
-			doCreatureSetPartyShield(cid, shield), isValidPosition(position), isNumeric(str). (Tryller)
+		* Add new lua functions doSteerCreature(cid, position[, maxNodes]), getCreaturePartyShield(cid[, target]),
+			doCreatureSetPartyShield(cid, shield), isValidPosition(position), isNumeric(str), getTotalGold(cid), 
+			doPlayerPay(cid, cost). (Tryller)
 		* Add old quest system based on unique id (quests.lua). (Tryller)
 		* Clean actions, movements and weapons scripts to work only with 7.9 items. (Tryller)
 		* Auto stack items. (Elf)

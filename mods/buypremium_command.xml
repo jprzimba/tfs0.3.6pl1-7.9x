@@ -15,7 +15,7 @@
 			return
 		end
 
-		if(not doPlayerRemoveMoney(cid, config.cost)) then
+		if(not doPlayerPay(cid, config.cost)) then
 			doPlayerSendCancel(cid, "You don't have enough money, " .. config.days .. " days premium account costs " .. config.cost .. " gold coins.")
 			doSendMagicEffect(getPlayerPosition(cid), CONST_ME_POFF)
 			return

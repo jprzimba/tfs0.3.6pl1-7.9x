@@ -37,11 +37,11 @@ function doPlayerTakeItem(cid, itemid, amount)
 end
 
 function doPlayerBuyItem(cid, itemid, count, cost, charges)
-	return doPlayerRemoveMoney(cid, cost) and doPlayerGiveItem(cid, itemid, count, charges)
+	return doPlayerPay(cid, cost) and doPlayerGiveItem(cid, itemid, count, charges)
 end
 
 function doPlayerBuyItemContainer(cid, containerid, itemid, count, cost, charges)
-	return doPlayerRemoveMoney(cid, cost) and doPlayerGiveItemContainer(cid, containerid, itemid, count, charges)
+	return doPlayerPay(cid, cost) and doPlayerGiveItemContainer(cid, containerid, itemid, count, charges)
 end
 
 function doPlayerSellItem(cid, itemid, count, cost)
@@ -517,4 +517,65 @@ end
 
 function isNumeric(str)
 	return tonumber(str) ~= nil
+end
+
+function getTotalGold(cid)
+    if not isPlayer(cid) then
+        return 0
+    end
+
+    return getPlayerMoney(cid) + getPlayerBalance(cid)
+end
+
+function doPlayerPay(cid, cost)
+    if not isPlayer(cid) then
+        return false
+    end
+
+    local totalGold = getTotalGold(cid)
+
+    if totalGold < cost then
+        return false
+    end
+
+    local playerMoney = getPlayerMoney(cid)
+    local playerBalance = getPlayerBalance(cid)
+    local amountFromMoney = 0
+    local amountFromBank = 0
+
+    if playerMoney >= cost then
+        doPlayerRemoveMoney(cid, cost)
+		amountFromMoney = cost
+    else
+        doPlayerRemoveMoney(cid, playerMoney)
+		amountFromMoney = playerMoney
+
+        local remainingCost = cost - playerMoney
+        if playerBalance >= remainingCost then
+			doPlayerSetBalance(cid, getPlayerBalance(cid) - remainingCost)
+			amountFromBank = remainingCost
+        else
+            return false
+        end
+    end
+
+    local message = ""
+    if amountFromMoney > 0 then
+		if amountFromBank > 0 then
+        	message = "You paid " .. amountFromMoney .. " gold from your inventory,"
+		else
+			message = "You paid " .. amountFromMoney .. " gold from your inventory."
+		end
+    end
+
+    if amountFromBank > 0 then
+        if message ~= "" then
+            message = message .. " and " .. amountFromBank .. " gold from your bank account."
+        else
+            message = "You paid " .. amountFromBank .. " gold from your bank account."
+        end
+    end
+
+    doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, message)
+    return true
 end

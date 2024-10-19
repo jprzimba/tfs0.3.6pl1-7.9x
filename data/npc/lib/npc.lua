@@ -108,7 +108,7 @@ function doNpcSellItem(cid, itemid, count, cost)
 	local cost = count * cost
 	local amount = count
 
-	if doPlayerRemoveMoney(cid, cost) then
+	if doPlayerPay(cid, cost) then
 		if isItemStackable(itemid) then
 			while count > 100 do
 				item = doPlayerAddItem(cid, itemid, 100)

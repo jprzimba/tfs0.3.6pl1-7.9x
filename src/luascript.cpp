@@ -2612,7 +2612,7 @@ int32_t LuaScriptInterface::internalGetPlayerInfo(lua_State* L, PlayerInfo_t inf
 			value = player->getGroupId();
 			break;
 		case PlayerInfoBalance:
-			value = (g_config.getBool(ConfigManager::BANK_SYSTEM) ? player->balance : 0);
+			value = (g_config.getBool(ConfigManager::BANK_SYSTEM) ? player->getBankBalance() : 0);
 			break;
 		case PlayerInfoStamina:
 			value = player->getStaminaMinutes();
@@ -8497,7 +8497,7 @@ int32_t LuaScriptInterface::luaDoPlayerSetBalance(lua_State* L)
 	ScriptEnviroment* env = getEnv();
 	if(Player* player = env->getPlayerByUID(popNumber(L)))
 	{
-		player->balance = balance;
+		player->setBankBalance(balance);
 		lua_pushboolean(L, true);
 	}
 	else
