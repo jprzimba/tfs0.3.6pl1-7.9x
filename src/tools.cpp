@@ -19,51 +19,49 @@
 #include <iomanip>
 
 #include "tools.h"
-#include "md5.h"
-#include "sha1.h"
+#include <openssl/sha.h>
+#include <openssl/md5.h>
 
 #include "vocation.h"
 #include "configmanager.h"
 extern ConfigManager g_config;
 
-std::string transformToSHA1(std::string plainText, bool upperCase)
-{
-	SHA1 sha1;
-	unsigned sha1Hash[5];
-	std::stringstream hexStream;
-
-	sha1.Input((const uint8_t*)plainText.c_str(), plainText.length());
-	sha1.Result(sha1Hash);
-
-	hexStream.flags(std::ios::hex | std::ios::uppercase);
-	for(uint32_t i = 0; i < 5; ++i)
-		hexStream << std::setw(8) << std::setfill('0') << (uint32_t)sha1Hash[i];
-
-	std::string hexStr = hexStream.str();
-	if(!upperCase)
-		toLowerCaseString(hexStr);
-
-	return hexStr;
-}
-
 std::string transformToMD5(std::string plainText, bool upperCase)
 {
-	MD5_CTX m_md5;
-	std::stringstream hexStream;
+	MD5_CTX c;
+	MD5_Init(&c);
+	MD5_Update(&c, plainText.c_str(), plainText.length());
 
-	MD5Init(&m_md5, 0);
-	MD5Update(&m_md5, (const uint8_t*)plainText.c_str(), plainText.length());
-	MD5Final(&m_md5);
+	uint8_t md[MD5_DIGEST_LENGTH];
+	MD5_Final(md, &c);
 
-	hexStream.flags(std::ios::hex | std::ios::uppercase);
-	for(uint32_t i = 0; i < 16; ++i)
-		hexStream << std::setw(2) << std::setfill('0') << (uint32_t)m_md5.digest[i];
+	char output[(MD5_DIGEST_LENGTH << 1) + 1];
+	for(int32_t i = 0; i < (int32_t)sizeof(md); ++i)
+		sprintf(output + (i << 1), "%.2X", md[i]);
 
-	std::string hexStr = hexStream.str();
-	if(!upperCase)
-		toLowerCaseString(hexStr);
+	if(upperCase)
+		return std::string(output);
 
-	return hexStr;
+	return asLowerCaseString(std::string(output));
+}
+
+std::string transformToSHA1(std::string plainText, bool upperCase)
+{
+	SHA_CTX c;
+	SHA1_Init(&c);
+	SHA1_Update(&c, plainText.c_str(), plainText.length());
+
+	uint8_t md[SHA_DIGEST_LENGTH];
+	SHA1_Final(md, &c);
+
+	char output[(SHA_DIGEST_LENGTH << 1) + 1];
+	for(int32_t i = 0; i < (int32_t)sizeof(md); ++i)
+		sprintf(output + (i << 1), "%.2X", md[i]);
+
+	if(upperCase)
+		return std::string(output);
+
+	return asLowerCaseString(std::string(output));
 }
 
 void _encrypt(std::string& str, bool upperCase)

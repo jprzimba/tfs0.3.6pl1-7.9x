@@ -29,7 +29,6 @@
 #include "player.h"
 
 #include "position.h"
-#include "rsa.h"
 
 /******************************************************************************/
 std::string NetworkMessage::getString(bool peek/* = false*/, uint16_t size/* = 0*/)

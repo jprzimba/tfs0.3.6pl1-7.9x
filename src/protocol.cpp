@@ -26,7 +26,8 @@
 #include "outputmessage.h"
 
 #include "tools.h"
-#include "rsa.h"
+#include <openssl/rsa.h>
+extern RSA* g_RSA;
 
 void Protocol::onSendMessage(OutputMessage_ptr msg)
 {
@@ -180,24 +181,34 @@ bool Protocol::XTEA_decrypt(NetworkMessage& msg)
 	return true;
 }
 
-bool Protocol::RSA_decrypt(RSA* rsa, NetworkMessage& msg)
+bool Protocol::RSA_decrypt(NetworkMessage& msg)
 {
 	if(msg.size() - msg.position() != 128)
 	{
-		std::clog << "Warning: [Protocol::RSA_decrypt]. Not valid packet size" << std::endl;
+		std::clog << "[Warning - Protocol::RSA_decrypt] Not valid packet size";
+		int32_t ip = getIP();
+		if(ip)
+			std::clog << " (IP: " << convertIPAddress(ip) << ")";
+
+		std::clog << std::endl;
 		return false;
 	}
 
-	if(!rsa->decrypt((char*)(msg.buffer() + msg.position()), 128))
-		return false;
+	uint16_t size = msg.size();
+	RSA_private_decrypt(128, (uint8_t*)(msg.buffer() + msg.position()), (uint8_t*)msg.buffer(), g_RSA, RSA_NO_PADDING);
+	msg.setSize(size);
 
-	if(msg.get<char>() != 0)
-	{
-		std::clog << "Warning: [Protocol::RSA_decrypt]. First byte != 0" << std::endl;
-		return false;
-	}
+	msg.setPosition(0);
+	if(!msg.get<char>())
+		return true;
 
-	return true;
+	std::clog << "[Warning - Protocol::RSA_decrypt] First byte != 0";
+	int32_t ip = getIP();
+	if(ip)
+		std::clog << " (IP: " << convertIPAddress(ip) << ")";
+
+	std::clog << std::endl;
+	return false;
 }
 
 uint32_t Protocol::getIP() const

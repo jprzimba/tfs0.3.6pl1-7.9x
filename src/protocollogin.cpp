@@ -19,7 +19,6 @@
 
 #include "protocollogin.h"
 #include "tools.h"
-#include "rsa.h"
 
 #include "iologindata.h"
 #include "ioban.h"
@@ -32,8 +31,6 @@
 
 extern ConfigManager g_config;
 extern Game g_game;
-
-extern RSA* g_otservRSA;
 extern IpList serverIps;
 
 #ifdef __ENABLE_SERVER_DIAGNOSTIC__
@@ -79,7 +76,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 	if(version <= 760)
 		disconnectClient(0x0A, CLIENT_VERSION_STRING);
 
-	if(!RSA_decrypt(g_otservRSA, msg))
+	if(!RSA_decrypt(msg))
 	{
 		getConnection()->close();
 		return false;
