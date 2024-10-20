@@ -3,10 +3,7 @@
 		The Forgotten Server
 
 	Version
-		0.3.6
-
-	Codenamed
-		Crying Damson
+		0.4
 
 	Protocol
 		7.9x by Tryller
@@ -880,10 +877,6 @@
 			Defines channel logs file prefix.
 			Usable if you have multiworld, and want to have channels from all worlds in different files.
 			Default: ""
-
-		adminLogsEnabled
-			Create logs from remote control tool.
-			Default: no
 
 		NOTE: A kind of logging listed below does not work in GUI version.
 		For such, please compile the software with __GUI_LOGS__ flag.

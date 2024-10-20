@@ -158,7 +158,6 @@ bool ConfigManager::load()
 	m_confBool[CLEAN_MAP_AT_GLOBALSAVE] = getGlobalBool("cleanMapAtGlobalSave", true);
 	m_confBool[FREE_PREMIUM] = getGlobalBool("freePremium", false);
 	m_confNumber[PROTECTION_LEVEL] = getGlobalNumber("protectionLevel", 1);
-	m_confBool[ADMIN_LOGS_ENABLED] = getGlobalBool("adminLogsEnabled", false);
 	m_confNumber[STATUSQUERY_TIMEOUT] = getGlobalNumber("statusTimeout", 5 * 60 * 1000);
 	m_confBool[BROADCAST_BANISHMENTS] = getGlobalBool("broadcastBanishments", true);
 	m_confBool[GENERATE_ACCOUNT_NUMBER] = getGlobalBool("generateAccountNumber", true);

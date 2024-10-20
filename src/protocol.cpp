@@ -103,19 +103,19 @@ void Protocol::XTEA_encrypt(OutputMessage& msg)
 	k[2] = m_key[2];
 	k[3] = m_key[3];
 
-	int32_t messageLength = msg.getMessageLength();
+	int32_t messageLength = msg.size();
 
 	//add bytes until reach 8 multiple
 	uint32_t n;
 	if((messageLength % 8) != 0)
 	{
 		n = 8 - (messageLength % 8);
-		msg.AddPaddingBytes(n);
+		msg.putPadding(n);
 		messageLength = messageLength + n;
 	}
 
 	int read_pos = 0;
-	uint32_t* buffer = (uint32_t*)msg.getBodyBuffer();
+	uint32_t* buffer = (uint32_t*)msg.bodyBuffer();
 	while(read_pos < messageLength / 4)
 	{
 		uint32_t v0 = buffer[read_pos], v1 = buffer[read_pos + 1];
@@ -136,7 +136,7 @@ void Protocol::XTEA_encrypt(OutputMessage& msg)
 
 bool Protocol::XTEA_decrypt(NetworkMessage& msg)
 {
-	if((msg.getMessageLength() - 2) % 8 != 0)
+	if((msg.size() - 2) % 8 != 0)
 	{
 		std::clog << "Failure: [Protocol::XTEA_decrypt]. Not valid encrypted message size" << std::endl;
 		return false;
@@ -149,9 +149,9 @@ bool Protocol::XTEA_decrypt(NetworkMessage& msg)
 	k[2] = m_key[2];
 	k[3] = m_key[3];
 
-	uint32_t* buffer = (uint32_t*)msg.getBodyBuffer();
+	uint32_t* buffer = (uint32_t*)msg.bodyBuffer();
 	int read_pos = 0;
-	int32_t messageLength = msg.getMessageLength();
+	int32_t messageLength = msg.size();
 	while(read_pos < messageLength / 4)
 	{
 		uint32_t v0 = buffer[read_pos], v1 = buffer[read_pos + 1];
@@ -169,29 +169,29 @@ bool Protocol::XTEA_decrypt(NetworkMessage& msg)
 	}
 	//
 
-	int tmp = msg.GetU16();
-	if(tmp > msg.getMessageLength() - 4)
+	int tmp = msg.get<uint16_t>();
+	if(tmp > msg.size() - 4)
 	{
 		std::clog << "Failure: [Protocol::XTEA_decrypt]. Not valid unencrypted message size" << std::endl;
 		return false;
 	}
 
-	msg.setMessageLength(tmp);
+	msg.setSize(tmp);
 	return true;
 }
 
 bool Protocol::RSA_decrypt(RSA* rsa, NetworkMessage& msg)
 {
-	if(msg.getMessageLength() - msg.getReadPos() != 128)
+	if(msg.size() - msg.position() != 128)
 	{
 		std::clog << "Warning: [Protocol::RSA_decrypt]. Not valid packet size" << std::endl;
 		return false;
 	}
 
-	if(!rsa->decrypt((char*)(msg.getBuffer() + msg.getReadPos()), 128))
+	if(!rsa->decrypt((char*)(msg.buffer() + msg.position()), 128))
 		return false;
 
-	if(msg.GetByte() != 0)
+	if(msg.get<char>() != 0)
 	{
 		std::clog << "Warning: [Protocol::RSA_decrypt]. First byte != 0" << std::endl;
 		return false;

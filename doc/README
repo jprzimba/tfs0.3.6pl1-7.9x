@@ -3,10 +3,7 @@
 		The Forgotten Server
 
 	Version
-		0.3.6
-
-	Codenamed
-		Crying Damson
+		0.4
 
 	Protocol
 		7.9x by Tryller
@@ -125,7 +122,7 @@
 			"Execute -> Rebuild All", if there is any error, then report it here:
 				http://otland.net/showthread.php?t=379
 
-			After it get compiled, copy Crying Damson.exe from C:\path\to\sources\dev-cpp to directory above (C:\path\to\sources)
+			After it get compiled, copy TheForgottenServer.exe from C:\path\to\sources\dev-cpp to directory above (C:\path\to\sources)
 ]
 
 [ CONFIGURING

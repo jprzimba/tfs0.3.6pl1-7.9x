@@ -3,10 +3,7 @@
 		The Forgotten Server
 
 	Version
-		0.3.6
-
-	Codenamed
-		Crying Damson
+		0.4
 
 	Protocol
 		7.9x by Tryller
@@ -23,7 +20,7 @@
 	M = Modified,
 	A = Added.
 
-	[ 0.3.6 pl1 for 7.9
+	[ 0.4 for 7.9
 		[ A...
 			data/actions/map/
 			data/actions/sscripts/quests/quests.lua
@@ -95,7 +92,7 @@
 ]
 
 [ Full changelog...
-	[ 0.3.6 with 7.9 protocol
+	[ 0.4 with 7.9 protocol
 		* Add ITEM_GROUP_RUNE from 7.9 protocol. (Tryller)
 		* Add new lua functions isItemRune(itemid). (Tryller)
 		* Add SadSoul Map with Evolutions map. (Tryller)
@@ -136,8 +133,9 @@
 		* Remove not supported 7.9 monsters. (Tryller)
 		* Remove not supported 7.9 spells. (Tryller)
 		* Remove bag from monsters. (Tryller)
+		* Remove admin protocol, since its never in use. (Tryller)
 		* Removed from config.lua gamePort, adminPort and statusPort, maxItemsPerPZTile and maxItemsPerHouseTile,
-			displaySkillLevelOnAdvance. (Tryller)
+			displaySkillLevelOnAdvance, adminLogsEnabled. (Tryller)
 		* Remove lua function getItemInfo and move functions to new lua functions, getItemPluralNameById(itemid), getItemArticleById(itemid), 
 			getItemRWInfo(uid), getItemWeaponType(uid), isCorpse(uid), getFluidSourceType(type), getItemDescriptionsById(itemid),
 			getItemDescriptions(uid) and getItemWeightById(itemid, count[, precise = TRUE]). (Tryller)

@@ -255,7 +255,7 @@ void Connection::accept()
 	// Read size of te first packet
 	m_pendingRead++;
 	boost::asio::async_read(m_socket,
-		boost::asio::buffer(m_msg.getBuffer(), NetworkMessage::headerLength),
+		boost::asio::buffer(m_msg.buffer(), NETWORK_HEADER_SIZE),
 		boost::bind(&Connection::parseHeader, this, boost::asio::placeholders::error));
 }
 
@@ -272,12 +272,12 @@ void Connection::parseHeader(const boost::system::error_code& error)
 	}
 
 	int32_t size = m_msg.decodeHeader();
-	if(!error && size > 0 && size < NETWORKMESSAGE_MAXSIZE - 16)
+	if(!error && size > 0 && size < NETWORK_MAX_SIZE - 16)
 	{
 		// Read packet content
 		m_pendingRead++;
-		m_msg.setMessageLength(size + NetworkMessage::headerLength);
-		boost::asio::async_read(m_socket, boost::asio::buffer(m_msg.getBodyBuffer(), size),
+		m_msg.setSize(size + NETWORK_HEADER_SIZE);
+		boost::asio::async_read(m_socket, boost::asio::buffer(m_msg.bodyBuffer(), size),
 			boost::bind(&Connection::parsePacket, this, boost::asio::placeholders::error));
 	}
 	else
@@ -304,7 +304,7 @@ void Connection::parsePacket(const boost::system::error_code& error)
 		if(!m_protocol)
 		{
 			// Protocol depends on the first byte of the packet
-			uint8_t protocolId = m_msg.GetByte();
+			uint8_t protocolId = m_msg.get<char>();
 			switch(protocolId)
 			{
 				case 0x01: // Login server protocol
@@ -334,7 +334,7 @@ void Connection::parsePacket(const boost::system::error_code& error)
 		// Wait to the next packet
 		m_pendingRead++;
 		boost::asio::async_read(m_socket,
-			boost::asio::buffer(m_msg.getBuffer(), NetworkMessage::headerLength),
+			boost::asio::buffer(m_msg.buffer(), NETWORK_HEADER_SIZE),
 			boost::bind(&Connection::parseHeader, this, boost::asio::placeholders::error));
 	}
 	else
@@ -404,7 +404,7 @@ void Connection::internalSend(OutputMessage_ptr msg)
 {
     m_pendingWrite++;
 	boost::asio::async_write(m_socket,
-		boost::asio::buffer(msg->getOutputBuffer(), msg->getMessageLength()),
+		boost::asio::buffer(msg->getOutputBuffer(), msg->size()),
 		boost::bind(&Connection::onWriteOperation, this, msg, boost::asio::placeholders::error));
 }
 

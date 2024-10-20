@@ -35,103 +35,86 @@ class RSA;
 class NetworkMessage
 {
 	public:
-		enum { headerLength = 2 };
+		NetworkMessage() {reset();}
+		virtual ~NetworkMessage() {}
 
-		// constructor/destructor
-		NetworkMessage()
-		{
-			Reset();
-		}
-		virtual ~NetworkMessage(){}
-
-	protected:
 		// resets the internal buffer to an empty message
-		void Reset()
+		void reset()
 		{
-			m_MsgSize = 0;
-			m_ReadPos = 4;
+			m_size = 0;
+			m_position = NETWORK_CRYPTOHEADER_SIZE;
 		}
 
 	public:
 		// simply read functions for incoming message
-		uint8_t  GetByte(){return m_MsgBuf[m_ReadPos++];}
-		uint16_t GetU16()
+		template<typename T>
+		T get(bool peek = false)
 		{
-			uint16_t v = *(uint16_t*)(m_MsgBuf + m_ReadPos);
-			m_ReadPos += 2;
-			return v;
+			T value = *(T*)(m_buffer + m_position);
+			if(peek)
+				return value;
+
+			m_position += sizeof(T);
+			return value;
 		}
-		uint16_t GetSpriteId()
-		{
-			return GetU16();
-		}
-		uint32_t GetU32()
-		{
-			uint32_t v = *(uint32_t*)(m_MsgBuf + m_ReadPos);
-			m_ReadPos += 4;
-			return v;
-		}
-		std::string GetString(uint16_t size = 0);
-		Position GetPosition();
+
+		std::string getString(bool peek = false, uint16_t size = 0);
+		std::string getRaw(bool peek = false) {return getString(peek, m_size - m_position);}
+
+		// read for complex types
+		Position getPosition();
 	
 		// skips count unknown/unused bytes in an incoming message
-		void SkipBytes(int count){m_ReadPos += count;}
+		void skip(int32_t count) {m_position += count;}
 	
 		// simply write functions for outgoing message
-		void AddByte(uint8_t  value)
+		template<typename T>
+		void put(T value)
 		{
-			if(!canAdd(1))
+			if(!hasSpace(sizeof(T)))
 				return;
-			m_MsgBuf[m_ReadPos++] = value;
-			m_MsgSize++;
-		}
-		void AddU16(uint16_t value)
-		{
-			if(!canAdd(2))
-				return;
-			*(uint16_t*)(m_MsgBuf + m_ReadPos) = value;
-			m_ReadPos += 2; m_MsgSize += 2;
-		}
-		void AddU32(uint32_t value)
-		{
-			if(!canAdd(4))
-				return;
-			*(uint32_t*)(m_MsgBuf + m_ReadPos) = value;
-			m_ReadPos += 4; m_MsgSize += 4;
-		}
-		void AddBytes(const char* bytes, uint32_t size);
-		void AddPaddingBytes(uint32_t n);
 
-		void AddString(const std::string &value){AddString(value.c_str());}
-		void AddString(const char* value);
+			*(T*)(m_buffer + m_position) = value;
+			m_position += sizeof(T);
+			m_size += sizeof(T);
+		}
+
+		void putString(const std::string& value, bool addSize = true) {putString(value.c_str(), addSize);}
+		void putString(const char* value, bool addSize = true);
+
+		void putPadding(uint32_t amount);
 
 		// write functions for complex types
-		void AddPosition(const Position &pos);
+		void putPosition(const Position& pos);
 		void AddItem(uint16_t id, uint8_t count);
-		void AddItem(const Item *item);
-		void AddItemId(const Item *item);
-		void AddItemId(uint16_t itemId);
+		void AddItem(const Item* item);
+		void putItemId(const Item* item);
+		void putItemId(uint16_t itemId);
 	
-		int32_t getMessageLength() const { return m_MsgSize; }
-		void setMessageLength(int32_t newSize) { m_MsgSize = newSize; }
+		// message propeties functions
+	  	uint16_t size() const {return m_size;}
+		void setSize(uint16_t size) {m_size = size;}
 
-		int32_t getReadPos() const { return m_ReadPos; }
+		uint16_t position() const {return m_position;}
+		void setPosition(uint16_t position) {m_position = position;}
 
-		char* getBuffer() { return (char*)&m_MsgBuf[0]; }
-		char* getBodyBuffer() { m_ReadPos = 2; return (char*)&m_MsgBuf[headerLength]; }
+		char* buffer() {return (char*)&m_buffer[0];}
+		char* bodyBuffer()
+		{
+			m_position = NETWORK_HEADER_SIZE;
+			return (char*)&m_buffer[NETWORK_HEADER_SIZE];
+		}
 
 		int32_t decodeHeader();
 
 	protected:
-		inline bool canAdd(int size)
-		{
-			return (size + m_ReadPos < NETWORKMESSAGE_MAXSIZE - 16);
-		};
+		// used to check available space while writing
+		inline bool hasSpace(int32_t size) {return (size + m_position < NETWORK_MAX_SIZE - 16);}
 
-		int32_t m_MsgSize;
-		int32_t m_ReadPos;
+		int32_t m_size;
+		int32_t m_position;
 
-		uint8_t m_MsgBuf[NETWORKMESSAGE_MAXSIZE];
+		uint8_t m_buffer[NETWORK_MAX_SIZE];
 };
 
 #endif // #ifndef __NETWORK_MESSAGE_H__

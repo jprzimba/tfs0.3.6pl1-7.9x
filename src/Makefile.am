@@ -16,9 +16,6 @@ endif
 if LOGIN_SERVER
 MAYBE_LOGIN = gameservers.cpp gameservers.h
 endif
-if REMOTE_CONTROL
-MAYBE_REMOTE = admin.cpp admin.h
-endif
 
 theforgottenserver_SOURCES = account.h actions.cpp actions.h $(MAYBE_REMOTE) \
 	allocator.cpp allocator.h baseevents.cpp baseevents.h beds.cpp \

@@ -31,109 +31,108 @@
 #include "position.h"
 #include "rsa.h"
 
-int32_t NetworkMessage::decodeHeader()
-{
- 	int32_t size = (int32_t)(m_MsgBuf[0] | m_MsgBuf[1] << 8);
-	m_MsgSize = size;
-	return size;
-}
-
 /******************************************************************************/
-std::string NetworkMessage::GetString(uint16_t size/* = 0*/)
+std::string NetworkMessage::getString(bool peek/* = false*/, uint16_t size/* = 0*/)
 {
 	if(!size)
-		size = GetU16();
+		size = get<uint16_t>(peek);
 
-	if(size >= (NETWORKMESSAGE_MAXSIZE - m_ReadPos))
-		return std::string();
+	uint16_t position = m_position;
+	if(peek)
+		position += 2;
 
-	char* v = (char*)(m_MsgBuf + m_ReadPos);
-	m_ReadPos += size;
+	if(size >= (16384 - position))
+		return std :: string();
+
+	char* v = (char*)(m_buffer + position);
+	if(peek)
+		return std::string(v, size);
+
+	m_position += size;
 	return std::string(v, size);
 }
 
-Position NetworkMessage::GetPosition()
+Position NetworkMessage::getPosition()
 {
 	Position pos;
-	pos.x = GetU16();
-	pos.y = GetU16();
-	pos.z = GetByte();
+	pos.x = get<uint16_t>();
+	pos.y = get<uint16_t>();
+	pos.z = get<char>();
 	return pos;
 }
+
 /******************************************************************************/
-
-void NetworkMessage::AddString(const char* value)
+void NetworkMessage::putString(const char* value, bool addSize/* = true*/)
 {
-	uint32_t stringlen = (uint32_t)strlen(value);
-	if(!canAdd(stringlen+2) || stringlen > 8192)
-		return;
-	
-	AddU16(stringlen);
-	strcpy((char*)(m_MsgBuf + m_ReadPos), value);
-	m_ReadPos += stringlen;
-	m_MsgSize += stringlen;
-}
-
-void NetworkMessage::AddBytes(const char* bytes, uint32_t size)
-{
-	if(!canAdd(size) || size > 8192)
-		return;
-	
-	memcpy(m_MsgBuf + m_ReadPos, bytes, size);
-	m_ReadPos += size;
-	m_MsgSize += size;
-}
-
-void NetworkMessage::AddPaddingBytes(uint32_t n)
-{
-	if(!canAdd(n))
+	uint32_t size = (uint32_t)strlen(value);
+	if(!hasSpace(size + (addSize ? 2 : 0)) || size > 8192)
 		return;
 
-	memset((void*)&m_MsgBuf[m_ReadPos], 0x33, n);
-	m_MsgSize = m_MsgSize + n;
+	if(addSize)
+		put<uint16_t>(size);
+
+	strcpy((char*)(m_buffer + m_position), value);
+	m_position += size;
+	m_size += size;
 }
 
-void NetworkMessage::AddPosition(const Position& pos)
+void NetworkMessage::putPadding(uint32_t amount)
 {
-	AddU16(pos.x);
-	AddU16(pos.y);
-	AddByte(pos.z);
+	if(!hasSpace(amount))
+		return;
+
+	memset((void*)&m_buffer[m_position], 0x33, amount);
+	m_size += amount;
+}
+
+void NetworkMessage::putPosition(const Position& pos)
+{
+	put<uint16_t>(pos.x);
+	put<uint16_t>(pos.y);
+	put<char>(pos.z);
 }
 
 void NetworkMessage::AddItem(uint16_t id, uint8_t count)
 {
 	const ItemType &it = Item::items[id];
-	AddU16(it.clientId);
+	put<uint16_t>(it.clientId);
 	if(it.stackable || it.isRune())
-		AddByte(count);
+		put<char>(count);
 	else if(it.isSplash() || it.isFluidContainer())
 	{
 		uint32_t fluidIndex = count % 8;
-		AddByte(fluidMap[fluidIndex]);
+		put<char>(fluidMap[fluidIndex]);
 	}
 }
 
 void NetworkMessage::AddItem(const Item* item)
 {
 	const ItemType &it = Item::items[item->getID()];
-	AddU16(it.clientId);
+	put<uint16_t>(it.clientId);
 	if(it.stackable || it.isRune())
-		AddByte(item->getSubType());
+		put<char>(item->getSubType());
 	else if(it.isSplash() || it.isFluidContainer())
 	{
 		uint32_t fluidIndex = item->getSubType() % 8;
-		AddByte(fluidMap[fluidIndex]);
+		put<char>(fluidMap[fluidIndex]);
 	}
 }
 
-void NetworkMessage::AddItemId(const Item *item)
+void NetworkMessage::putItemId(const Item* item)
 {
 	const ItemType &it = Item::items[item->getID()];
-	AddU16(it.clientId);
+	put<uint16_t>(it.clientId);
 }
 
-void NetworkMessage::AddItemId(uint16_t itemId)
+void NetworkMessage::putItemId(uint16_t itemId)
 {
 	const ItemType &it = Item::items[itemId];
-	AddU16(it.clientId);
+	put<uint16_t>(it.clientId);
+}
+
+int32_t NetworkMessage::decodeHeader()
+{
+ 	int32_t size = (int32_t)(m_buffer[0] | m_buffer[1] << 8);
+	m_size = size;
+	return size;
 }

@@ -23,15 +23,6 @@ AC_ARG_ENABLE(login-server, [  --enable-login-server		enable login server mode],
 	loginServer=yes
 )
 
-# check if we want remote control feature
-AM_CONDITIONAL(REMOTE_CONTROL, false)
-remoteControl=no
-AC_ARG_ENABLE(remote-control, [  --enable-remote-control	enable remote control feature],
-	[OPTIONAL_FLAGS="$OPTIONAL_FLAGS -D__REMOTE_CONTROL__"]
-	AM_CONDITIONAL(REMOTE_CONTROL, true)
-	remoteControl=yes
-)
-
 # check if we want otserv allocator enabled
 otservAllocator=no
 AC_ARG_ENABLE(otserv-allocator, [  --enable-otserv-allocator	enable otserv custom allocator],

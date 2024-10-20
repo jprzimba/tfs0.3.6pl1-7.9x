@@ -40,9 +40,6 @@
 #include "protocollogin.h"
 #include "protocolgame.h"
 #include "status.h"
-#ifdef __REMOTE_CONTROL__
-#include "admin.h"
-#endif
 
 #include "configmanager.h"
 #include "scriptmanager.h"
@@ -87,9 +84,6 @@ boost::mutex g_loaderLock;
 boost::condition_variable g_loaderSignal;
 
 boost::unique_lock<boost::mutex> g_loaderUniqueLock(g_loaderLock);
-#ifdef __REMOTE_CONTROL__
-extern Admin* g_admin;
-#endif
 
 bool argumentsHandler(StringVec args)
 {
@@ -121,7 +115,7 @@ bool argumentsHandler(StringVec args)
 
 		if((*it) == "--version")
 		{
-			std::clog << STATUS_SERVER_NAME << ", version " << STATUS_SERVER_VERSION << " (" << STATUS_SERVER_CODENAME << "), patch level " << VERSION_PATCH << "\n"
+			std::clog << SOFTWARE_NAME << ", version " << SOFTWARE_VERSION << "\n"
 			"Compiled with " << BOOST_COMPILER << " at " << __DATE__ << ", " << __TIME__ << ".\n"
 			"A server developed by Elf, slawkens, Talaturen, Lithium, KaczooH, Kiper, Kornholijo.\n"
 			"Server modified to version 7.9x by Tryller.\n"
@@ -300,14 +294,14 @@ void otserv(StringVec args)
 {
 	srand((uint32_t)OTSYS_TIME());
 #if defined(WINDOWS)
-	SetConsoleTitle(STATUS_SERVER_NAME);
+	SetConsoleTitle(SOFTWARE_NAME);
 #endif
 
 	g_game.setGameState(GAME_STATE_STARTUP);
 #if !defined(WINDOWS) && !defined(__ROOT_PERMISSION__)
 	if(!getuid() || !geteuid())
 	{
-		std::clog << "WARNING: " << STATUS_SERVER_NAME << " has been executed as super user! It is "
+		std::clog << "WARNING: " << SOFTWARE_NAME << " has been executed as super user! It is "
 			<< "recommended to run as a normal user." << std::endl << "Continue? (y/N)" << std::endl;
 		char buffer = OTSYS_getch();
 		if(buffer != 121 && buffer != 89)
@@ -315,7 +309,7 @@ void otserv(StringVec args)
 	}
 #endif
 
-	std::clog << STATUS_SERVER_NAME << ", version " << STATUS_SERVER_VERSION << " (" << STATUS_SERVER_CODENAME << "), patch level " << VERSION_PATCH << std::endl;
+	std::clog << SOFTWARE_NAME << ", version " << SOFTWARE_VERSION << std::endl;
 	std::clog << "Compiled with " << BOOST_COMPILER << " at " << __DATE__ << ", " << __TIME__ << "." << std::endl;
 	std::clog << "A server developed by Elf, slawkens, Talaturen, KaczooH, Lithium, Kiper, Kornholijo." << std::endl;
 	std::clog << "Server modified to version 7.9x by Tryller" << std::endl;
@@ -546,15 +540,6 @@ void otserv(StringVec args)
 	std::clog << "Loading game servers" << std::endl;
 	if(!GameServers::getInstance()->loadFromXml(true))
 		startupErrorMessage("Unable to load game servers!");
-	#endif
-
-	#ifdef __REMOTE_CONTROL__
-	std::clog << "Loading administration protocol" << std::endl;
-	g_admin = new Admin();
-	if(!g_admin->loadFromXml())
-		startupErrorMessage("Unable to load administration protocol!");
-
-	services->add<ProtocolAdmin>(g_config.getNumber(ConfigManager::ADMIN_PORT));
 	#endif
 
 	std::clog << "Checking world type... ";

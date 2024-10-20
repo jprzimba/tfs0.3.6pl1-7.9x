@@ -23,12 +23,10 @@
 #define CLIENT_VERSION_MAX 792
 #define CLIENT_VERSION_STRING "Only clients with protocol 7.9x allowed!"
 
-#define STATUS_SERVER_NAME "The Forgotten Server"
-#define STATUS_SERVER_VERSION "0.3.6"
-#define STATUS_SERVER_CODENAME "Crying Damson"
-#define STATUS_SERVER_PROTOCOL "7.9x"
+#define SOFTWARE_NAME "The Forgotten Server"
+#define SOFTWARE_VERSION "0.4"
+#define SOFTWARE_PROTOCOL "7.9x"
 
-#define VERSION_PATCH 1
 #define VERSION_DATABASE 24
 
 #undef MULTI_SQL_DRIVERS

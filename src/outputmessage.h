@@ -42,21 +42,21 @@ class OutputMessage : public NetworkMessage, boost::noncopyable
 		Protocol* getProtocol() const {return m_protocol;}
 		Connection* getConnection() const {return m_connection;}
 
-		char* getOutputBuffer() {return (char*)&m_MsgBuf[m_outputBufferStart];}
+		char* getOutputBuffer() {return (char*)&m_buffer[m_outputBufferStart];}
 		uint64_t getFrame() const {return m_frame;}
 
 		void writeMessageLength()
 		{
-			*(uint16_t*)(m_MsgBuf + 2) = m_MsgSize;
+			*(uint16_t*)(m_buffer + 2) = m_size;
 			//added header size to the message size
-			m_MsgSize = m_MsgSize + 2;
+			m_size = m_size + 2;
 			m_outputBufferStart = 2;
 		}
 
 		void addCryptoHeader()
 		{
-			*(uint16_t*)(m_MsgBuf) = m_MsgSize;
-			m_MsgSize = m_MsgSize + 2;
+			*(uint16_t*)(m_buffer) = m_size;
+			m_size = m_size + 2;
 			m_outputBufferStart = 0;
 		}
 
