@@ -38,7 +38,19 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include <stdint.h>
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+	#include <cstdint>
+#else
+	#include <stdint.h>
+#endif
+
+#ifndef __x86_64__
+	#ifdef _M_X64 // msvc
+		#define __x86_64__ 1
+	#else
+		#define __x86_64__ 0
+	#endif
+#endif
 
 #include <time.h>
 #include <assert.h>

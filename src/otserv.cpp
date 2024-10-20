@@ -113,12 +113,11 @@ bool argumentsHandler(StringVec args)
 			return false;
 		}
 
-		if((*it) == "--version")
+		if((*it) == "--version" || (*it) == "-v")
 		{
-			std::clog << SOFTWARE_NAME << ", version " << SOFTWARE_VERSION << "\n"
-			"Compiled with " << BOOST_COMPILER << " at " << __DATE__ << ", " << __TIME__ << ".\n"
-			"A server developed by Elf, slawkens, Talaturen, Lithium, KaczooH, Kiper, Kornholijo.\n"
-			"Server modified to version 7.9x by Tryller.\n"
+			std::clog << SOFTWARE_NAME << ", version " << SOFTWARE_VERSION << " (" << SOFTWARE_CODENAME << ")\n"
+			"Compiled with " << BOOST_COMPILER << " (x86_64: " << __x86_64__ << ") at " << __DATE__ << ", " << __TIME__ << ".\n"
+			"A server developed by " << SOFTWARE_DEVELOPERS << ".\n"
 			"Visit our forum for updates, support and resources: http://otland.net.\n";
 			return false;
 		}
@@ -309,12 +308,10 @@ void otserv(StringVec args)
 	}
 #endif
 
-	std::clog << SOFTWARE_NAME << ", version " << SOFTWARE_VERSION << std::endl;
-	std::clog << "Compiled with " << BOOST_COMPILER << " at " << __DATE__ << ", " << __TIME__ << "." << std::endl;
-	std::clog << "A server developed by Elf, slawkens, Talaturen, KaczooH, Lithium, Kiper, Kornholijo." << std::endl;
-	std::clog << "Server modified to version 7.9x by Tryller" << std::endl;
-	std::clog << "Visit our forum for updates, support and resources: http://otland.net." << std::endl << std::endl;
-
+	std::clog << SOFTWARE_NAME << ", version " << SOFTWARE_VERSION << " (" << SOFTWARE_CODENAME << ")" << std::endl
+		<< "Compiled with " << BOOST_COMPILER << " (x86_64: " << __x86_64__ << ") at " << __DATE__ << ", " << __TIME__ << "." << std::endl
+		<< "A server developed by " << SOFTWARE_DEVELOPERS << "." << std::endl
+		<< "Visit our forum for updates, support and resources: http://otland.net." << std::endl << std::endl;
 	std::stringstream ss;
 	#ifdef __DEBUG__
 	ss << " GLOBAL";

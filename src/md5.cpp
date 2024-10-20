@@ -206,7 +206,7 @@ void MD5Update (MD5_CTX *mdContext, const unsigned char *inBuf, unsigned int inL
 	mdContext->i[0] += ((UINT4)inLen << 3);
 	mdContext->i[1] += ((UINT4)inLen >> 29);
 
-	while (inLen--)
+	while(inLen--)
 	{
 		/* Add new character to buffer, increment mdi */
 		mdContext->in[mdi++] = *inBuf++;

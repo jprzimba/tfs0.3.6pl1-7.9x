@@ -450,11 +450,34 @@ bool TalkAction::houseBuy(Creature* creature, const std::string& cmd, const std:
 		return false;
 	}
 
-	if((uint32_t)g_game.getMoney(player) < house->getPrice() || !g_game.removeMoney(player, house->getPrice()))
+	int32_t housePrice = house->getPrice();
+	int32_t playerMoney = g_game.getMoney(player);
+	int32_t playerBankBalance = player->getBankBalance();
+	uint32_t totalMoney = playerMoney + playerBankBalance;
+
+	if(totalMoney < housePrice)
 	{
 		player->sendCancel("You do not have enough money.");
 		g_game.addMagicEffect(player->getPosition(), MAGIC_EFFECT_POFF);
 		return false;
+	}
+
+	uint32_t moneyTakenFromInventory = 0;
+	uint32_t moneyTakenFromBank = 0;
+
+	if(playerMoney >= housePrice)
+	{
+		g_game.removeMoney(player, housePrice);
+		moneyTakenFromInventory = playerMoney;
+		moneyTakenFromInventory = housePrice;
+	}
+	else
+	{
+		g_game.removeMoney(player, playerMoney);
+		moneyTakenFromInventory = playerMoney;
+		uint32_t remainingAmount = housePrice - playerMoney;
+		player->setBankBalance(playerBankBalance - remainingAmount);
+		moneyTakenFromBank = remainingAmount;
 	}
 
 	house->setOwnerEx(player->getGUID(), true);
@@ -489,7 +512,25 @@ bool TalkAction::houseBuy(Creature* creature, const std::string& cmd, const std:
 	else
 		ret += "house";
 
-	ret += ", remember to leave money at ";
+	std::stringstream ssInventory, ssBank;
+	if(moneyTakenFromInventory > 0)
+	{
+		ssInventory << moneyTakenFromInventory;
+		ret += ". You paid " + ssInventory.str() + " gold from your inventory";
+	}
+  
+	if(moneyTakenFromBank > 0)
+	{
+		ssBank << moneyTakenFromBank;
+		if(moneyTakenFromInventory > 0)
+			ret += " and ";
+		else
+			ret += ". You paid ";
+
+		ret += ssBank.str() + " gold from your bank balance";
+	}
+	ret += ".";
+	ret += " Remember to leave money at ";
 	if(house->isGuild())
 		ret += "guild owner ";
 
