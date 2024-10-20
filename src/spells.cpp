@@ -193,7 +193,7 @@ RuneSpell* Spells::getRuneSpellByName(const std::string& name)
 {
 	for(RunesMap::iterator it = runes.begin(); it != runes.end(); ++it)
 	{
-		if(strcasecmp(it->second->getName().c_str(), name.c_str()) == 0)
+		if(boost::algorithm::iequals(it->second->getName(), name))
 			return it->second;
 	}
 
@@ -255,9 +255,10 @@ InstantSpell* Spells::getInstantSpellByIndex(const Player* player, uint32_t inde
 
 InstantSpell* Spells::getInstantSpellByName(const std::string& name)
 {
+	std::string tmpName = asLowerCaseString(name);
 	for(InstantsMap::iterator it = instants.begin(); it != instants.end(); ++it)
 	{
-		if(strcasecmp(it->second->getName().c_str(), name.c_str()) == 0)
+		if(tmpName == asLowerCaseString(it->second->getName()))
 			return it->second;
 	}
 
@@ -481,29 +482,14 @@ bool Spell::configureSpell(xmlNodePtr p)
 		name = strValue;
 		const char* reservedList[] =
 		{
-			"melee",
-			"physical",
-			"poison",
-			"fire",
-			"energy",
-			"lifedrain",
-			"manadrain",
-			"healing",
-			"speed",
-			"outfit",
-			"invisible",
-			"drunk",
-			"firefield",
-			"poisonfield",
-			"energyfield",
-			"firecondition",
-			"poisoncondition",
-			"energycondition"
+			"melee", "physical", "poison", "fire", "energy", "lifedrain", "manadrain",
+			"healing", "speed", "outfit", "invisible", "drunk", "firefield", "poisonfield",
+			"energyfield", "firecondition", "poisoncondition", "energycondition"
 		};
 
 		for(uint32_t i = 0; i < sizeof(reservedList) / sizeof(const char*); ++i)
 		{
-			if(!strcasecmp(reservedList[i], name.c_str()))
+			if(boost::algorithm::iequals(reservedList[i], name.c_str()))
 			{
 				std::clog << "Error: [Spell::configureSpell] Spell is using a reserved name: " << reservedList[i] << std::endl;
 				return false;

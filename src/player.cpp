@@ -69,7 +69,7 @@ Player::Player(const std::string& _name, ProtocolGame* p):
 	soul = guildId = levelPercent = magLevelPercent = magLevel = experience = damageImmunities = 0;
 	conditionImmunities = conditionSuppressions = groupId = vocation_id = town = skullEnd = 0;
 	lastLogin = lastLogout = lastIP = messageTicks = messageBuffer = nextAction = 0;
-	editListId = maxWriteLen = windowTextId = rankId = 0;
+	editListId = maxWriteLen = windowTextId = rankId = nextExAction =  0;
 
 	purchaseCallback = saleCallback = -1;
 	level = shootRange = 1;
@@ -4058,7 +4058,7 @@ bool Player::hasLearnedInstantSpell(const std::string& name) const
 
 	for(LearnedInstantSpellList::const_iterator it = learnedInstantSpellList.begin(); it != learnedInstantSpellList.end(); ++it)
 	{
-		if(!strcasecmp((*it).c_str(), name.c_str()))
+		if(boost::algorithm::iequals(*it, name))
 			return true;
 	}
 

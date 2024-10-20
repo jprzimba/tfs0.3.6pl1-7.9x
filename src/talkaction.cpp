@@ -53,6 +53,7 @@ TalkActions::TalkActions() :
 m_interface("TalkAction Interface")
 {
 	m_interface.initState();
+	defaultTalkAction = NULL;
 }
 
 TalkActions::~TalkActions()
@@ -67,6 +68,9 @@ void TalkActions::clear()
 
 	talksMap.clear();
 	m_interface.reInitState();
+
+	delete defaultTalkAction;
+	defaultTalkAction = NULL;
 }
 
 Event* TalkActions::getEvent(const std::string& nodeName)
@@ -83,11 +87,26 @@ bool TalkActions::registerEvent(Event* event, xmlNodePtr p, bool override)
 	if(!talkAction)
 		return false;
 
-	std::string sep;
-	if(!readXMLString(p, "separator", sep) || sep.empty())
-		sep = ";";
+	std::string strValue;
+	if(readXMLString(p, "default", strValue) && booleanString(strValue))
+	{
+		if(!defaultTalkAction)
+			defaultTalkAction = talkAction;
+		else if(override)
+		{
+			delete defaultTalkAction;
+			defaultTalkAction = talkAction;
+		}
+		else
+			std::clog << "[Warning - TalkAction::registerEvent] You cannot define more than one default talkAction." << std::endl;
 
-	StringVec strVector = explodeString(talkAction->getWords(), sep);
+		return true;
+	}
+
+	if(!readXMLString(p, "separator", strValue) || strValue.empty())
+		strValue = ";";
+
+	StringVec strVector = explodeString(talkAction->getWords(), strValue);
 	for(StringVec::iterator it = strVector.begin(); it != strVector.end(); ++it)
 	{
 		trimString(*it);
@@ -96,11 +115,11 @@ bool TalkActions::registerEvent(Event* event, xmlNodePtr p, bool override)
 		{
 			if(!override)
 			{
-				std::clog << "[Warning - TalkAction::configureEvent] Duplicate registered talkaction with words: " << (*it) << std::endl;
+				std::clog << "[Warning - TalkAction::registerEvent] Duplicate registered talkaction with words: " << (*it) << std::endl;
 				continue;
 			}
-			else
-				delete talksMap[(*it)];
+
+			delete talksMap[(*it)];
 		}
 
 		talksMap[(*it)] = new TalkAction(talkAction);
@@ -112,71 +131,87 @@ bool TalkActions::registerEvent(Event* event, xmlNodePtr p, bool override)
 
 bool TalkActions::onPlayerSay(Creature* creature, uint16_t channelId, const std::string& words, bool ignoreAccess)
 {
-	std::string cmdstring[TALKFILTER_LAST] = words, paramstring[TALKFILTER_LAST] = "";
-	size_t loc = words.find('"', 0);
-	if(loc != std::string::npos && loc >= 0)
+	std::string cmd[TALKFILTER_LAST], param[TALKFILTER_LAST];
+	for(int32_t i = 0; i < TALKFILTER_LAST; ++i)
+		cmd[i] = words;
+
+	std::string::size_type loc = words.find('"', 0);
+	if(loc != std::string::npos)
 	{
-		cmdstring[TALKFILTER_QUOTATION] = std::string(words, 0, loc);
-		paramstring[TALKFILTER_QUOTATION] = std::string(words, (loc + 1), (words.size() - (loc - 1)));
-		trimString(cmdstring[TALKFILTER_QUOTATION]);
+		cmd[TALKFILTER_QUOTATION] = std::string(words, 0, loc);
+		param[TALKFILTER_QUOTATION] = std::string(words, (loc + 1), (words.size() - (loc - 1)));
+		trimString(cmd[TALKFILTER_QUOTATION]);
 	}
 
 	loc = words.find(" ", 0);
-	if(loc != std::string::npos && loc >= 0)
+	if(loc != std::string::npos)
 	{
-		cmdstring[TALKFILTER_WORD] = std::string(words, 0, loc);
-		paramstring[TALKFILTER_WORD] = std::string(words, (loc + 1), (words.size() - (loc - 1)));
+		cmd[TALKFILTER_WORD] = std::string(words, 0, loc);
+		param[TALKFILTER_WORD] = std::string(words, (loc + 1), (words.size() - (loc - 1)));
 
-		size_t sloc = words.find(" ", ++loc);
-		if(sloc != std::string::npos && sloc >= 0)
+		std::string::size_type spaceLoc = words.find(" ", ++loc);
+		if(spaceLoc != std::string::npos)
 		{
-			cmdstring[TALKFILTER_WORD_SPACED] = std::string(words, 0, sloc);
-			paramstring[TALKFILTER_WORD_SPACED] = std::string(words, (sloc + 1), (words.size() - (sloc - 1)));
+			cmd[TALKFILTER_WORD_SPACED] = std::string(words, 0, spaceLoc);
+			param[TALKFILTER_WORD_SPACED] = std::string(words, (spaceLoc + 1), (words.size() - (spaceLoc - 1)));
 		}
 	}
 
 	TalkAction* talkAction = NULL;
 	for(TalkActionsMap::iterator it = talksMap.begin(); it != talksMap.end(); ++it)
 	{
-		if(it->first == cmdstring[it->second->getFilter()] || (!it->second->isSensitive() &&
-			!strcasecmp(it->first.c_str(), cmdstring[it->second->getFilter()].c_str())))
+		if(it->first == cmd[it->second->getFilter()] || (!it->second->isSensitive()
+			&& boost::algorithm::iequals(it->first, cmd[it->second->getFilter()])))
 		{
 			talkAction = it->second;
 			break;
 		}
 	}
 
+	if(!talkAction && defaultTalkAction)
+		talkAction = defaultTalkAction;
+
 	if(!talkAction || (talkAction->getChannel() != -1 && talkAction->getChannel() != channelId))
 		return false;
 
 	Player* player = creature->getPlayer();
-	StringVec exceptions = talkAction->getExceptions();
-	if(player && ((!ignoreAccess && std::find(exceptions.begin(), exceptions.end(), asLowerCaseString(
-		player->getName())) == exceptions.end() && talkAction->getAccess() > player->getAccess())
-		|| player->isAccountManager()))
+	if(player)
 	{
-		if(player->hasCustomFlag(PlayerCustomFlag_GamemasterPrivileges))
+		if(!player->canDoExAction())
+			return false;
+
+		StringVec exceptions = talkAction->getExceptions();
+		if((!ignoreAccess && std::find(exceptions.begin(), exceptions.end(), asLowerCaseString(
+			player->getName())) == exceptions.end() && (talkAction->getAccess() > player->getAccess()
+			|| (talkAction->hasGroups() && !talkAction->hasGroup(player->getGroupId()))))
+			|| player->isAccountManager())
 		{
-			player->sendTextMessage(MSG_STATUS_SMALL, "You cannot execute this talkaction.");
-			return true;
+			if(player->hasCustomFlag(PlayerCustomFlag_GamemasterPrivileges))
+			{
+				player->sendTextMessage(MSG_STATUS_SMALL, "You cannot execute this talkaction.");
+				return true;
+			}
+
+			return false;
 		}
 
-		return false;
+		if(!player->hasCustomFlag(PlayerCustomFlag_GamemasterPrivileges))
+			player->setNextExAction(OTSYS_TIME() + g_config.getNumber(ConfigManager::CUSTOM_ACTIONS_DELAY_INTERVAL) - 10);
 	}
 
 	if(talkAction->isLogged())
 	{
 		if(player)
-			player->sendTextMessage(MSG_STATUS_CONSOLE_RED, words.c_str());
+			player->sendTextMessage(MSG_STATUS_CONSOLE_ORANGE, words.c_str());
 
 		Logger::getInstance()->eFile("talkactions/" + creature->getName() + ".log", words, true);
 	}
 
 	if(talkAction->isScripted())
-		return talkAction->executeSay(creature, cmdstring[talkAction->getFilter()], paramstring[talkAction->getFilter()], channelId);
+		return (talkAction->executeSay(creature, cmd[talkAction->getFilter()], param[talkAction->getFilter()], channelId) != 0);
 
 	if(TalkFunction* function = talkAction->getFunction())
-		return function(creature, cmdstring[talkAction->getFilter()], paramstring[talkAction->getFilter()]);
+		return function(creature, cmd[talkAction->getFilter()], param[talkAction->getFilter()]);
 
 	return false;
 }

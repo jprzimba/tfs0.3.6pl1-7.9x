@@ -3389,8 +3389,9 @@ bool Game::playerRequestAddVip(uint32_t playerId, const std::string& vipName)
 
 	uint32_t guid;
 	bool specialVip;
-
 	std::string name = vipName;
+
+	player->setNextExAction(OTSYS_TIME() + g_config.getNumber(ConfigManager::CUSTOM_ACTIONS_DELAY_INTERVAL) - 10);
 	if(!IOLoginData::getInstance()->getGuidByNameEx(guid, specialVip, name))
 	{
 		player->sendTextMessage(MSG_STATUS_SMALL, "A player with that name does not exist.");

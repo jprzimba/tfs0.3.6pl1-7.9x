@@ -160,11 +160,11 @@
 	-- Item usage
 	timeBetweenActions = 200
 	timeBetweenExActions = 1000
+	timeBetweenCustomActions = 500
 	hotkeyAimbotEnabled = true
 
 	-- Map
 	-- NOTE: storeTrash costs more memory, but will perform alot faster cleaning.
-	-- NOTE: do not enable randomizeTiles for now, it need to be fixed.
 	mapName = "world"
 	mapAuthor = "Unknow"
 	randomizeTiles = true
