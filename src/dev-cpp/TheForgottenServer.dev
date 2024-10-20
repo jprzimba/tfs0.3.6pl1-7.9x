@@ -1631,20 +1631,20 @@ BuildCmd=
 
 [VersionInfo]
 Major=0
-Minor=4
-Release=0
-Build=0
+Minor=3
+Release=6
+Build=1
 LanguageID=1033
 CharsetID=1250
 CompanyName=OtLand.net
-FileVersion=0.4
+FileVersion=0.3.6
 FileDescription=The Forgotten Server
-InternalName=The Forgotten Server
+InternalName=Crying Damson
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=TheForgottenServer.exe
 ProductName=The Forgotten Server
-ProductVersion=0.4
+ProductVersion=0.3.6
 AutoIncBuildNr=0
 
 [Unit172]

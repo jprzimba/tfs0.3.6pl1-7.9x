@@ -24,8 +24,8 @@
 #define CLIENT_VERSION_STRING "Only clients with protocol 7.9x allowed!"
 
 #define SOFTWARE_NAME "The Forgotten Server"
-#define SOFTWARE_VERSION "0.4_SVN"
-#define SOFTWARE_CODENAME ""
+#define SOFTWARE_VERSION "0.3.6"
+#define SOFTWARE_CODENAME "Golden"
 #define SOFTWARE_DEVELOPERS "Elf, Talaturen, Dalkon, BeniS, Tryller and Kornholijo"
 #define SOFTWARE_PROTOCOL "7.9x"
 

@@ -195,6 +195,7 @@
 	bufferMutedOnSpellFailure = false
 	spellNameInsteadOfWords = false
 	emoteSpells = false
+	unifiedSpells = true
 
 	-- Outfits
 	allowChangeOutfit = true
@@ -246,6 +247,7 @@
 	tileLimit = 0
 	protectionTileLimit = 0
 	houseTileLimit = 0
+	tradeLimit = 100
 
 	-- Premium-related
 	freePremium = false

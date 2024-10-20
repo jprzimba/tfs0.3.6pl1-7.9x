@@ -287,6 +287,8 @@ bool ConfigManager::load()
 	m_confNumber[ROOK_TOWN] = getGlobalNumber("rookTownId", 1);
 	m_confNumber[ROOK_LEVELTO] = getGlobalNumber("rookLevelToGetRooked", 5);
 	m_confNumber[ROOK_TOLEVEL] = getGlobalNumber("rookLevelToLeaveRook", 8);
+	m_confBool[UNIFIED_SPELLS] = getGlobalBool("unifiedSpells", true);
+	m_confNumber[TRADE_LIMIT] = getGlobalNumber("tradeLimit", 100);
 
 	m_loaded = true;
 	return true;
