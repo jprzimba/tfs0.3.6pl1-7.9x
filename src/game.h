@@ -516,7 +516,7 @@ class Game
 		void loadPlayersRecord();
 		void checkPlayersRecord(Player* player);
 
-		bool reloadInfo(ReloadInfo_t reload, uint32_t playerId = 0);
+		bool reloadInfo(ReloadInfo_t reload, uint32_t playerId = 0, bool completeReload = false);
 		void cleanup();
 		void shutdown();
 		void freeThing(Thing* thing);

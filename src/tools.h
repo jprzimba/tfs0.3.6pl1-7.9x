@@ -48,6 +48,31 @@ enum FileType_t
 	FILE_TYPE_MOD
 };
 
+template <typename T>
+inline void asString(const T& object, std::string& s)
+{
+	std::ostringstream ss;
+	ss << object;
+	s = ss.str();
+}
+
+template <typename T>
+inline std::string asString(const T& object)
+{
+	std::ostringstream ss;
+	ss << object;
+	return ss.str();
+}
+
+template<class T>
+inline T fromString(const std::string& s)
+{
+	std::istringstream ss (s);
+	T t;
+	ss >> t;
+	return t;
+}
+
 std::string transformToMD5(std::string plainText, bool upperCase);
 std::string transformToSHA1(std::string plainText, bool upperCase);
 

@@ -25,6 +25,9 @@
 
 #include "outputmessage.h"
 #include "connection.h"
+#ifdef __LOGIN_SERVER__
+#include "gameservers.h"
+#endif
 
 #include "configmanager.h"
 #include "game.h"
@@ -174,6 +177,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 	}
 
 	//Remove premium days
+	#ifndef __LOGIN_SERVER__
 	IOLoginData::getInstance()->removePremium(account);
 	if(!g_config.getBool(ConfigManager::ACCOUNT_MANAGER) && !account.charList.size())
 	{
@@ -181,6 +185,22 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 			+ g_config.getString(ConfigManager::SERVER_NAME) + " website at " + g_config.getString(ConfigManager::URL) + ".").c_str());
 		return false;
 	}
+	#else
+	Characters charList;
+	for(Characters::iterator it = account.charList.begin(); it != account.charList.end(); ++it)
+	{
+		if(version >= it->second.server->getVersionMin() && version <= it->second.server->getVersionMax())
+			charList[it->first] = it->second;
+	}
+
+	IOLoginData::getInstance()->removePremium(account);
+	if(!g_config.getBool(ConfigManager::ACCOUNT_MANAGER) && !charList.size())
+	{
+		disconnectClient(0x0A, std::string("This account does not contain any character on this client yet.\nCreate a new character on the "
+			+ g_config.getString(ConfigManager::SERVER_NAME) + " website at " + g_config.getString(ConfigManager::URL) + ".").c_str());
+		return false;
+	}
+	#endif
 
 	ConnectionManager::getInstance()->addLoginAttempt(clientIp, true);
 	if(OutputMessage_ptr output = OutputMessagePool::getInstance()->getOutputMessage(this, false))
@@ -205,9 +225,9 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 		else
 			output->put<char>((uint8_t)account.charList.size());
 
+		#ifndef __LOGIN_SERVER__
 		for(Characters::iterator it = account.charList.begin(); it != account.charList.end(); it++)
 		{
-			#ifndef __LOGIN_SERVER__
 			output->putString((*it));
 			if(g_config.getBool(ConfigManager::ON_OR_OFF_CHARLIST))
 			{
@@ -221,16 +241,23 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 
 			output->put<uint32_t>(serverIp);
 			output->put<uint16_t>(g_config.getNumber(ConfigManager::LOGIN_PORT));
-			#else
-			if(version < it->second->getVersionMin() || version > it->second->getVersionMax())
-				continue;
-
-			output->putString(it->first);
-			output->putString(it->second->getName());
-			output->put<uint32_t>(it->second->getAddress());
-			output->put<uint16_t>(it->second->getPort());
-			#endif
 		}
+		#else
+		for(Characters::iterator it = charList.begin(); it != charList.end(); ++it)
+		{
+			output->putString(it->second.name);
+			if(!g_config.getBool(ConfigManager::ON_OR_OFF_CHARLIST) || it->second.status < 0)
+				output->putString(it->second.server->getName());
+			else if(it->second.status)
+				output->putString("Online");
+			else
+				output->putString("Offline");
+
+			output->put<uint32_t>(it->second.server->getAddress());
+			IntegerVec games = it->second.server->getPorts();
+			output->put<uint16_t>(games[random_range(0, games.size() - 1)]);
+		}
+		#endif
 
 		//Add premium days
 		if(g_config.getBool(ConfigManager::FREE_PREMIUM))

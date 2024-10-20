@@ -74,14 +74,20 @@ Account IOLoginData::loadAccount(uint32_t accountId, bool preLoad/* = false*/)
 
 	do
 	{
-		std::string ss = result->getDataString("name");
 #ifndef __LOGIN_SERVER__
-		account.charList.push_back(ss.c_str());
+		account.charList.push_back(result->getDataString("name"));
 #else
-		if(GameServer* server = GameServers::getInstance()->getServerById(result->getDataInt("world_id")))
-			account.charList[ss] = server;
+		std::string name = result->getDataString("name");
+		if(hasCustomFlag(PlayerCustomFlag_GamemasterPrivileges, result->getDataInt("id")))
+		{
+			uint16_t hax = 0;
+			for(GameServersMap::const_iterator it = GameServers::getInstance()->getFirstServer(); it != GameServers::getInstance()->getLastServer(); ++it, ++hax)
+				account.charList[name + asString(hax)] = Character(name, it->second, -1);
+		}
+		else if(GameServer* srv = GameServers::getInstance()->getServerById(result->getDataInt("world_id")))
+			account.charList[name] = Character(name, srv, result->getDataInt("online"));
 		else
-			std::clog << "[Warning - IOLoginData::loadAccount] Invalid server for player '" << ss << "'." << std::endl;
+			std::clog << "[Warning - IOLoginData::loadAccount] Invalid server for player '" << name << "'." << std::endl;
 #endif
 	}
 	while(result->next());
