@@ -513,7 +513,7 @@ class Game
 		bool playerJoinParty(uint32_t playerId, uint32_t leaderId);
 		bool playerRevokePartyInvitation(uint32_t playerId, uint32_t invitedId);
 		bool playerPassPartyLeadership(uint32_t playerId, uint32_t newLeaderId);
-		bool playerLeaveParty(uint32_t playerId);
+		bool playerLeaveParty(uint32_t playerId, bool forced = false);
 
 		void kickPlayer(uint32_t playerId, bool displayEffect);
 		bool broadcastMessage(const std::string& text, MessageClasses type);

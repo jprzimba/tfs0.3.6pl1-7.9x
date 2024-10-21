@@ -2179,6 +2179,12 @@ void LuaInterface::registerFunctions()
 	//getPlayerAccountManager(cid)
 	lua_register(m_luaState, "getPlayerAccountManager", LuaInterface::luaGetPlayerAccountManager);
 
+	//getPlayerTradeState(cid)
+	lua_register(m_luaState, "getPlayerTradeState", LuaInterface::luaGetPlayerTradeState);
+
+	//getPlayerModes(cid)
+	lua_register(m_luaState, "getPlayerModes", LuaInterface::luaGetPlayerModes);
+
 	//getPlayerRates(cid)
 	lua_register(m_luaState, "getPlayerRates", LuaInterface::luaGetPlayerRates);
 
@@ -2191,11 +2197,17 @@ void LuaInterface::registerFunctions()
 	//doPlayerSetPartner(cid, guid)
 	lua_register(m_luaState, "doPlayerSetPartner", LuaInterface::luaDoPlayerSetPartner);
 
+	//doPlayerFollowCreature(cid, target)
+	lua_register(m_luaState, "doPlayerFollowCreature", LuaInterface::luaDoPlayerFollowCreature);
+
 	//getPlayerParty(cid)
 	lua_register(m_luaState, "getPlayerParty", LuaInterface::luaGetPlayerParty);
 
 	//doPlayerJoinParty(cid, lid)
 	lua_register(m_luaState, "doPlayerJoinParty", LuaInterface::luaDoPlayerJoinParty);
+
+	//doPlayerLeaveParty(cid[, forced = false])
+	lua_register(m_luaState, "doPlayerLeaveParty", LuaInterface::luaDoPlayerLeaveParty);
 
 	//getPartyMembers(lid)
 	lua_register(m_luaState, "getPartyMembers", LuaInterface::luaGetPartyMembers);
@@ -2232,6 +2244,9 @@ void LuaInterface::registerFunctions()
 
 	//getTalkActionList()
 	lua_register(m_luaState, "getTalkActionList", LuaInterface::luaGetTalkActionList);
+
+	//getTownList()
+	lua_register(m_luaState, "getTownList", LuaInterface::luaGetTownList);
 
 	//getExperienceStageList()
 	lua_register(m_luaState, "getExperienceStageList", LuaInterface::luaGetExperienceStageList);
@@ -2676,6 +2691,9 @@ int32_t LuaInterface::internalGetPlayerInfo(lua_State* L, PlayerInfo_t info)
 		case PlayerInfoAccountManager:
 			value = player->accountManager;
 			break;
+		case PlayerInfoTradeState:
+			value = player->tradeState;
+			break;
 		default:
 			errorEx("Unknown player info #" + info);
 			value = 0;
@@ -2870,6 +2888,11 @@ int32_t LuaInterface::luaGetPlayerLastLogin(lua_State* L)
 int32_t LuaInterface::luaGetPlayerAccountManager(lua_State* L)
 {
 	return internalGetPlayerInfo(L, PlayerInfoAccountManager);
+}
+
+int32_t LuaInterface::luaGetPlayerTradeState(lua_State* L)
+{
+	return internalGetPlayerInfo(L, PlayerInfoTradeState);
 }
 //
 
@@ -6623,6 +6646,22 @@ int32_t LuaInterface::luaGetMonsterInfo(lua_State* L)
 	return 1;
 }
 
+int32_t LuaInterface::luaGetTownList(lua_State* L)
+{
+	//getTownList()
+	TownMap::const_iterator it = Towns::getInstance()->getFirstTown();
+	lua_newtable(L);
+	for(uint32_t i = 1; it != Towns::getInstance()->getLastTown(); ++it, ++i)
+	{
+		createTable(L, i);
+		setField(L, "id", it->first);
+		setField(L, "name", it->second->getName());
+		pushTable(L);
+	}
+
+	return 1;
+}
+
 int32_t LuaInterface::luaGetTalkActionList(lua_State* L)
 {
 	//getTalkactionList()
@@ -8549,6 +8588,51 @@ int32_t LuaInterface::luaDoPlayerSetBalance(lua_State* L)
 	return 1;
 }
 
+int32_t LuaInterface::luaDoPlayerFollowCreature(lua_State* L)
+{
+	//doPlayerFollowCreature(cid, target)
+	ScriptEnviroment* env = getEnv();
+
+	Creature* creature = env->getCreatureByUID(popNumber(L));
+	if(!creature)
+	{
+		errorEx(getError(LUA_ERROR_CREATURE_NOT_FOUND));
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	Player* player = env->getPlayerByUID(popNumber(L));
+	if(!player)
+	{
+		errorEx(getError(LUA_ERROR_PLAYER_NOT_FOUND));
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	lua_pushboolean(L, g_game.playerFollowCreature(player->getID(), creature->getID()));
+	return 1;
+}
+
+int32_t LuaInterface::luaDoPlayerLeaveParty(lua_State* L)
+{
+	//doPlayerLeaveParty(cid[, forced = false])
+	bool forced = false;
+	if(lua_gettop(L) > 1)
+		forced = popBoolean(L);
+
+	ScriptEnviroment* env = getEnv();
+	Player* player = env->getPlayerByUID(popNumber(L));
+	if(!player)
+	{
+		errorEx(getError(LUA_ERROR_PLAYER_NOT_FOUND));
+		lua_pushboolean(L, false);
+	}
+
+	g_game.playerLeaveParty(player->getID(), forced);
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 int32_t LuaInterface::luaDoPlayerSetPartner(lua_State* L)
 {
 	//doPlayerSetPartner(cid, guid)
@@ -8888,6 +8972,26 @@ int32_t LuaInterface::luaDoCreatureSetNoMove(lua_State* L)
 		lua_pushboolean(L, false);
 	}
 
+	return 1;
+}
+
+int32_t LuaInterface::luaGetPlayerModes(lua_State* L)
+{
+	//getPlayerModes(cid)
+	ScriptEnviroment* env = getEnv();
+
+	Player* player = env->getPlayerByUID(popNumber(L));
+	if(!player)
+	{
+		errorEx(getError(LUA_ERROR_PLAYER_NOT_FOUND));
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	lua_newtable(L);
+	setField(L, "chase", player->getChaseMode());
+	setField(L, "fight", player->getFightMode());
+	setField(L, "secure", player->getSecureMode());
 	return 1;
 }
 

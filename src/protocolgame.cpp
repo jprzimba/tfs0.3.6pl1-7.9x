@@ -1393,7 +1393,7 @@ void ProtocolGame::parsePassPartyLeadership(NetworkMessage& msg)
 
 void ProtocolGame::parseLeaveParty(NetworkMessage& msg)
 {
-	addGameTask(&Game::playerLeaveParty, player->getID());
+	addGameTask(&Game::playerLeaveParty, player->getID(), false);
 }
 
 void ProtocolGame::parseQuests(NetworkMessage& msg)

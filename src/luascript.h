@@ -421,6 +421,8 @@ class LuaInterface
 		static int32_t luaGetBanAction(lua_State* L);
 		static int32_t luaGetBanList(lua_State* L);
 		static int32_t luaGetPlayerRates(lua_State* L);
+		static int32_t luaGetPlayerTradeState(lua_State* L);
+		static int32_t luaGetPlayerModes(lua_State* L);
 		static int32_t luaDoPlayerSetRate(lua_State* L);
 		static int32_t luaDoCreatureSetDropLoot(lua_State* L);
 		static int32_t luaGetPlayerLossPercent(lua_State* L);
@@ -513,6 +515,8 @@ class LuaInterface
 		static int32_t luaGetPlayerPartner(lua_State* L);
 		static int32_t luaDoPlayerSetPartner(lua_State* L);
 		static int32_t luaGetPlayerParty(lua_State* L);
+		static int32_t luaDoPlayerFollowCreature(lua_State* L);
+		static int32_t luaDoPlayerLeaveParty(lua_State* L);
 		static int32_t luaDoPlayerJoinParty(lua_State* L);
 		static int32_t luaGetPartyMembers(lua_State* L);
 		static int32_t luaGetCreatureStorage(lua_State* L);
@@ -631,6 +635,7 @@ class LuaInterface
 		static int32_t luaDoItemSetAttribute(lua_State* L);
 		static int32_t luaDoItemEraseAttribute(lua_State* L);
 		static int32_t luaGetTalkActionList(lua_State* L);
+		static int32_t luaGetTownList(lua_State* L);
 		static int32_t luaGetExperienceStageList(lua_State* L);
 		static int32_t luaGetWaypointList(lua_State* L);
 		static int32_t luaGetWaypointPosition(lua_State* L);
@@ -753,7 +758,8 @@ class LuaInterface
 			PlayerInfoClient,
 			PlayerInfoLastLoad,
 			PlayerInfoLastLogin,
-			PlayerInfoAccountManager
+			PlayerInfoAccountManager,
+			PlayerInfoTradeState
 		};
 		static int32_t internalGetPlayerInfo(lua_State* L, PlayerInfo_t info);
 

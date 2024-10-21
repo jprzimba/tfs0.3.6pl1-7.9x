@@ -4726,13 +4726,10 @@ bool Game::playerPassPartyLeadership(uint32_t playerId, uint32_t newLeaderId)
 	return player->getParty()->passLeadership(newLeader);
 }
 
-bool Game::playerLeaveParty(uint32_t playerId)
+bool Game::playerLeaveParty(uint32_t playerId, bool forced/* = false*/)
 {
 	Player* player = getPlayerByID(playerId);
-	if(!player || player->isRemoved())
-		return false;
-
-	if(!player->getParty() || player->hasCondition(CONDITION_INFIGHT))
+	if(!player || player->isRemoved() || !player->getParty() || (player->hasCondition(CONDITION_INFIGHT) && !forced))
 		return false;
 
 	return player->getParty()->leave(player);

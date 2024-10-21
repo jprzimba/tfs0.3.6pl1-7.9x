@@ -369,7 +369,9 @@ class Player : public Creature, public Cylinder
 
 		void stopWalk();
 
+		chaseMode_t getChaseMode() const {return chaseMode;}
 		void setChaseMode(chaseMode_t mode);
+		fightMode_t getFightMode() const {return fightMode;}
 		void setFightMode(fightMode_t mode) {fightMode = mode;}
 		void setSecureMode(secureMode_t mode) {secureMode = mode;}
 		secureMode_t getSecureMode() const {return secureMode;}
