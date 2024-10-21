@@ -13,6 +13,7 @@
 	sqlKeepAlive = 0
 	mysqlReadTimeout = 10
 	mysqlWriteTimeout = 10
+	mysqlReconnectionAttempts = 3
 	encryptionType = "plain"
 
 	-- Account manager
@@ -227,9 +228,10 @@
 
 	-- Saving-related
 	-- useHouseDataStorage usage may be found at README.
+	houseDataStorage = "relational"
 	saveGlobalStorage = true
-	useHouseDataStorage = false
 	storePlayerDirection = false
+	savePlayerData = true
 
 	-- Loot
 	-- monsterLootMessage 0 to disable, 1 - only party, 2 - only player, 3 - party or player (like Tibia's)

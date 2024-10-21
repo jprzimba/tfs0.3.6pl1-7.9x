@@ -31,28 +31,28 @@ extern ConfigManager g_config;
 #endif
 
 boost::recursive_mutex DBQuery::databaseLock;
-Database* _Database::_instance = NULL;
+Database* _Database::m_instance = NULL;
 
 Database* _Database::getInstance()
 {
-	if(!_instance)
+	if(!m_instance)
 	{
 #if defined MULTI_SQL_DRIVERS
 #ifdef __USE_MYSQL__
 		if(g_config.getString(ConfigManager::SQL_TYPE) == "mysql")
-			_instance = new DatabaseMySQL;
+			m_instance = new DatabaseMySQL;
 #endif
 #ifdef __USE_SQLITE__
-		if(g_config.getString(ConfigManager::SQL_TYPE) == "sqlite")
-			_instance = new DatabaseSQLite;
+		else if(g_config.getString(ConfigManager::SQL_TYPE) == "sqlite")
+			m_instance = new DatabaseSQLite;
 #endif
 #else
-		_instance = new Database;
+		m_instance = new Database;
 #endif
 	}
 
-	_instance->use();
-	return _instance;
+	m_instance->use();
+	return m_instance;
 }
 
 DBResult* _Database::verifyResult(DBResult* result)
@@ -61,36 +61,25 @@ DBResult* _Database::verifyResult(DBResult* result)
 		return result;
 
 	result->free();
-	result = NULL;
 	return NULL;
 }
 
-DBInsert::DBInsert(Database* db)
-{
-	m_db = db;
-	m_rows = 0;
-	// checks if current database engine supports multiline INSERTs
-	m_multiLine = m_db->getParam(DBPARAM_MULTIINSERT);
-}
-
-void DBInsert::setQuery(const std::string& query)
+void DBInsert::setQuery(std::string query)
 {
 	m_query = query;
 	m_buf = "";
 	m_rows = 0;
 }
 
-bool DBInsert::addRow(const std::string& row)
+bool DBInsert::addRow(std::string row)
 {
-	if(!m_multiLine) // executes INSERT for current row
-		return m_db->executeQuery(m_query + "(" + row + ")");
+	if(!m_db->multiLine())
+		return m_db->query(m_query + "(" + row + ")");
 
-	m_rows++;
-	int32_t size = m_buf.length();
-	// adds new row to buffer
-	if(!size)
+	++m_rows;
+	if(m_buf.empty())
 		m_buf = "(" + row + ")";
-	else if(size > 8192)
+	else if(m_buf.length() > 8192)
 	{
 		if(!execute())
 			return false;
@@ -112,15 +101,11 @@ bool DBInsert::addRow(std::stringstream& row)
 
 bool DBInsert::execute()
 {
-	if(!m_multiLine || m_buf.length() < 1) // INSERTs were executed on-fly
-		return true;
-
-	if(!m_rows) //no rows to execute
+	if(!m_db->multiLine() || m_buf.empty() || !m_rows)
 		return true;
 
 	m_rows = 0;
-	// executes buffer
-	bool res = m_db->executeQuery(m_query + m_buf);
+	bool ret = m_db->query(m_query + m_buf);
 	m_buf = "";
-	return res;
+	return ret;
 }

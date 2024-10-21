@@ -32,18 +32,21 @@
 		[ M...
 			config.lua
 			forgottenserver.s3db
-			data/
-				actions/
-					actions.xml
+			data/actions/
 					scripts/
 						tools/
 							fishing.lua
-			data/
-				creaturescripts/
+					actions.xml
+			data/creaturescripts/
 					scripts/
 						advancesave.lua
+			data/globalevents/
+					scripts/
+						save.lua
+					globalevents.xml
 			data/lib/
 					000-constant.lua
+					004-database.lua
 					032-position.lua
 					050-function.lua
 					100-compat.lua
@@ -61,8 +64,15 @@
 						burst_arrow.lua
 						poison_arrow.lua
 					weapons.xml
+			data/talkactions/
+					scripts/
+						clean.lua
+						newtype.lua
+						save.lua
 			data/XML/
+					groups.xml
 					outfits.xml
+					servers.xml
 		]
 		[ D...
 			data/actions/scripts/
@@ -90,6 +100,8 @@
 				gamePort
 				adminPort
 				statusPort
+			data/XML/
+					admin.xml
 		]
 	]
 ]
@@ -112,6 +124,8 @@
 			doPlayerPay(cid, cost), unregisterCreatureEvent(cid, name). (Tryller)
 		* Add new creature events onMoveItem(moveItem, frompos, position, cid). (Elf Tryller)
 		* Add old quest system based on unique id (quests.lua). (Tryller)
+		* Add all database lua functions form 0.4 db.stringComparer(), db.connected(), db.tableExists(name), 
+			db.transBegin(), db.transRollback(), db.transCommit(). (Elf Tryller)
 		* Clean actions, movements and weapons scripts to work only with 7.9 items. (Tryller)
 		* Players can buy house with gold in inventory and/or bank balance. (Tryller)
 		* Auto stack items. (Elf)
@@ -125,9 +139,13 @@
 		* Replace randomize ground with hard coded (need to be fixed). (Tryller)
 		* Replace lua getItemNameById(itemid) with getItemName(itemid) compat. (Tryller)
 		* Replace doNpcSellItem(cid, itemid, amount, subType, ignoreCap, inBackpacks, backpack) with doNpcSellItem(cid, itemid, count, cost). (Tryller)
+		* Replace lua functions db.executeQuery(query) -> db.query, db.stringComparison() -> db.stringComparer() (Elf)
+		* Replace connection system for 7.9 protocol. (OpenTibia, Tryller)
 		* Updated Account Manager to work with account number instead of account name. (Tryller)
 		* Updated characters death corpse ITEM_MALE_CORPSE = 3058, ITEM_FEMALE_CORPSE = 3065 to work with 7.9 protocol. (Tryller)
 		* Updated global save to TFS 0.4 (Elf, Tryller)
+		* Updated saveGameState to TFS 0.4 (Elf, Tryller)
+		* Updated house storage to TFS 0.4 (Elf, Tryller)
 		* Updated npc system. (Tryller)
 		* Remove shared experience. (Tryller)
 		* Remove account name lua functions getAccountByName(name) and getAccountByAccountId(accId). (Tryller)

@@ -32,6 +32,7 @@
 #include "housetile.h"
 
 #include "database.h"
+#include "databasemanager.h"
 #include "iologindata.h"
 #include "ioban.h"
 #include "iomapserialize.h"
@@ -132,7 +133,7 @@ bool ScriptEnviroment::saveGameState()
 	DBQuery query;
 
 	query << "DELETE FROM `global_storage` WHERE `world_id` = " << g_config.getNumber(ConfigManager::WORLD_ID) << ";";
-	if(!db->executeQuery(query.str()))
+	if(!db->query(query.str()))
 		return false;
 
 	DBInsert query_insert(db);
@@ -2388,7 +2389,7 @@ void LuaInterface::registerFunctions()
 	//doReloadInfo(id[, cid])
 	lua_register(m_luaState, "doReloadInfo", LuaInterface::luaDoReloadInfo);
 
-	//doSaveServer()
+	//doSaveServer([flags = 13])
 	lua_register(m_luaState, "doSaveServer", LuaInterface::luaDoSaveServer);
 
 	//doCleanHouse(houseId)
@@ -2441,8 +2442,8 @@ const luaL_Reg LuaInterface::luaSystemTable[] =
 
 const luaL_Reg LuaInterface::luaDatabaseTable[] =
 {
-	//db.executeQuery(query)
-	{"executeQuery", LuaInterface::luaDatabaseExecute},
+	//db.query(query)
+	{"query", LuaInterface::luaDatabaseExecute},
 
 	//db.storeQuery(query)
 	{"storeQuery", LuaInterface::luaDatabaseStoreQuery},
@@ -2456,13 +2457,28 @@ const luaL_Reg LuaInterface::luaDatabaseTable[] =
 	//db.lastInsertId()
 	{"lastInsertId", LuaInterface::luaDatabaseLastInsertId},
 
-	//db.stringComparison()
-	{"stringComparison", LuaInterface::luaDatabaseStringComparison},
+	//db.stringComparer()
+	{"stringComparer", LuaInterface::luaDatabaseStringComparer},
 
 	//db.updateLimiter()
 	{"updateLimiter", LuaInterface::luaDatabaseUpdateLimiter},
 
-	{NULL,NULL}
+	//db.connected()
+	{"connected", LuaInterface::luaDatabaseConnected},
+
+	//db.tableExists(name)
+	{"tableExists", LuaInterface::luaDatabaseTableExists},
+
+	//db.transBegin()
+	{"transBegin", LuaInterface::luaDatabaseTransBegin},
+
+	//db.transRollback()
+	{"transRollback", LuaInterface::luaDatabaseTransRollback},
+
+	//db.transCommit()
+	{"transCommit", LuaInterface::luaDatabaseTransCommit},
+
+	{NULL, NULL}
 };
 
 const luaL_Reg LuaInterface::luaResultTable[] =
@@ -9198,12 +9214,13 @@ int32_t LuaInterface::luaDoReloadInfo(lua_State* L)
 
 int32_t LuaInterface::luaDoSaveServer(lua_State* L)
 {
-	//doSaveServer([shallow])
-	bool shallow = false;
+	//doSaveServer([flags = 13])
+	uint8_t flags = 13;
 	if(lua_gettop(L) > 0)
-		shallow = popNumber(L);
+		flags = popNumber(L);
 
-	Dispatcher::getInstance().addTask(createTask(boost::bind(&Game::saveGameState, &g_game, shallow)));
+	Dispatcher::getInstance().addTask(createTask(boost::bind(&Game::saveGameState, &g_game, flags)));
+	lua_pushnil(L);
 	return 1;
 }
 
@@ -9241,7 +9258,7 @@ int32_t LuaInterface::luaDoRefreshMap(lua_State* L)
 int32_t LuaInterface::luaDoUpdateHouseAuctions(lua_State* L)
 {
 	//doUpdateHouseAuctions()
-	lua_pushboolean(L, IOMapSerialize::getInstance()->updateAuctions());
+	lua_pushboolean(L, g_game.getMap()->updateAuctions());
 	return 1;
 }
 
@@ -10157,9 +10174,11 @@ int32_t LuaInterface::luaSystemTime(lua_State* L)
 
 int32_t LuaInterface::luaDatabaseExecute(lua_State* L)
 {
-	//db.executeQuery(query)
+	//db.query(query)
 	DBQuery query; //lock mutex
-	lua_pushboolean(L, Database::getInstance()->executeQuery(popString(L)));
+	query << popString(L);
+
+	lua_pushboolean(L, Database::getInstance()->query(query.str()));
 	return 1;
 }
 
@@ -10167,9 +10186,10 @@ int32_t LuaInterface::luaDatabaseStoreQuery(lua_State* L)
 {
 	//db.storeQuery(query)
 	ScriptEnviroment* env = getEnv();
-
 	DBQuery query; //lock mutex
-	if(DBResult* res = Database::getInstance()->storeQuery(popString(L)))
+
+	query << popString(L);
+	if(DBResult* res = Database::getInstance()->storeQuery(query.str()))
 		lua_pushnumber(L, env->addResult(res));
 	else
 		lua_pushboolean(L, false);
@@ -10180,7 +10200,6 @@ int32_t LuaInterface::luaDatabaseStoreQuery(lua_State* L)
 int32_t LuaInterface::luaDatabaseEscapeString(lua_State* L)
 {
 	//db.escapeString(str)
-	DBQuery query; //lock mutex
 	lua_pushstring(L, Database::getInstance()->escapeString(popString(L)).c_str());
 	return 1;
 }
@@ -10189,8 +10208,6 @@ int32_t LuaInterface::luaDatabaseEscapeBlob(lua_State* L)
 {
 	//db.escapeBlob(s, length)
 	uint32_t length = popNumber(L);
-	DBQuery query; //lock mutex
-
 	lua_pushstring(L, Database::getInstance()->escapeBlob(popString(L).c_str(), length).c_str());
 	return 1;
 }
@@ -10198,15 +10215,14 @@ int32_t LuaInterface::luaDatabaseEscapeBlob(lua_State* L)
 int32_t LuaInterface::luaDatabaseLastInsertId(lua_State* L)
 {
 	//db.lastInsertId()
-	DBQuery query; //lock mutex
 	lua_pushnumber(L, Database::getInstance()->getLastInsertId());
 	return 1;
 }
 
-int32_t LuaInterface::luaDatabaseStringComparison(lua_State* L)
+int32_t LuaInterface::luaDatabaseStringComparer(lua_State* L)
 {
-	//db.stringComparison()
-	lua_pushstring(L, Database::getInstance()->getStringComparison().c_str());
+	//db.stringComparer()
+	lua_pushstring(L, Database::getInstance()->getStringComparer().c_str());
 	return 1;
 }
 
@@ -10214,6 +10230,41 @@ int32_t LuaInterface::luaDatabaseUpdateLimiter(lua_State* L)
 {
 	//db.updateLimiter()
 	lua_pushstring(L, Database::getInstance()->getUpdateLimiter().c_str());
+	return 1;
+}
+
+int32_t LuaInterface::luaDatabaseConnected(lua_State* L)
+{
+	//db.connected()
+	lua_pushboolean(L, Database::getInstance()->isConnected());
+	return 1;
+}
+
+int32_t LuaInterface::luaDatabaseTableExists(lua_State* L)
+{
+	//db.tableExists(table)
+	lua_pushboolean(L, DatabaseManager::getInstance()->tableExists(popString(L)));
+	return 1;
+}
+
+int32_t LuaInterface::luaDatabaseTransBegin(lua_State* L)
+{
+	//db.transBegin()
+	lua_pushboolean(L, Database::getInstance()->beginTransaction());
+	return 1;
+}
+
+int32_t LuaInterface::luaDatabaseTransRollback(lua_State* L)
+{
+	//db.transRollback()
+	lua_pushboolean(L, Database::getInstance()->rollback());
+	return 1;
+}
+
+int32_t LuaInterface::luaDatabaseTransCommit(lua_State* L)
+{
+	//db.transCommit()
+	lua_pushboolean(L, Database::getInstance()->commit());
 	return 1;
 }
 

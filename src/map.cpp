@@ -47,31 +47,31 @@ bool Map::loadMap(const std::string& identifier)
 	IOMap* loader = new IOMap();
 	if(!loader->loadMap(this, identifier))
 	{
-		std::clog << "FATAL: OTBM Loader - " << loader->getLastErrorString() << std::endl;
+		std::clog << "> FATAL: OTBM Loader - " << loader->getLastErrorString() << std::endl;
 		return false;
 	}
 
-	std::clog << "Map loading time: " << (OTSYS_TIME() - start) / (1000.) << " seconds." << std::endl;
+	std::clog << "Loading time: " << (OTSYS_TIME() - start) / (1000.) << " seconds." << std::endl;
 	start = OTSYS_TIME();
 	if(!loader->loadSpawns(this))
-		std::clog << "WARNING: Could not load spawn data." << std::endl;
+		std::clog << "> WARNING: Could not load spawn data." << std::endl;
 
 	if(!loader->loadHouses(this))
 		std::clog << "WARNING: Could not load house data." << std::endl;
 
 	delete loader;
-	std::clog << "Data parsing time: " << (OTSYS_TIME() - start) / (1000.) << " seconds." << std::endl;
+	std::clog << "Parsing time: " << (OTSYS_TIME() - start) / (1000.) << " seconds." << std::endl;
 	start = OTSYS_TIME();
 
 	IOMapSerialize::getInstance()->updateHouses();
 	IOMapSerialize::getInstance()->updateAuctions();
-	std::clog << "Houses synchronization time: " << (OTSYS_TIME() - start) / (1000.) << " seconds." << std::endl;
+	std::clog << "Synchronization time: " << (OTSYS_TIME() - start) / (1000.) << " seconds." << std::endl;
 
 	start = OTSYS_TIME();
 	IOMapSerialize::getInstance()->loadHouses();
 	IOMapSerialize::getInstance()->loadMap(this);
 
-	std::clog << "Content unserialization time: " << (OTSYS_TIME() - start) / (1000.) << " seconds." << std::endl;
+	std::clog << "Unserialization time: " << (OTSYS_TIME() - start) / (1000.) << " seconds." << std::endl;
 	return true;
 }
 
@@ -102,6 +102,11 @@ bool Map::saveMap()
 	}
 
 	return saved;
+}
+
+bool Map::updateAuctions()
+{
+	return IOMapSerialize::getInstance()->updateAuctions();
 }
 
 Tile* Map::getTile(int32_t x, int32_t y, int32_t z)
