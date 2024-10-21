@@ -166,7 +166,6 @@ int32_t OTSYS_getch()
 
 void signalHandler(int32_t sig)
 {
-	uint32_t tmp = 0;
 	switch(sig)
 	{
 		case SIGHUP:
@@ -175,7 +174,7 @@ void signalHandler(int32_t sig)
 			break;
 
 		case SIGTRAP:
-			g_game.cleanMap(tmp);
+			g_game.cleanMap();
 			break;
 
 		case SIGCHLD:

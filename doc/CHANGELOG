@@ -102,7 +102,8 @@
 		* Add new configs from TFS 0.4 useCapacity, monsterSpawnWalkback, defaultDepotSizePremium, defaultDepotSize.
 			vipListDefaultLimit and vipListDefaultPremiumLimit, mailMaxAttempts, mailBlockPeriod and mailAttemptsFadeTime,
 			houseProtection, houseSkipInitialRent, houseTileLimit, tileLimit, protectionTileLimit, useRookSystem, rookTownId,
-			rookLevelToGetRooked, rookLevelToLeaveRook, timeBetweenCustomActions, unifiedSpells, tradeLimit. (Tryller)
+			rookLevelToGetRooked, rookLevelToLeaveRook, timeBetweenCustomActions, unifiedSpells, tradeLimit,
+			recoverManaAfterDeathInPvPZone. (Tryller)
 		* Add new lua functions doSteerCreature(cid, position[, maxNodes]), getCreaturePartyShield(cid[, target]),
 			doCreatureSetPartyShield(cid, shield), isValidPosition(position), isNumeric(str), getTotalGold(cid), 
 			doPlayerPay(cid, cost), unregisterCreatureEvent(cid, name). (Tryller)

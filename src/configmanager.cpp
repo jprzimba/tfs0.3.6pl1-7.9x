@@ -289,6 +289,7 @@ bool ConfigManager::load()
 	m_confNumber[ROOK_TOLEVEL] = getGlobalNumber("rookLevelToLeaveRook", 8);
 	m_confBool[UNIFIED_SPELLS] = getGlobalBool("unifiedSpells", true);
 	m_confNumber[TRADE_LIMIT] = getGlobalNumber("tradeLimit", 100);
+	m_confBool[PVPZONE_RECOVERMANA] = getGlobalBool("recoverManaAfterDeathInPvPZone", false);
 
 	m_loaded = true;
 	return true;

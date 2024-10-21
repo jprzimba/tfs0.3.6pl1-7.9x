@@ -92,6 +92,7 @@
 	deathContainerId = 1987
 	gainExperienceColor = 215
 	addManaSpentInPvPZone = true
+	recoverManaAfterDeathInPvPZone = false
 	squareColor = 0
 	allowFightback = true
 

@@ -2168,7 +2168,8 @@ void Player::dropCorpse(DeathList deathList)
 		if(health <= 0)
 		{
 			health = healthMax;
-			mana = manaMax;
+			if(getZone() != ZONE_PVP || g_config.getBool(ConfigManager::PVPZONE_RECOVERMANA))
+				mana = manaMax;
 		}
 
 		setDropLoot(LOOT_DROP_FULL);
