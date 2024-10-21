@@ -154,7 +154,7 @@ class Game
 		void checkHighscores();
 		bool reloadHighscores();
 
-		void prepareGlobalSave();
+		void prepareGlobalSave(uint8_t minutes);
 		void globalSave();
 
 		/**
@@ -599,9 +599,6 @@ class Game
 		inline StageList::const_iterator getLastStage() const {return stages.end();}
 		size_t getStagesCount() const {return stages.size();}
 
-		void setGlobalSaveMessage(int16_t key, bool value) {globalSaveMessage[key] = value;}
-		bool getGlobalSaveMessage(int16_t key) const {return globalSaveMessage[key];}
-
 		Map* getMap() {return map;}
 		const Map* getMap() const {return map;}
 
@@ -655,7 +652,6 @@ class Game
 		int32_t lastMotdId;
 		uint32_t playersRecord;
 		uint32_t checkLightEvent, checkCreatureEvent, checkDecayEvent, saveEvent;
-		bool globalSaveMessage[2];
 
 		RefreshTiles refreshTiles;
 		Trash trash;

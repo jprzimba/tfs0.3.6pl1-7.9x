@@ -22,6 +22,7 @@
 
 	[ 0.3.6 pl1 for 7.9
 		[ A...
+			data/globalevents/scripts/init.lua
 			data/actions/map/
 			data/actions/sscripts/quests/quests.lua
 			data/world/world-house.xml
@@ -72,6 +73,8 @@
 							liquids/potions.lua
 							other/enchanting.lua
 							other/furniturebeds.lua
+			data/globalevents/scripts/
+							start.lua
 			data/movements/scripts/
 							snow.lua
 							swimming.lua
@@ -103,7 +106,7 @@
 			vipListDefaultLimit and vipListDefaultPremiumLimit, mailMaxAttempts, mailBlockPeriod and mailAttemptsFadeTime,
 			houseProtection, houseSkipInitialRent, houseTileLimit, tileLimit, protectionTileLimit, useRookSystem, rookTownId,
 			rookLevelToGetRooked, rookLevelToLeaveRook, timeBetweenCustomActions, unifiedSpells, tradeLimit,
-			recoverManaAfterDeathInPvPZone. (Tryller)
+			recoverManaAfterDeathInPvPZone, globalSaveMinute. (Tryller)
 		* Add new lua functions doSteerCreature(cid, position[, maxNodes]), getCreaturePartyShield(cid[, target]),
 			doCreatureSetPartyShield(cid, shield), isValidPosition(position), isNumeric(str), getTotalGold(cid), 
 			doPlayerPay(cid, cost), unregisterCreatureEvent(cid, name). (Tryller)
@@ -124,6 +127,7 @@
 		* Replace doNpcSellItem(cid, itemid, amount, subType, ignoreCap, inBackpacks, backpack) with doNpcSellItem(cid, itemid, count, cost). (Tryller)
 		* Updated Account Manager to work with account number instead of account name. (Tryller)
 		* Updated characters death corpse ITEM_MALE_CORPSE = 3058, ITEM_FEMALE_CORPSE = 3065 to work with 7.9 protocol. (Tryller)
+		* Updated global save to TFS 0.4 (Elf, Tryller)
 		* Updated npc system. (Tryller)
 		* Remove shared experience. (Tryller)
 		* Remove account name lua functions getAccountByName(name) and getAccountByAccountId(accId). (Tryller)

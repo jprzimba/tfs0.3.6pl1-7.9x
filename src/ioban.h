@@ -105,6 +105,5 @@ class IOBan
 		uint32_t getStatementsCount(uint32_t playerId, int16_t channelId = -1) const;
 		uint32_t getStatementsCount(std::string name, int16_t channelId = -1) const;
 
-		bool clearTemporials() const;
 };
 #endif
