@@ -136,9 +136,10 @@
 			rookLevelToLeaveRook
 			timeBetweenCustomActions
 			unifiedSpells
-			tradeLimit,
+			tradeLimit
 			recoverManaAfterDeathInPvPZone
 			globalSaveMinute
+			houseDataStorage (previously related to useHouseDataStorage)
 		* Add new Lua functions (Elf, slawkens, Dalkon, Talaturen, Tryller):
 			doSteerCreature(cid, position[, maxNodes])
 			getCreaturePartyShield(cid[, target])
