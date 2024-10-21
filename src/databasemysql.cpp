@@ -72,7 +72,7 @@ bool DatabaseMySQL::connect(bool _reconnect)
 		if(attempts != 0 && m_attempts > attempts)
 			return false;
 
-		std::clog << "> WARNING: MYSQL Lost connection, attempting to reconnect..." << std::endl;
+		std::clog << "WARNING: MYSQL Lost connection, attempting to reconnect..." << std::endl;
 		if(attempts != 0 && ++m_attempts > attempts)
 		{
 			std::clog << std::endl << "Failed connection to database - maximum reconnect attempts passed." << std::endl;

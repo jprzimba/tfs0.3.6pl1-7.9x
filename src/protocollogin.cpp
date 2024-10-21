@@ -218,6 +218,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 		{
 			output->put<char>(account.charList.size() + 1);
 			output->putString("Account Manager");
+
 			output->putString(g_config.getString(ConfigManager::SERVER_NAME));
 			output->put<uint32_t>(serverIp);
 			output->put<uint16_t>(g_config.getNumber(ConfigManager::LOGIN_PORT));

@@ -3,6 +3,7 @@
 	-- Database
 	-- NOTE: sqlFile is used only by sqlite database, and sqlKeepAlive by mysql database.
 	-- To disable sqlKeepAlive such as mysqlReadTimeout use 0 value.
+	-- encryptionType can be plain, md5, sha1, sha256, sha512.
 	sqlType = "mysql"
 	sqlHost = "localhost"
 	sqlPort = 3306
@@ -14,10 +15,10 @@
 	mysqlReadTimeout = 10
 	mysqlWriteTimeout = 10
 	mysqlReconnectionAttempts = 3
-	encryptionType = "plain"
+	encryptionType = "sha1"
 
 	-- Account manager
-	accountManager = false
+	accountManager = true
 	namelockManager = true
 	newPlayerChooseVoc = true
 	newPlayerSpawnPosX = 438

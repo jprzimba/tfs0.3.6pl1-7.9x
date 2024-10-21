@@ -47,14 +47,14 @@ bool Map::loadMap(const std::string& identifier)
 	IOMap* loader = new IOMap();
 	if(!loader->loadMap(this, identifier))
 	{
-		std::clog << "> FATAL: OTBM Loader - " << loader->getLastErrorString() << std::endl;
+		std::clog << "FATAL: OTBM Loader - " << loader->getLastErrorString() << std::endl;
 		return false;
 	}
 
 	std::clog << "Loading time: " << (OTSYS_TIME() - start) / (1000.) << " seconds." << std::endl;
 	start = OTSYS_TIME();
 	if(!loader->loadSpawns(this))
-		std::clog << "> WARNING: Could not load spawn data." << std::endl;
+		std::clog << "WARNING: Could not load spawn data." << std::endl;
 
 	if(!loader->loadHouses(this))
 		std::clog << "WARNING: Could not load house data." << std::endl;

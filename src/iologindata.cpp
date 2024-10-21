@@ -209,17 +209,15 @@ bool IOLoginData::getPassword(uint32_t accountId, std::string& password, std::st
 	if(!(result = db->storeQuery(query.str())))
 		return false;
 
+	std::string tmpPassword = result->getDataString("password");
+	result->free();
 	if(name.empty() || name == "Account Manager")
 	{
-		password = result->getDataString("password");
-		result->free();
+		password = tmpPassword;
 		return true;
 	}
 
-	std::string tmpPassword = result->getDataString("password");
-	result->free();
 	query.str("");
-
 	query << "SELECT `name` FROM `players` WHERE `account_id` = " << accountId;
 	if(!(result = db->storeQuery(query.str())))
 		return false;
@@ -230,6 +228,7 @@ bool IOLoginData::getPassword(uint32_t accountId, std::string& password, std::st
 			continue;
 
 		password = tmpPassword;
+
 		result->free();
 		return true;
 	}

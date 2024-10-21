@@ -75,6 +75,8 @@ inline T fromString(const std::string& s)
 
 std::string transformToMD5(std::string plainText, bool upperCase);
 std::string transformToSHA1(std::string plainText, bool upperCase);
+std::string transformToSHA256(std::string plainText, bool upperCase);
+std::string transformToSHA512(std::string plainText, bool upperCase);
 
 void _encrypt(std::string& str, bool upperCase);
 bool encryptTest(std::string plain, std::string& hash);

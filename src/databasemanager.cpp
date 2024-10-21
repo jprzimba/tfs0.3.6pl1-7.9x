@@ -1103,7 +1103,7 @@ void DatabaseManager::checkEncryption()
 				{
 					if((Encryption_t)value != ENCRYPTION_PLAIN)
 					{
-						std::clog << "WARNING: You cannot change the encryption to MD5, change it back in config.lua to \"sha1\"." << std::endl;
+						std::clog << "WARNING: You cannot change the encryption to MD5, change it back in config.lua." << std::endl;
 						return;
 					}
 
@@ -1111,7 +1111,8 @@ void DatabaseManager::checkEncryption()
 					DBQuery query;
 					if(db->getDatabaseEngine() != DATABASE_ENGINE_MYSQL)
 					{
-						if(DBResult* result = db->storeQuery("SELECT `id`, `password`, `key` FROM `accounts`;"))
+						query << "SELECT `id`, `password`, `key` FROM `accounts`;";
+						if(DBResult* result = db->storeQuery(query.str()))
 						{
 							do
 							{
@@ -1134,7 +1135,7 @@ void DatabaseManager::checkEncryption()
 				{
 					if((Encryption_t)value != ENCRYPTION_PLAIN)
 					{
-						std::clog << "WARNING: You cannot change the encryption to SHA1, change it back in config.lua to \"md5\"." << std::endl;
+						std::clog << "WARNING: You cannot change the encryption to SHA1, change it back in config.lua." << std::endl;
 						return;
 					}
 
@@ -1142,7 +1143,8 @@ void DatabaseManager::checkEncryption()
 					DBQuery query;
 					if(db->getDatabaseEngine() != DATABASE_ENGINE_MYSQL)
 					{
-						if(DBResult* result = db->storeQuery("SELECT `id`, `password`, `key` FROM `accounts`;"))
+						query << "SELECT `id`, `password`, `key` FROM `accounts`;";
+						if(DBResult* result = db->storeQuery(query.str()))
 						{
 							do
 							{
@@ -1158,6 +1160,62 @@ void DatabaseManager::checkEncryption()
 
 					registerDatabaseConfig("encryption", (int32_t)newValue);
 					std::clog << "Encryption set to SHA1." << std::endl;
+					break;
+				}
+
+				case ENCRYPTION_SHA256:
+				{
+					if((Encryption_t)value != ENCRYPTION_PLAIN)
+					{
+						std::clog << "WARNING: You cannot change the encryption to SHA256, change it back in config.lua." << std::endl;
+						return;
+					}
+
+					Database* db = Database::getInstance();
+					DBQuery query;
+
+					query << "SELECT `id`, `password`, `key` FROM `accounts`;";
+					if(DBResult* result = db->storeQuery(query.str()))
+					{
+						do
+						{
+							query << "UPDATE `accounts` SET `password` = " << db->escapeString(transformToSHA256(result->getDataString("password"), false)) << ", `key` = " << db->escapeString(transformToSHA256(result->getDataString("key"), false)) << " WHERE `id` = " << result->getDataInt("id") << ";";
+							db->query(query.str());
+						}
+						while(result->next());
+						result->free();
+					}
+
+					registerDatabaseConfig("encryption", (int32_t)newValue);
+					std::clog << "Encryption set to SHA256." << std::endl;
+					break;
+				}
+
+				case ENCRYPTION_SHA512:
+				{
+					if((Encryption_t)value != ENCRYPTION_PLAIN)
+					{
+						std::clog << "WARNING: You cannot change the encryption to SHA512, change it back in config.lua." << std::endl;
+						return;
+					}
+
+					Database* db = Database::getInstance();
+					DBQuery query;
+
+					query << "SELECT `id`, `password`, `key` FROM `accounts`;";
+					if(DBResult* result = db->storeQuery(query.str()))
+					{
+						do
+						{
+							query << "UPDATE `accounts` SET `password` = " << db->escapeString(transformToSHA512(result->getDataString("password"), false)) << ", `key` = " << db->escapeString(transformToSHA512(result->getDataString("key"), false)) << " WHERE `id` = " << result->getDataInt("id") << ";";
+							db->query(query.str());
+						}
+						while(result->next());
+						result->free();
+					}
+
+					registerDatabaseConfig("encryption", (int32_t)newValue);
+					std::clog << "Encryption set to SHA512." << std::endl;
 					break;
 				}
 
@@ -1190,6 +1248,24 @@ void DatabaseManager::checkEncryption()
 					Database* db = Database::getInstance();
 					DBQuery query;
 					query << "UPDATE `accounts` SET `password` = " << db->escapeString(transformToSHA1("1", false)) << " WHERE `id` = 1 AND `password` = '1';";
+					db->query(query.str());
+					break;
+				}
+
+				case ENCRYPTION_SHA256:
+				{
+					Database* db = Database::getInstance();
+					DBQuery query;
+					query << "UPDATE `accounts` SET `password` = " << db->escapeString(transformToSHA256("1", false)) << " WHERE `id` = 1 AND `password` = '1';";
+					db->query(query.str());
+					break;
+				}
+
+				case ENCRYPTION_SHA512:
+				{
+					Database* db = Database::getInstance();
+					DBQuery query;
+					query << "UPDATE `accounts` SET `password` = " << db->escapeString(transformToSHA512("1", false)) << " WHERE `id` = 1 AND `password` = '1';";
 					db->query(query.str());
 					break;
 				}

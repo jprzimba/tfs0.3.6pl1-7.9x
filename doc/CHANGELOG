@@ -141,6 +141,9 @@
 			globalSaveMinute
 			houseDataStorage (previously related to useHouseDataStorage)
 		* Add new Lua functions (Elf, slawkens, Dalkon, Talaturen, Tryller):
+			std.sha256(string[, upperCase])
+			std.sha512(string[, upperCase])
+			std.checkName(string[, forceUppercaseOnFirstLetter = true])
 			doSteerCreature(cid, position[, maxNodes])
 			getCreaturePartyShield(cid[, target])
 			doCreatureSetPartyShield(cid, shield)
@@ -149,10 +152,14 @@
 			getTotalGold(cid)
 			doPlayerPay(cid, cost)
 			unregisterCreatureEvent(cid, name)
+			db.stringComparer()
+			db.connected()
+			db.tableExists(name)
+			db.transBegin()
+			db.transRollback()
+			db.transCommit()
 		* Add new creature events onMoveItem(moveItem, frompos, position, cid). (Elf Tryller)
 		* Add old quest system based on unique id (quests.lua). (Tryller)
-		* Add all database lua functions form 0.4 db.stringComparer(), db.connected(), db.tableExists(name), 
-			db.transBegin(), db.transRollback(), db.transCommit(). (Elf Tryller)
 		* Clean actions, movements and weapons scripts to work only with 7.9 items. (Tryller)
 		* Players can buy house with gold in inventory and/or bank balance. (Tryller)
 		* Auto stack items. (Elf)
@@ -184,8 +191,14 @@
 		* Remove not supported 7.9 spells. (Tryller)
 		* Remove bag from monsters. (Tryller)
 		* Remove admin protocol, since its never in use. (Tryller)
-		* Removed from config.lua gamePort, adminPort and statusPort, maxItemsPerPZTile and maxItemsPerHouseTile,
-			displaySkillLevelOnAdvance, adminLogsEnabled. (Tryller)
+		* Remove from config.lua. (Tryller):
+			gamePort
+			adminPort
+			statusPort
+			maxItemsPerPZTile
+			maxItemsPerHouseTile
+			displaySkillLevelOnAdvance
+			adminLogsEnabled
 		* Remove lua function getItemInfo and move functions to new lua functions, getItemPluralNameById(itemid), getItemArticleById(itemid), 
 			getItemRWInfo(uid), getItemWeaponType(uid), isCorpse(uid), getFluidSourceType(type), getItemDescriptionsById(itemid),
 			getItemDescriptions(uid) and getItemWeightById(itemid, count[, precise = TRUE]). (Tryller)

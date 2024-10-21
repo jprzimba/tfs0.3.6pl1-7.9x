@@ -435,10 +435,23 @@ void otserv(StringVec args)
 		g_config.setNumber(ConfigManager::ENCRYPTION, ENCRYPTION_SHA1);
 		std::clog << "Using SHA1 encryption" << std::endl;
 	}
+	else if(encryptionType == "sha256")
+	{
+		g_config.setNumber(ConfigManager::ENCRYPTION, ENCRYPTION_SHA256);
+		std::clog << "Using SHA256 encryption" << std::endl;
+	}
+	else if(encryptionType == "sha512")
+	{
+		g_config.setNumber(ConfigManager::ENCRYPTION, ENCRYPTION_SHA512);
+		std::clog << "Using SHA512 encryption" << std::endl;
+	}
 	else
 	{
 		g_config.setNumber(ConfigManager::ENCRYPTION, ENCRYPTION_PLAIN);
-		std::clog << "Using plaintext encryption" << std::endl;
+		std::clog << "Using plaintext encryption" << std::endl << std::endl
+			<< "WARNING: This method is completely unsafe!" << std::endl
+			<< "Please set encryptionType = \"sha1\" (or any other available method) in config.lua" << std::endl;
+		boost::this_thread::sleep(boost::posix_time::seconds(15));
 	}
 
 	std::clog << "Loading RSA key";
