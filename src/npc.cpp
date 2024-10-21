@@ -683,8 +683,8 @@ ResponseList Npc::parseInteractionNode(xmlNodePtr node)
 			if(readXMLInteger(node, "focus", intValue))
 				prop.focusStatus = intValue;
 
-			if(readXMLInteger(node, "storageId", intValue))
-				prop.storageId = intValue;
+			if(readXMLString(node, "storageId", strValue))
+				prop.storageId = strValue;
 
 			if(readXMLString(node, "storageValue", strValue))
 				prop.storageValue = strValue;
@@ -1018,8 +1018,8 @@ ResponseList Npc::parseInteractionNode(xmlNodePtr node)
 									std::clog << "[Warning - Npc::parseInteractionNode] Unknown action " << strValue << std::endl;
 							}
 
-							if(readXMLInteger(subNode, "key", intValue))
-								action.key = intValue;
+							if(readXMLString(subNode, "key", strValue))
+								action.key = strValue;
 
 							if(action.actionType != ACTION_NONE)
 								prop.actionList.push_back(action);
@@ -1579,7 +1579,7 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 
 				case ACTION_SETSTORAGE:
 				{
-					if(it->key > 0)
+					if(!it->key.empty())
 						player->setStorage(it->key, it->strValue);
 
 					break;
@@ -2174,7 +2174,7 @@ const NpcResponse* Npc::getResponse(const ResponseList& list, const Player* play
 			++matchCount;
 		}
 
-		if((*it)->getStorageId() != -1)
+		if(!(*it)->getStorageId().empty())
 		{
 			std::string value, storageValue = (*it)->getStorage();
 			player->getStorage((*it)->getStorageId(), value);

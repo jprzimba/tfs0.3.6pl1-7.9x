@@ -4578,21 +4578,23 @@ int32_t LuaInterface::luaDoCreateTeleport(lua_State* L)
 int32_t LuaInterface::luaGetCreatureStorage(lua_State* L)
 {
 	//getCreatureStorage(cid, key)
-	uint32_t key = popNumber(L);
+	std::string key = popString(L);
 	ScriptEnviroment* env = getEnv();
 	if(Creature* creature = env->getCreatureByUID(popNumber(L)))
 	{
 		std::string strValue;
-		if(creature->getStorage(key, strValue))
+		if(!creature->getStorage(key, strValue))
 		{
-			int32_t intValue = atoi(strValue.c_str());
-			if(intValue || strValue == "0")
-				lua_pushnumber(L, intValue);
-			else
-				lua_pushstring(L, strValue.c_str());
-		}
-		else
 			lua_pushnumber(L, -1);
+			lua_pushnil(L);
+			return 2;
+		}
+
+		int32_t intValue = atoi(strValue.c_str());
+		if(intValue || strValue == "0")
+			lua_pushnumber(L, intValue);
+		else
+			lua_pushstring(L, strValue.c_str());
 	}
 	else
 	{
@@ -4607,28 +4609,28 @@ int32_t LuaInterface::luaDoCreatureSetStorage(lua_State* L)
 {
 	//doCreatureSetStorage(cid, key[, value])
 	std::string value;
-	bool nil = true;
+	bool tmp = true;
 	if(lua_gettop(L) > 2)
 	{
 		if(!lua_isnil(L, -1))
 		{
 			value = popString(L);
-			nil = false;
+			tmp = false;
 		}
 		else
 			lua_pop(L, 1);
 	}
 
-	uint32_t key = popNumber(L);
+	std::string key = popString(L);
 	ScriptEnviroment* env = getEnv();
 	if(Creature* creature = env->getCreatureByUID(popNumber(L)))
 	{
-		if(!nil)
-			nil = creature->setStorage(key, value);
+		if(!tmp)
+			tmp = creature->setStorage(key, value);
 		else
 			creature->eraseStorage(key);
 
-		lua_pushboolean(L, nil);
+		lua_pushboolean(L, tmp);
 	}
 	else
 	{

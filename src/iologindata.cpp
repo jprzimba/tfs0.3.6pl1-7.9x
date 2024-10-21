@@ -638,7 +638,7 @@ bool IOLoginData::loadPlayer(Player* player, const std::string& name, bool preLo
 	if((result = db->storeQuery(query.str())))
 	{
 		do
-			player->setStorage((uint32_t)result->getDataInt("key"), result->getDataString("value"));
+			player->setStorage(result->getDataString("key"), result->getDataString("value"));
 		while(result->next());
 		result->free();
 	}
@@ -740,6 +740,7 @@ bool IOLoginData::savePlayer(Player* player, bool preSave/* = true*/, bool shall
 	query << "`sex` = " << player->sex << ", ";
 	query << "`balance` = " << player->balance << ", ";
 	query << "`stamina` = " << player->getStamina() << ", ";
+
 	if(g_game.getWorldType() != WORLD_TYPE_PVP_ENFORCED)
 	{
 		Skulls_t skull = SKULL_RED;
@@ -886,11 +887,13 @@ bool IOLoginData::savePlayer(Player* player, bool preSave/* = true*/, bool shall
 		return false;
 
 	player->generateReservedStorage();
+	query.str("");
+
 	query_insert.setQuery("INSERT INTO `player_storage` (`player_id`, `key`, `value`) VALUES ");
 	for(StorageMap::const_iterator cit = player->getStorageBegin(); cit != player->getStorageEnd(); ++cit)
 	{
-		sprintf(buffer, "%u, %u, %s", player->getGUID(), cit->first, db->escapeString(cit->second).c_str());
-		if(!query_insert.addRow(buffer))
+		query << player->getGUID() << "," << db->escapeString(cit->first) << "," << db->escapeString(cit->second);
+		if(!query_insert.addRow(query))
 			return false;
 	}
 

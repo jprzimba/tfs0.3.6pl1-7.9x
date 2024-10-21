@@ -29,7 +29,7 @@
 #define SOFTWARE_DEVELOPERS "Elf, Talaturen, Dalkon, BeniS, Tryller and Kornholijo"
 #define SOFTWARE_PROTOCOL "7.9x"
 
-#define VERSION_DATABASE 24
+#define VERSION_DATABASE 25
 
 #undef MULTI_SQL_DRIVERS
 #define SQL_DRIVERS __USE_SQLITE__+__USE_MYSQL__

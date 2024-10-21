@@ -238,8 +238,8 @@ class Player : public Creature, public Cylinder
 		void addContainer(uint32_t cid, Container* container);
 		void closeContainer(uint32_t cid);
 
-		virtual bool setStorage(const uint32_t key, const std::string& value);
-		virtual void eraseStorage(const uint32_t key);
+		virtual bool setStorage(const std::string& key, const std::string& value);
+		virtual void eraseStorage(const std::string& key);
 
 		void generateReservedStorage();
 		bool transferMoneyTo(const std::string& name, uint64_t amount);
@@ -346,6 +346,9 @@ class Player : public Creature, public Cylinder
 		void setTradeState(tradestate_t state) {tradeState = state;}
 		tradestate_t getTradeState() {return tradeState;}
 		Item* getTradeItem() {return tradeItem;}
+
+		//Quest functions
+		void onUpdateQuest();
 
 		//V.I.P. functions
 		void notifyLogIn(Player* loginPlayer);

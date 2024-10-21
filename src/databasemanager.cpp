@@ -1033,6 +1033,24 @@ uint32_t DatabaseManager::updateDatabase()
 			return 24;
 		}
 
+		case 24:
+		{
+			std::clog << "Updating database to version 25..." << std::endl;
+			if(db->getDatabaseEngine() == DATABASE_ENGINE_MYSQL)
+			{
+				query << "ALTER TABLE `player_storage` CHANGE `key` `key` VARCHAR(32) NOT NULL DEFAULT '0'";
+				db->query(query.str());
+				query.str("");
+
+				query << "ALTER TABLE `global_storage` CHANGE `key` `key` VARCHAR(32) NOT NULL DEFAULT '0'";
+				db->query(query.str());
+				query.str("");
+			}
+
+			registerDatabaseConfig("db_version", 25);
+			return 25;
+		}
+
 		default:
 			break;
 	}
