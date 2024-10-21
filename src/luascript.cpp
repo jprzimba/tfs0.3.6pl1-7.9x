@@ -8942,16 +8942,20 @@ int32_t LuaInterface::luaDoPlayerSave(lua_State* L)
 	//doPlayerSave(cid[, shallow = false])
 	bool shallow = false;
 	if(lua_gettop(L) > 1)
-		shallow = popNumber(L);
+		shallow = popBoolean(L);
 
 	ScriptEnviroment* env = getEnv();
 	if(Player* player = env->getPlayerByUID(popNumber(L)))
+	{
+		player->loginPosition = player->getPosition();
 		lua_pushboolean(L, IOLoginData::getInstance()->savePlayer(player, false, shallow));
+	}
 	else
 	{
 		errorEx(getError(LUA_ERROR_PLAYER_NOT_FOUND));
 		lua_pushboolean(L, false);
 	}
+
 	return 1;
 }
 
@@ -8997,7 +9001,7 @@ int32_t LuaInterface::luaGetTownTemplePosition(lua_State* L)
 
 int32_t LuaInterface::luaGetTownHouses(lua_State* L)
 {
-	//getTownHouses(townId)
+	//getTownHouses([townId])
 	uint32_t townId = 0;
 	if(lua_gettop(L) > 0)
 		townId = popNumber(L);
@@ -9113,7 +9117,7 @@ int32_t LuaInterface::luaDoSetGameState(lua_State* L)
 {
 	//doSetGameState(id)
 	uint32_t id = popNumber(L);
-	if(id >= GAME_STATE_FIRST && id <= GAME_STATE_LAST)
+	if(id >= GAMESTATE_FIRST && id <= GAMESTATE_LAST)
 	{
 		Dispatcher::getInstance().addTask(createTask(boost::bind(&Game::setGameState, &g_game, (GameState_t)id)));
 		lua_pushboolean(L, true);

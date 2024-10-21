@@ -891,6 +891,6 @@
 		errorLogName
 			Default: ""
 
-		truncateLogsOnStartup
+		truncateLogOnStartup
 			Default: no
 ]

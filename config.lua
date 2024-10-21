@@ -209,6 +209,7 @@
 	-- NOTE: promptExceptionTracerErrorBox works only with precompiled support feature,
 	-- called "exception tracer" (__EXCEPTION_TRACER__ flag).
 	dataDirectory = "data/"
+	logsDirectory = "data/logs/"
 	bankSystem = true
 	promptExceptionTracerErrorBox = true
 	maximumDoorLevel = 500
@@ -266,7 +267,7 @@
 	-- NOTE: experienceStages configuration is located in data/XML/stages.xml.
 	-- rateExperienceFromPlayers 0 to disable.
 	experienceStages = false
-	rateExperience = 50.0
+	rateExperience = 5.0
 	rateExperienceFromPlayers = 0
 	rateSkill = 3.0
 	rateMagic = 3.0
@@ -309,6 +310,7 @@
 	-- if you want such a system please check out data/globalevents/globalevents.xml.
 	globalSaveEnabled = false
 	globalSaveHour = 8
+	globalSaveMinute = 0
 	shutdownAtGlobalSave = true
 	cleanMapAtGlobalSave = false
 
