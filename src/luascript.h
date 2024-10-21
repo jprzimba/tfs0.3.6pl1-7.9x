@@ -433,6 +433,7 @@ class LuaInterface
 		static int32_t luaGetThingPosition(lua_State* L);
 		static int32_t luaDoItemRaidUnref(lua_State* L);
 		static int32_t luaHasItemProperty(lua_State* L);
+		static int32_t luaGetItemParent(lua_State* L);
 		static int32_t luaGetThingFromPos(lua_State* L);
 		static int32_t luaGetTileItemById(lua_State* L);
 		static int32_t luaGetTileItemByType(lua_State* L);
@@ -635,6 +636,8 @@ class LuaInterface
 		static int32_t luaDoItemSetAttribute(lua_State* L);
 		static int32_t luaDoItemEraseAttribute(lua_State* L);
 		static int32_t luaGetTalkActionList(lua_State* L);
+		static int32_t luaGetVocationList(lua_State* L);
+		static int32_t luaGetGroupList(lua_State* L);
 		static int32_t luaGetTownList(lua_State* L);
 		static int32_t luaGetExperienceStageList(lua_State* L);
 		static int32_t luaGetWaypointList(lua_State* L);

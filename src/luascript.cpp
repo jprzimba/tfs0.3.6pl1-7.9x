@@ -2239,6 +2239,12 @@ void LuaInterface::registerFunctions()
 	//getGroupInfo(id)
 	lua_register(m_luaState, "getGroupInfo", LuaInterface::luaGetGroupInfo);
 
+	//getVocationList()
+	lua_register(m_luaState, "getVocationList", LuaInterface::luaGetVocationList);
+
+	//getGroupList()
+	lua_register(m_luaState, "getGroupList", LuaInterface::luaGetGroupList);
+
 	//getWaypointList()
 	lua_register(m_luaState, "getWaypointList", LuaInterface::luaGetWaypointList);
 
@@ -2298,6 +2304,9 @@ void LuaInterface::registerFunctions()
 
 	//getItemWeight(itemid, count, <optional: default: 1> precise)
 	lua_register(m_luaState, "getItemWeight", LuaInterface::luaGetItemWeight);
+
+	//getItemParent(uid)
+	lua_register(m_luaState, "getItemParent", LuaInterface::luaGetItemParent);
 
 	//hasItemProperty(uid)
 	lua_register(m_luaState, "hasItemProperty", LuaInterface::luaHasItemProperty);
@@ -6683,6 +6692,38 @@ int32_t LuaInterface::luaGetTalkActionList(lua_State* L)
 	return 1;
 }
 
+int32_t LuaInterface::luaGetVocationList(lua_State* L)
+{
+	//getVocationList()
+	VocationsMap::iterator it = Vocations::getInstance()->getFirstVocation();
+	lua_newtable(L);
+	for(uint32_t i = 1; it != Vocations::getInstance()->getLastVocation(); ++i, ++it)
+	{
+		createTable(L, i);
+		setField(L, "id", it->first);
+		setField(L, "name", it->second->getName());
+		pushTable(L);
+	}
+
+	return 1;
+}
+
+int32_t LuaInterface::luaGetGroupList(lua_State* L)
+{
+	//getGroupList()
+	GroupsMap::iterator it = Groups::getInstance()->getFirstGroup();
+	lua_newtable(L);
+	for(uint32_t i = 1; it != Groups::getInstance()->getLastGroup(); ++i, ++it)
+	{
+		createTable(L, i);
+		setField(L, "id", it->first);
+		setField(L, "name", it->second->getName());
+		pushTable(L);
+	}
+
+	return 1;
+}
+
 int32_t LuaInterface::luaGetExperienceStageList(lua_State* L)
 {
 	//getExperienceStageList()
@@ -9691,6 +9732,42 @@ int32_t LuaInterface::luaGetItemWeight(lua_State* L)
 	}
 
 	lua_pushnumber(L, weight);
+	return 1;
+}
+
+int32_t LuaInterface::luaGetItemParent(lua_State* L)
+{
+	//getItemParent(uid)
+	ScriptEnviroment* env = getEnv();
+
+	Thing* thing = env->getThingByUID(popNumber(L));
+	if(!thing)
+	{
+		errorEx(getError(LUA_ERROR_THING_NOT_FOUND));
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	if(!thing->getParent())
+	{
+		pushThing(L, NULL, 0);
+		return 1;
+	}
+
+	if(Tile* tile = thing->getParent()->getTile())
+	{
+		if(tile->ground)
+			pushThing(L, tile->ground, env->addThing(tile->ground));
+		else
+			pushThing(L, NULL, 0);
+	}
+	if(Item* container = thing->getParent()->getItem())
+		pushThing(L, container, env->addThing(container));
+	else if(Creature* creature = thing->getParent()->getCreature())
+		pushThing(L, creature, env->addThing(creature));
+	else
+		pushThing(L, NULL, 0);
+
 	return 1;
 }
 
